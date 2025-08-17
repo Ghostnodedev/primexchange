@@ -165,3 +165,30 @@ a.secondary {
     filter: invert();
   }
 }
+
+.heroContainer {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/freepik__the-style-is-dark-and-mysterious-inspired-by-neoex__53096.png'); /* your image */
+  background-size: cover;      /* ensures full cover */
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroContainer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* fade overlay to help nav visibility */
+  z-index: 0;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  color: white;
+  padding: 2rem;
+}
+
