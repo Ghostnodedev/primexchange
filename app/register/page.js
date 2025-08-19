@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Correct import
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
@@ -29,11 +29,13 @@ export default function LoginPage() {
         }
       );
 
+      const data = await res.json();
+
       if (res.ok) {
-        setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.push("/login"), 1500); // ✅ Now it will work
+        setMessage("Registration successful! Redirecting...");
+        setTimeout(() => router.push("/login"), 1500);
       } else {
-        setMessage("Login failed. Check your credentials.");
+        setMessage(data.message || "Registration failed. Check your input.");
       }
     } catch (err) {
       setMessage("Network error");
@@ -42,89 +44,78 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+    <div
+      className="d-flex justify-content-center align-items-center vh-100 p-3"
+      style={{
+        background: "linear-gradient(135deg, #0d6efd, #3a8dff)",
+        minHeight: "100vh",
+      }}
+    >
       <div
-        className="card shadow-lg p-4"
-        style={{ width: "100%", maxWidth: "400px" }}
+        className="card shadow-lg p-5 border-0"
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          borderRadius: "20px",
+          backgroundColor: "#ffffffcc",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+          transition: "0.3s",
+        }}
       >
-        <h2 className="text-center text-primary mb-4">Login</h2>
+        <h2
+          className="text-center text-primary mb-4"
+          style={{ fontWeight: "700", letterSpacing: "1px", fontSize: "2rem" }}
+        >
+          Register
+        </h2>
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="Name" className="form-label">
-              Name
-            </label>
-            <input type="text" name="name" className="form-control" required />
-          </div>
+          {[
+            { label: "Name", type: "text", name: "name" },
+            { label: "Username", type: "text", name: "username" },
+            { label: "Password", type: "password", name: "password" },
+            { label: "Confirm Password", type: "password", name: "confirmpassword" },
+            { label: "Email", type: "email", name: "email" },
+            { label: "Age", type: "number", name: "age" },
+            { label: "Phone", type: "tel", name: "phone" },
+          ].map((field) => (
+            <div className="mb-3" key={field.name}>
+              <label htmlFor={field.name} className="form-label fw-semibold text-dark">
+                {field.label}
+              </label>
+              <input
+                type={field.type}
+                name={field.name}
+                className="form-control shadow-sm"
+                required
+                style={{
+                  borderRadius: "10px",
+                  transition: "0.3s",
+                }}
+              />
+            </div>
+          ))}
 
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="age" className="form-label">
-              Age
-            </label>
-            <input type="number" name="age" className="form-control" required />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="confirmpassword" className="form-label">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmpassword"
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              className="form-control"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="phone" className="form-label">
-              Phone
-            </label>
-            <input type="tel" name="phone" className="form-control" required />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-100 py-2">
-            Login
+          <button
+            type="submit"
+            className="btn btn-primary w-100 py-2"
+            style={{
+              fontWeight: "600",
+              fontSize: "1.1rem",
+              borderRadius: "12px",
+              transition: "0.3s",
+            }}
+          >
+            Register
           </button>
         </form>
 
         {message && (
-          <div className="alert alert-info mt-3 text-center" role="alert">
+          <div
+            className="alert alert-primary mt-4 text-center"
+            role="alert"
+            style={{ borderRadius: "12px", fontWeight: "500", fontSize: "0.95rem" }}
+          >
             {message}
           </div>
         )}
@@ -132,3 +123,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+

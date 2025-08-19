@@ -1,79 +1,116 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Correct import
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
   const router = useRouter(); 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formdata = {
-    username: e.target.username.value,
-    password: e.target.password.value,
-    email: e.target.email.value,
-    phone: e.target.phone.value,
+    const formdata = {
+      username: e.target.username.value,
+      password: e.target.password.value,
+      email: e.target.email.value,
+      phone: e.target.phone.value,
+    };
+
+    try {
+      const res = await fetch(
+        "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formdata),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const token = data.token;
+        if (token) {
+          localStorage.setItem("authToken", token);
+          setMessage("Login successful! Redirecting...");
+          setTimeout(() => router.push("/"), 1500);
+        } else {
+          setMessage("Login successful, but no token received.");
+        }
+      } else {
+        setMessage(data.message || "Login failed. Check your credentials.");
+      }
+    } catch (err) {
+      setMessage("Network error");
+      console.error(err);
+    }
   };
 
-  try {
-    const res = await fetch("https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formdata),
-    });
-
-    const data = await res.json(); // 👈 Parse response JSON
-
-    if (res.ok) {
-      const token = data.token; // 👈 Extract token from response
-
-      if (token) {
-        localStorage.setItem("authToken", token); // ✅ Store in localStorage
-        setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.push("/"), 1500);
-      } else {
-        setMessage("Login successful, but no token received.");
-      }
-    } else {
-      setMessage(data.message || "Login failed. Check your credentials.");
-    }
-  } catch (err) {
-    setMessage("Network error");
-    console.error(err);
-  }
-};
-
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-lg p-4" style={{ width: "100%", maxWidth: "400px" }}>
-        <h2 className="text-center text-primary mb-4">Login</h2>
+    <div
+      className="d-flex justify-content-center align-items-center vh-100 p-3"
+      style={{
+        background: "linear-gradient(135deg, #0d6efd, #3a8dff)",
+        minHeight: "100vh",
+      }}
+    >
+      <div
+        className="card shadow-lg p-5 border-0"
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          borderRadius: "20px",
+          backgroundColor: "#ffffffcc", // semi-transparent white
+          boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+          transition: "0.3s",
+        }}
+      >
+        <h2
+          className="text-center text-primary mb-4"
+          style={{ fontWeight: "700", letterSpacing: "1px", fontSize: "2rem" }}
+        >
+          Login
+        </h2>
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">Username</label>
-            <input type="text" name="username" className="form-control" required />
-          </div>
+          {["username", "password", "email", "phone"].map((field) => (
+            <div className="mb-3" key={field}>
+              <label className="form-label fw-semibold text-dark" htmlFor={field}>
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
+              <input
+                type={field === "password" ? "password" : field === "email" ? "email" : "text"}
+                name={field}
+                className="form-control shadow-sm"
+                required
+                style={{
+                  borderRadius: "10px",
+                  transition: "0.3s",
+                }}
+              />
+            </div>
+          ))}
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" name="password" className="form-control" required />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email</label>
-            <input type="email" name="email" className="form-control" required />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="phone" className="form-label">Phone</label>
-            <input type="tel" name="phone" className="form-control" required />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-100 py-2">Login</button>
+          <button
+            type="submit"
+            className="btn btn-primary w-100 py-2"
+            style={{
+              fontWeight: "600",
+              fontSize: "1.1rem",
+              borderRadius: "12px",
+              transition: "0.3s",
+            }}
+          >
+            Login
+          </button>
         </form>
 
         {message && (
-          <div className="alert alert-info mt-3 text-center" role="alert">
+          <div
+            className="alert alert-primary mt-4 text-center"
+            role="alert"
+            style={{ borderRadius: "12px", fontWeight: "500", fontSize: "0.95rem" }}
+          >
             {message}
           </div>
         )}

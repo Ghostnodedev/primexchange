@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
+// --- Your original crypto data ---
 const cryptos = [
-  // same crypto array as before...
+  // (your full list here — already added previously, same order)
   {
     symbol: "BTC",
     name: "Bitcoin",
@@ -126,104 +127,124 @@ const cryptos = [
   },
 ];
 
-function shuffleArray(array) {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+// --- Dummy trend generator ---
+function generateRandomTrend(length = 7) {
+  let values = [Math.random() * 100];
+  for (let i = 1; i < length; i++) {
+    values.push(values[i - 1] + (Math.random() * 20 - 10));
   }
-  return arr;
+  return values;
+}
+
+function generatePath(data, width, height) {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const step = width / (data.length - 1);
+
+  return data
+    .map((point, i) => {
+      const x = i * step;
+      const y = height - ((point - min) / (max - min || 1)) * height;
+      return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+    })
+    .join(' ');
+}
+
+function CryptoCard({ symbol, name, changePercent, price, icon, trend }) {
+  const isPositive = changePercent >= 0;
+  const strokeColor = isPositive ? "#00ff99" : "#ff4d4f";
+
+  return (
+    <div
+      style={{
+        background: "#121826",
+        borderRadius: "16px",
+        padding: "20px",
+        color: "#fff",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-evenly",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+        transition: "transform 0.3s",
+        cursor: "pointer",
+        height: "180px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <img src={icon} alt={name} style={{ width: 32, height: 32 }} />
+        <div>
+          <div style={{ fontWeight: 600 }}>{name}</div>
+          <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>{symbol}</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: "12px" }}>
+        <div style={{ fontSize: "1.4rem", fontWeight: 700 }}>
+          ${price.toLocaleString()}
+        </div>
+        <div
+          style={{
+            fontSize: "0.95rem",
+            fontWeight: 600,
+            color: strokeColor,
+            marginTop: "4px",
+          }}
+        >
+          {isPositive ? "+" : ""}
+          {changePercent}%
+        </div>
+      </div>
+
+      <svg viewBox="0 0 100 30" width="100%" height="30px">
+        <path
+          d={generatePath(trend, 100, 30)}
+          stroke={strokeColor}
+          strokeWidth="2"
+          fill="none"
+        />
+      </svg>
+    </div>
+  );
 }
 
 export default function CryptoCardGrid() {
-  const [shuffledCryptos, setShuffledCryptos] = useState([]);
+  const [cryptoData, setCryptoData] = useState([]);
 
   useEffect(() => {
-    setShuffledCryptos(shuffleArray(cryptos).slice(0, 12));
+    // Only show first 12 cryptos and add trendlines
+    const withTrends = cryptos.slice(0, 12).map((c) => ({
+      ...c,
+      trend: generateRandomTrend(7),
+    }));
+    setCryptoData(withTrends);
   }, []);
 
   return (
     <div
       style={{
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "0 20px", 
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)", // exactly 3 columns
-        gap: "16px",
-        backgroundColor: "#f5f5f7",
+        backgroundColor: "#0a0f1c",
         minHeight: "100vh",
-        paddingTop: "20px",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "40px 20px",
+        boxSizing: "border-box",
       }}
     >
-      {shuffledCryptos.map(({ symbol, name, changePercent, volume, price, icon }) => {
-        const isPositive = changePercent >= 0;
-        return (
-          <div
-            key={symbol}
-            style={{
-              background: "linear-gradient(190deg, blue, black)",
-              borderRadius: "10px",
-              padding: "15px 20px",
-              color: "#eee",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              height: "140px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <img
-                src={icon}
-                alt={name}
-                style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "#000" }}
-                // onError={(e) => (e.currentTarget.src = "/placeholder.png")}
-              />
-              <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{name}</h3>
-            </div>
-
-            <div style={{ marginTop: 10 }}>
-              <p
-                style={{
-                  margin: "0 0 5px 0",
-                  fontWeight: "600",
-                  color: isPositive ? "#4caf50" : "#f44336",
-                  fontSize: "1rem",
-                }}
-              >
-                {isPositive ? "+" : ""}
-                {changePercent.toFixed(2)}%
-              </p>
-              <p style={{ margin: "2px 0", fontSize: "0.85rem" }}>
-                Volume: {volume.toLocaleString()}
-              </p>
-              <p style={{ margin: "2px 0", fontSize: "0.85rem" }}>
-                Price: ${price.toLocaleString()}
-              </p>
-            </div>
-
-            <div
-              style={{
-                height: 6,
-                backgroundColor: "#444",
-                borderRadius: 3,
-                overflow: "hidden",
-                marginTop: "auto",
-              }}
-            >
-              <div
-                style={{
-                  width: `${Math.min(Math.abs(changePercent) * 20, 100)}%`,
-                  height: "100%",
-                  backgroundColor: isPositive ? "#4caf50" : "#f44336",
-                  transition: "width 0.3s ease",
-                }}
-              />
-            </div>
-          </div>
-        );
-      })}
+      <div
+        style={{
+          maxWidth: "1180px", // 3 cards * ~300px
+          width: "100%",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "50px",
+        }}
+      >
+        {cryptoData.map((crypto) => (
+          <CryptoCard key={crypto.symbol} {...crypto} />
+        ))}
+      </div>
     </div>
   );
 }

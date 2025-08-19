@@ -61,7 +61,7 @@ export default function Navbar() {
               <a className="nav-link text-white" href="/home">Home</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="/account">Account</a>
+              <a className="nav-link text-white" href="/contact us">contact us</a>
             </li>
             <li className="nav-item">
               <a className="nav-link text-white" href="/exchange">Exchange</a>
@@ -86,3 +86,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
