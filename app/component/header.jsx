@@ -1,24 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ Import router
 
 export default function Navbar() {
   const [showNavbar, setShowNavbar] = useState(true);
+  const [token, setToken] = useState(null);
+  const router = useRouter(); // ✅ Initialize router
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
+    setToken(storedToken);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY === 0) {
-        setShowNavbar(true); // show only at top
-      } else {
-        setShowNavbar(false); // hide once you scroll down
-      }
+      setShowNavbar(window.scrollY === 0);
     };
 
     window.addEventListener("scroll", handleScroll);
-
-    // Cleanup
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    setToken(null);
+    router.push("/login"); // ✅ Redirect to login
+  };
 
   return (
     <nav
@@ -31,7 +39,7 @@ export default function Navbar() {
     >
       <div className="container-fluid">
         <img
-          src="/Prime_Xchange-removebg-preview.png"
+          src="/images-removebg-preview.png"
           alt="Logo"
           className="navbar-brand"
           style={{ height: "100px" }}
@@ -47,29 +55,31 @@ export default function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div
-          className="collapse navbar-collapse justify-content-end"
-          id="navbarNav"
-        >
+        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav align-items-center gap-lg-4">
             <li className="nav-item">
-              <a className="nav-link text-white" href="/home">
-                Home
-              </a>
+              <a className="nav-link text-white" href="/home">Home</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="/account">
-                Account
-              </a>
+              <a className="nav-link text-white" href="/account">Account</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="/exchage">
-                exchage
-              </a>
+              <a className="nav-link text-white" href="/exchange">Exchange</a>
             </li>
-            <li className="nav-item">
-              <button className="btn btn-outline-light ms-lg-3">Login</button>
-            </li>
+
+            {token ? (
+              <li className="nav-item">
+                <button onClick={handleLogout} className="btn btn-outline-light ms-lg-3">
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li className="nav-item">
+                <a href="/login" className="btn btn-outline-light ms-lg-3">
+                  Login
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
