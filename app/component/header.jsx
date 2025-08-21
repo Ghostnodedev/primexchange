@@ -1,89 +1,70 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Import router
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default function Navbar() {
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [token, setToken] = useState(null);
-  const router = useRouter(); // ✅ Initialize router
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    setToken(storedToken);
-  }, []);
+const Navbar = () => {
+  const router = useRouter()
+  const [token, setToken] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowNavbar(window.scrollY === 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const storedToken = localStorage.getItem('authToken')
+    setToken(storedToken || '')
+  }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    setToken(null);
-    router.push("/login"); // ✅ Redirect to login
-  };
+    localStorage.removeItem('authToken')
+    setToken('')
+    router.push('/login')
+  }
+
+  const handleLogin = () => {
+    router.push('/login')
+  }
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen)
+  }
 
   return (
-    <nav
-      className="navbar navbar-expand-lg fixed-top bg-transparent px-3"
-      style={{
-        top: showNavbar ? "0" : "-80px",
-        transition: "top 0.3s ease-in-out",
-        zIndex: 10,
-      }}
-    >
-      <div className="container-fluid">
-        <img
-          src="/images-removebg-preview.png"
-          alt="Logo"
-          className="navbar-brand"
-          style={{ height: "100px" }}
-        />
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul className="navbar-nav align-items-center gap-lg-4">
-            <li className="nav-item">
-              <a className="nav-link text-white" href="/home">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-white" href="/contact us">contact us</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-white" href="/exchange">Exchange</a>
-            </li>
+    <nav className="navbar navbar-expand-lg bg-black px-4 border-bottom">
+      <a className="navbar-brand text-white fw-bold" href="#">
+        MyApp
+      </a>
 
-            {token ? (
-              <li className="nav-item">
-                <button onClick={handleLogout} className="btn btn-outline-light ms-lg-3">
-                  Logout
-                </button>
-              </li>
-            ) : (
-              <li className="nav-item">
-                <a href="/login" className="btn btn-outline-light ms-lg-3">
-                  Login
-                </a>
-              </li>
-            )}
-          </ul>
-        </div>
+      <button
+        className="navbar-toggler"
+        type="button"
+        onClick={toggleMenu}
+        aria-controls="navbarNav"
+        aria-expanded={isOpen}
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon"></span>
+      </button>
+
+      <div className={`collapse navbar-collapse text-black justify-content-end ${isOpen ? 'show' : ''}`} id="navbarNav">
+        <ul className="navbar-nav d-flex align-items-center gap-2 me-3 mb-2 mb-lg-0">
+          {['Home', 'exchange', 'contact', 'profile'].map((label) => (
+            <li className="nav-item" key={label}>
+              <a className="nav-link text-black text-white" href={`/${label.toLowerCase()}`}>
+                {label === 'Home' ? 'Home' : label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          className="btn"
+          onClick={token ? handleLogout : handleLogin}
+          style={{ backgroundColor: 'purple', color: 'white' }}
+        >
+          {token ? 'Logout' : 'Login'}
+        </button>
       </div>
     </nav>
-  );
+  )
 }
 
+export default Navbar

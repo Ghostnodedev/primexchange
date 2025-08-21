@@ -1,10 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
+// app/component/CryptoCardGrid.jsx
 'use client'
 import React, { useEffect, useState } from "react";
 
-// --- Your original crypto data ---
+// --- Sample crypto data ---
 const cryptos = [
-  // (your full list here — already added previously, same order)
   {
     symbol: "BTC",
     name: "Bitcoin",
@@ -54,22 +53,6 @@ const cryptos = [
     icon: "https://cryptoicons.org/api/icon/sol/64",
   },
   {
-    symbol: "USDC",
-    name: "USDC",
-    changePercent: 0.0,
-    volume: 7201867560,
-    price: 1.0,
-    icon: "https://cryptoicons.org/api/icon/usdc/64",
-  },
-  {
-    symbol: "LDO",
-    name: "Lido Staked Ether",
-    changePercent: 2.35,
-    volume: 59000792,
-    price: 4541.49,
-    icon: "https://cryptologos.cc/logos/lido-dao-lido-logo.png",
-  },
-  {
     symbol: "DOGE",
     name: "Dogecoin",
     changePercent: 0.94,
@@ -84,46 +67,6 @@ const cryptos = [
     volume: 987654321,
     price: 2.15,
     icon: "https://cryptoicons.org/api/icon/ada/64",
-  },
-  {
-    symbol: "DOT",
-    name: "Polkadot",
-    changePercent: -1.02,
-    volume: 123456789,
-    price: 30.12,
-    icon: "https://cryptoicons.org/api/icon/dot/64",
-  },
-  {
-    symbol: "AVAX",
-    name: "Avalanche",
-    changePercent: 0.72,
-    volume: 654321987,
-    price: 60.45,
-    icon: "https://cryptoicons.org/api/icon/avax/64",
-  },
-  {
-    symbol: "MATIC",
-    name: "Polygon",
-    changePercent: 1.58,
-    volume: 765432198,
-    price: 1.25,
-    icon: "https://cryptoicons.org/api/icon/matic/64",
-  },
-  {
-    symbol: "SHIB",
-    name: "Shiba Inu",
-    changePercent: -0.33,
-    volume: 1112131415,
-    price: 0.000028,
-    icon: "https://cryptoicons.org/api/icon/shib/64",
-  },
-  {
-    symbol: "TRX",
-    name: "Tron",
-    changePercent: 0.45,
-    volume: 543216789,
-    price: 0.09,
-    icon: "https://cryptoicons.org/api/icon/trx/64",
   },
 ];
 
@@ -169,6 +112,7 @@ function CryptoCard({ symbol, name, changePercent, price, icon, trend }) {
         cursor: "pointer",
         height: "180px",
       }}
+      className="card"
     >
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <img src={icon} alt={name} style={{ width: 32, height: 32 }} />
@@ -211,8 +155,7 @@ export default function CryptoCardGrid() {
   const [cryptoData, setCryptoData] = useState([]);
 
   useEffect(() => {
-    // Only show first 12 cryptos and add trendlines
-    const withTrends = cryptos.slice(0, 12).map((c) => ({
+    const withTrends = cryptos.map((c) => ({
       ...c,
       trend: generateRandomTrend(7),
     }));
@@ -225,20 +168,19 @@ export default function CryptoCardGrid() {
         backgroundColor: "#0a0f1c",
         minHeight: "100vh",
         width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
         padding: "40px 20px",
         boxSizing: "border-box",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       <div
         style={{
-          maxWidth: "1180px", // 3 cards * ~300px
           width: "100%",
+          maxWidth: "1200px",
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "50px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "30px",
         }}
       >
         {cryptoData.map((crypto) => (

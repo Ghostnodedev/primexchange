@@ -1,6 +1,9 @@
-// app/layout.js
-
 import './globals.css';
+import { Toaster } from 'react-hot-toast';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+
 export const metadata = {
   title: 'Next.js 13+ with Bootstrap',
   description: 'A better looking and responsive page.',
@@ -15,7 +18,26 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+
+        {/* ✅ Toaster must be inside <body> to avoid hydration error */}
+ <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1e293b',
+              color: '#fff',
+              padding: '16px 20px',
+              borderRadius: '10px',
+              fontSize: '0.95rem',
+              position: 'relative',
+              overflow: 'hidden',
+            },
+          }}
+        />
+      </body>
     </html>
   );
 }

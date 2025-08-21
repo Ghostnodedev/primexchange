@@ -167,13 +167,15 @@ a.secondary {
 }
 
 .heroContainer {
-  width: 99vw;
-  height: 100vh;
-  background-image: url('/freepik__the-style-is-dark-and-mysterious-inspired-by-neoex__53096.png'); /* your image */
-  background-size: cover;      /* ensures full cover */
+  width: 100%;
+  min-height: 100vh;
+  background-image: url('/freepik__the-style-is-dark-and-mysterious-inspired-by-neoex__53096.png');
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center;
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -181,7 +183,7 @@ a.secondary {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5); /* fade overlay to help nav visibility */
+  background: rgba(0, 0, 0, 0.5); /* overlay */
   z-index: 0;
 }
 
@@ -190,5 +192,21 @@ a.secondary {
   z-index: 1;
   color: white;
   padding: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.heroContent h1 {
+  font-size: 3rem;
+}
+
+@media (max-width: 768px) {
+  .heroContent h1 {
+    font-size: 2rem;
+  }
 }
 
