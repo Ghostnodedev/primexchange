@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // app/component/CryptoCardGrid.jsx
 'use client'
 import React, { useEffect, useState } from "react";
@@ -68,6 +69,7 @@ const cryptos = [
     price: 2.15,
     icon: "https://cryptoicons.org/api/icon/ada/64",
   },
+  
 ];
 
 // --- Dummy trend generator ---
@@ -98,19 +100,20 @@ function CryptoCard({ symbol, name, changePercent, price, icon, trend }) {
   const strokeColor = isPositive ? "#00ff99" : "#ff4d4f";
 
   return (
+    <>
     <div
       style={{
-        background: "#121826",
+        background: "#061e59ff",
         borderRadius: "16px",
         padding: "20px",
         color: "#fff",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+        boxShadow: "2px 2px 2px 2px rgba(1, 1, 1, 0.12)",
         transition: "transform 0.3s",
         cursor: "pointer",
-        height: "180px",
+        height: "210px",
       }}
       className="card"
     >
@@ -148,6 +151,7 @@ function CryptoCard({ symbol, name, changePercent, price, icon, trend }) {
         />
       </svg>
     </div>
+    </>
   );
 }
 
@@ -163,15 +167,19 @@ export default function CryptoCardGrid() {
   }, []);
 
   return (
+    <>
+    <h1 style={{ textAlign: "center", margin: "20px 0" }}>Cryptos Market</h1>
     <div
       style={{
-        backgroundColor: "#0a0f1c",
+        backgroundColor: "#ffffffff",
         minHeight: "100vh",
         width: "100%",
         padding: "40px 20px",
         boxSizing: "border-box",
         display: "flex",
         justifyContent: "center",
+        boxShadow: "20px 20px 20px 20px rgba(1, 1, 1, 0.12)",
+
       }}
     >
       <div
@@ -188,5 +196,6 @@ export default function CryptoCardGrid() {
         ))}
       </div>
     </div>
+    </>
   );
 }

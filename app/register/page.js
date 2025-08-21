@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const [message, setMessage] = useState("");
@@ -35,9 +36,11 @@ export default function RegisterPage() {
 
       if (res.ok) {
         setMessage("Registration successful! Redirecting...");
+        toast.success("Registration successful!");
         setTimeout(() => router.push("/login"), 1500);
       } else {
         setMessage(data.message || "Registration failed. Check your input.");
+        toast.error(data.message || "Registration failed. Check your input.");
       }
     } catch (err) {
       setMessage("Network error");

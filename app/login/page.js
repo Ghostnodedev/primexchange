@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
@@ -30,6 +31,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         const token = data.token;
+        toast.success("Login successful!");
         if (token) {
           localStorage.setItem("authToken", token);
           setMessage("Login successful! Redirecting...");
@@ -39,6 +41,7 @@ export default function LoginPage() {
         }
       } else {
         setMessage(data.message || "Login failed. Check your credentials.");
+        toast.error(data.message || "Login failed. Check your credentials.");
       }
     } catch (err) {
       setMessage("Network error");

@@ -49,7 +49,7 @@ const Navbar = () => {
           {['Home', 'exchange', 'contact', 'profile'].map((label) => (
             <li className="nav-item" key={label}>
               <a className="nav-link text-black text-white" href={`/${label.toLowerCase()}`}>
-                {label === 'Home' ? 'Home' : label}
+                {label === 'Home' ? 'Home' : label}   
               </a>
             </li>
           ))}
