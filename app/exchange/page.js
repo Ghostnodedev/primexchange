@@ -11,7 +11,6 @@ import { toast } from 'react-hot-toast';
 export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
   const [showModal, setShowModal] = useState(false);
-  const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [password, setPassword] = useState('');
   const router = useRouter();
 
@@ -51,20 +50,6 @@ export default function ExchangePage() {
       rating: 4,
       text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
     },
-    {
-      name: 'John Cena',
-      role: 'Financial Advisor',
-      img: '/users/user2.jpg',
-      rating: 4,
-      text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
-    },
-    {
-      name: 'dwen smith',
-      role: 'Financial Advisor',
-      img: '/users/user2.jpg',
-      rating: 4,
-      text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
-    },
   ];
 
   const settings = {
@@ -82,46 +67,34 @@ export default function ExchangePage() {
     ],
   };
 
-  // Modal logic
   const handleShowModal = () => {
     setShowModal(true);
-    setShowPasswordInput(false);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setPassword('');
-    setShowPasswordInput(false);
   };
 
-  const handleDepositClick = () => {
-    const savedPassword = localStorage.getItem('securePassword');
-    if (savedPassword) {
-      toast.success('Redirecting to home...');
-      handleCloseModal();
-      router.push('/deposite');
-    } else {
-      setShowPasswordInput(true);
-    }
-  };
-
-  const handlePasswordSave = () => {
-    if (password.length !== 10 || isNaN(password)) {
-      toast.error('Password must be 10 digits only.');
+  const handlePasswordSubmit = () => {
+    if (password.length !== 10 || isNaN(Number(password))) {
+      toast.error('Password must be exactly 10 digits.');
       return;
     }
+
     localStorage.setItem('securePassword', password);
     toast.success('Password saved successfully!');
     handleCloseModal();
-    router.push('/deposite');
+    router.push('/');
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f9fc', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ backgroundColor: '#f8f9fc', minHeight: '100vh' }}>
       <Navbar />
 
       {/* === Banner === */}
-      <div className="banner-section d-flex align-items-center text-center text-white"
+      <div
+        className="banner-section d-flex align-items-center text-center text-white"
         style={{
           background: 'linear-gradient(150deg, #4f46e5, #3b82f6)',
           minHeight: '350px',
@@ -143,7 +116,7 @@ export default function ExchangePage() {
               <p className="text-muted">Auto-refresh in {seconds}s</p>
             </Col>
             <Col md={3} className="text-center mt-4 mt-md-0">
-              <Button variant="primary" size="lg" onClick={handleShowModal}>
+              <Button variant="danger" size="lg" onClick={handleShowModal}>
                 Sell Now
               </Button>
             </Col>
@@ -195,6 +168,7 @@ export default function ExchangePage() {
         </Container>
       </Container>
 
+      {/* === WhatsApp Icon === */}
       <a
         href="https://wa.me/1234567890"
         target="_blank"
@@ -217,36 +191,30 @@ export default function ExchangePage() {
         <img src="/whatsapp-icon.png" alt="WhatsApp" style={{ width: '30px' }} />
       </a>
 
+      {/* === Sell Modal === */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Secure Deposit</Modal.Title>
+          <Modal.Title className="text-primary">Enter Password to Continue</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {!showPasswordInput ? (
-            <div className="text-center">
-              <Button variant="success" size="lg" onClick={handleDepositClick}>
-                Deposit
+          <Form>
+            <Form.Group controlId="formPassword">
+              <Form.Label className="fw-semibold">10-digit Secure Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter 10-digit password"
+                value={password}
+                maxLength={10}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Form.Text muted>Keep this safe! You will need it again.</Form.Text>
+            </Form.Group>
+            <div className="d-grid gap-2 mt-4">
+              <Button variant="primary" size="lg" onClick={handlePasswordSubmit}>
+                Submit
               </Button>
             </div>
-          ) : (
-            <>
-              <Form.Group>
-                <Form.Label>Enter 10-digit password</Form.Label>
-                <Form.Control
-                  type="password"
-                  maxLength={10}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter 10-digit password"
-                />
-              </Form.Group>
-              <div className="text-end mt-3">
-                <Button variant="primary" onClick={handlePasswordSave}>
-                  Save & Continue
-                </Button>
-              </div>
-            </>
-          )}
+          </Form>
         </Modal.Body>
       </Modal>
     </div>
