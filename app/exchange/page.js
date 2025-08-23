@@ -211,7 +211,7 @@ export default function ExchangePage() {
             </Form.Group>
             <div className="d-grid gap-2 mt-4">
               <Button variant="primary" size="lg" onClick={handlePasswordSubmit}>
-                Submit
+                Submit & Go to Home
               </Button>
             </div>
           </Form>
