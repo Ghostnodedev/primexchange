@@ -2,14 +2,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
-import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import { Container, Row, Col, Card, Button, Badge, Modal, Form } from 'react-bootstrap';
 import Navbar from '../component/header';
 import Slider from 'react-slick';
+import { toast } from 'react-hot-toast';
 
 export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
+  const [showModal, setShowModal] = useState(false);
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [password, setPassword] = useState('');
+  const router = useRouter();
 
+  // Auto-refresh countdown
   useEffect(() => {
     const interval = setInterval(() => {
       setSeconds((prev) => (prev <= 1 ? 60 : prev - 1));
@@ -22,10 +28,6 @@ export default function ExchangePage() {
     { usd: 4999, inr: 96.5 },
     { usd: 9999, inr: 97.5 },
   ];
-
-  const Toasters = () => {
-    toast.success('Logged in successfully!');
-  };
 
   const testimonials = [
     {
@@ -43,231 +45,156 @@ export default function ExchangePage() {
       text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
     },
     {
-      name: 'Harsh P.',
-      role: 'Trader',
-      img: '/users/user3.jpg',
-      rating: 5,
-      text: 'Very user-friendly interface and quick support. My INR was credited without any delays.',
+      name: 'Kane Smith',
+      role: 'Financial Advisor',
+      img: '/users/user2.jpg',
+      rating: 4,
+      text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
     },
     {
-      name: 'Kane P.',
-      role: 'Trader',
-      img: '/users/user3.jpg',
-      rating: 5,
-      text: 'Very user-friendly interface and quick support. My INR was credited without any delays.',
-    }, 
-       {
-      name: 'Mr. SMith P.',
-      role: 'Trader',
-      img: '/users/user3.jpg',
-      rating: 5,
-      text: 'Very user-friendly interface and quick support. My INR was credited without any delays.',
+      name: 'John Cena',
+      role: 'Financial Advisor',
+      img: '/users/user2.jpg',
+      rating: 4,
+      text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
+    },
+    {
+      name: 'dwen smith',
+      role: 'Financial Advisor',
+      img: '/users/user2.jpg',
+      rating: 4,
+      text: 'Honestly impressed with the speed and transparency. USDT to INR has never been this easy for me.',
     },
   ];
 
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 3,
-  slidesToScroll: 1,
-  arrows: true,
-  autoplay: true,        // Enables auto-sliding
-  autoplaySpeed: 3000,   // 3 seconds per slide
-  pauseOnHover: true,    // Optional: pause when hovered
-  responsive: [
-    { breakpoint: 992, settings: { slidesToShow: 2 } },
-    { breakpoint: 768, settings: { slidesToShow: 1 } },
-  ],
-};
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    arrows: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    responsive: [
+      { breakpoint: 768, settings: { slidesToShow: 1 } },
+    ],
+  };
 
+  // Modal logic
+  const handleShowModal = () => {
+    setShowModal(true);
+    setShowPasswordInput(false);
+  };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setPassword('');
+    setShowPasswordInput(false);
+  };
+
+  const handleDepositClick = () => {
+    const savedPassword = localStorage.getItem('securePassword');
+    if (savedPassword) {
+      toast.success('Redirecting to home...');
+      handleCloseModal();
+      router.push('/deposite');
+    } else {
+      setShowPasswordInput(true);
+    }
+  };
+
+  const handlePasswordSave = () => {
+    if (password.length !== 10 || isNaN(password)) {
+      toast.error('Password must be 10 digits only.');
+      return;
+    }
+    localStorage.setItem('securePassword', password);
+    toast.success('Password saved successfully!');
+    handleCloseModal();
+    router.push('/deposite');
+  };
 
   return (
     <div style={{ backgroundColor: '#f8f9fc', minHeight: '100vh', position: 'relative' }}>
       <Navbar />
 
-      <div
-        className="banner-section d-flex align-items-center text-center text-white"
+      {/* === Banner === */}
+      <div className="banner-section d-flex align-items-center text-center text-white"
         style={{
-          background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
-          minHeight: '320px',
+          background: 'linear-gradient(150deg, #4f46e5, #3b82f6)',
+          minHeight: '350px',
           padding: '60px 20px',
         }}
       >
         <Container>
-          <h1 style={{ fontWeight: '700', fontSize: '3rem' }}>Buy & Sell USDT at the Best Rates</h1>
-          <p style={{ fontSize: '1.25rem', marginTop: '18px' }}>
-            Secure, Fast, and Transparent — Trusted by thousands.
-          </p>
+          <h1 className="fw-bold display-4">Buy & Sell USDT at the Best Rates</h1>
+          <p className="lead mt-3">Secure, Fast, and Transparent — Trusted by thousands.</p>
         </Container>
       </div>
 
-      {/* === Exchange Content === */}
+      {/* === Exchange Box === */}
       <Container className="py-5">
-        {/* Exchange Rate Box */}
-        <Card
-          className="shadow-lg mb-5 px-4 py-5"
-          style={{
-            borderRadius: '30px',
-            minHeight: '220px',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <Row className="align-items-center w-100">
+        <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
+          <Row className="align-items-center">
             <Col md={6}>
-              <h2 className="fw-bold text-purple fs-2">Current Exchange Rate</h2>
-              <div className="text-primary fs-5">Auto-refresh in {seconds}s</div>
+              <h2 className="fw-bold fs-2 text-primary">Current Exchange Rate</h2>
+              <p className="text-muted">Auto-refresh in {seconds}s</p>
             </Col>
             <Col md={3} className="text-center mt-4 mt-md-0">
-              <Button
-                variant="success"
-                size="lg"
-                style={{ borderRadius: '14px', padding: '12px 28px' }}
-                onClick={Toasters}
-              >
+              <Button variant="primary" size="lg" onClick={handleShowModal}>
                 Sell Now
               </Button>
             </Col>
             <Col md={3} className="text-end mt-4 mt-md-0">
-              <div style={{ fontSize: '3rem', fontWeight: '700', color: '#1e2a78' }}>
-                95{' '}
-                <Badge bg="warning" text="dark" style={{ fontSize: '0.8rem', verticalAlign: 'top' }}>
-                  BASE
-                </Badge>
+              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: '#1e2a78' }}>
+                ₹95 <Badge bg="warning" text="dark">BASE</Badge>
               </div>
-              <div className="text-muted small">1 USDT = ₹95</div>
+              <small className="text-muted">1 USDT = ₹95</small>
             </Col>
           </Row>
         </Card>
 
-        {/* Rate Cards */}
+        {/* === Rate Cards === */}
         <Row className="g-4">
-          {rates.map((rate, index) => (
-            <Col xs={12} md={4} key={index}>
-              <Card
-                className="shadow-sm text-center"
-                style={{
-                  borderRadius: '20px',
-                  padding: '25px',
-                  minHeight: '140px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                }}
-              >
-                <h5 className="fw-bold fs-4">${rate.usd}</h5>
-                <div className="text-primary fs-5">₹{rate.inr}</div>
+          {rates.map((rate, idx) => (
+            <Col key={idx} xs={12} md={4}>
+              <Card className="text-center shadow-sm rounded-3 py-4">
+                <h5 className="fw-bold">${rate.usd}</h5>
+                <p className="text-primary fs-5">₹{rate.inr}</p>
               </Card>
             </Col>
           ))}
         </Row>
 
-        {/* Footer Message */}
-        <div className="text-center mt-5">
-          <div
-            style={{
-              backgroundColor: '#3a0ca3',
-              color: 'white',
-              padding: '16px 24px',
-              borderRadius: '14px',
-              display: 'inline-block',
-              fontWeight: '500',
-              fontSize: '1rem',
-            }}
-          >
-            No external wallets, no shady processes — lifetime fund protection guaranteed.
-          </div>
-        </div>
-      </Container>
-
-      {/* === Platform Advantage Section === */}
-      <Container className=" shadow-lg mb-15 px-16 py-5">
-        <h3 className="fw-bold mb-4 text-center text-dark">Platform Advantage</h3>
-        <Row className="g-4">
-          {[
-            {
-              title: '24/7 Support',
-              desc: 'Got a problem? Just get in touch. Our customer service support team is available 24/7.',
-              icon: '🕐',
-            },
-            {
-              title: 'No Transaction Fee',
-              desc: 'Zero transaction fees guaranteed, every time, with no hidden charges or deductions.',
-              icon: '💸',
-            },
-            {
-              title: 'Best In Market',
-              desc: 'We offer the highest price for your USDT, beating all market rates.',
-              icon: '📈',
-            },
-            {
-              title: 'Reliable Security',
-              desc: 'Our sophisticated security measures protect your cryptocurrency from all risks.',
-              icon: '🔒',
-            },
-          ].map((item, idx) => (
-            <Col key={idx} xs={12} md={6}>
-              <Card
-                className="h-100 shadow-sm border-0"
-                style={{ borderRadius: '18px', padding: '20px' }}
-              >
-                <div className="d-flex align-items-start">
-                  <div style={{ fontSize: '2rem', marginRight: '15px' }}>{item.icon}</div>
-                  <div>
-                    <h5 className="fw-bold">{item.title}</h5>
-                    <p className="text-muted mb-0">{item.desc}</p>
+        {/* === Testimonials === */}
+        <Container className="mt-5">
+          <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
+          <Slider {...settings}>
+            {testimonials.map((item, idx) => (
+              <div key={idx} className="px-3">
+                <Card className="shadow-sm border-0 rounded-4 p-4 h-100">
+                  <div className="mb-3">
+                    {[...Array(item.rating)].map((_, i) => (
+                      <span key={i} style={{ color: '#fbbf24', fontSize: '1.2rem' }}>★</span>
+                    ))}
                   </div>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </Container>
-
-      {/* === Testimonials Section === */}
-      <Container className="mt-5 pb-5">
-        <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
-        <Slider {...settings}>
-          {testimonials.map((item, index) => (
-            <div key={index} className="px-3">
-              <Card
-                className="border-0 shadow-sm h-100"
-                style={{ borderRadius: '18px', padding: '24px' }}
-              >
-                <div className="mb-3">
-                  {[...Array(item.rating)].map((_, i) => (
-                    <span key={i} style={{ color: '#fbbf24', fontSize: '1.2rem' }}>
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <p className="text-muted">{item.text}</p>
-                <div className="d-flex align-items-center mt-4">
-                  <img
-                    src={item.img}
-                    alt={item.name}
-                    style={{
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      marginRight: '15px',
-                    }}
-                  />
-                  <div>
-                    <h6 className="mb-0 fw-bold">{item.name}</h6>
-                    <small className="text-muted">{item.role}</small>
+                  <p className="text-muted">{item.text}</p>
+                  <div className="d-flex align-items-center mt-4">
+                    <img src={item.img} alt={item.name} className="rounded-circle me-3" style={{ width: '50px', height: '50px' }} />
+                    <div>
+                      <h6 className="mb-0 fw-bold">{item.name}</h6>
+                      <small className="text-muted">{item.role}</small>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </div>
-          ))}
-        </Slider>
+                </Card>
+              </div>
+            ))}
+          </Slider>
+        </Container>
       </Container>
 
-      {/* WhatsApp Floating Icon */}
       <a
         href="https://wa.me/1234567890"
         target="_blank"
@@ -289,6 +216,39 @@ const settings = {
       >
         <img src="/whatsapp-icon.png" alt="WhatsApp" style={{ width: '30px' }} />
       </a>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Secure Deposit</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {!showPasswordInput ? (
+            <div className="text-center">
+              <Button variant="success" size="lg" onClick={handleDepositClick}>
+                Deposit
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Form.Group>
+                <Form.Label>Enter 10-digit password</Form.Label>
+                <Form.Control
+                  type="password"
+                  maxLength={10}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter 10-digit password"
+                />
+              </Form.Group>
+              <div className="text-end mt-3">
+                <Button variant="primary" onClick={handlePasswordSave}>
+                  Save & Continue
+                </Button>
+              </div>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

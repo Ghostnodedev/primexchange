@@ -1,0 +1,39 @@
+/* navbar.css */
+
+.mobile-slide-menu {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  height: 100%;
+  width: 260px;
+  background-color: #000;
+  color: white;
+  z-index: 1050;
+  transition: left 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+.mobile-slide-menu.open {
+  left: 0;
+}
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+/* Custom purple button */
+.btn-purple {
+  background-color: #007bff !important; /* Bootstrap primary blue */
+  color: white !important; /* force white text */
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.btn-pur:hover {
+  background-color: #0056b3 !important; /* Darker blue on hover */
+  color: white !important;
+}
+
