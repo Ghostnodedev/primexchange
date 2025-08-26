@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import './navbar.css' // 👈 Import the custom CSS
+import Link from 'next/link'
+import './navbar.css'
 
 const Navbar = () => {
   const router = useRouter()
@@ -28,12 +29,25 @@ const Navbar = () => {
     setIsOpen(!isOpen)
   }
 
+  const closeMenu = () => {
+    setIsOpen(false)
+  }
+
+  const links = [
+    { label: 'Home', href: '/' },
+    { label: 'Exchange', href: '/exchange' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Profile', href: '/profile' },
+  ]
+
   return (
     <nav className="navbar navbar-expand-md bg-black border-bottom px-4 py-2">
-      <a className="navbar-brand text-white fw-bold" href="/">
+      {/* Brand */}
+      <Link href="/" className="navbar-brand text-white fw-bold">
         MyApp
-      </a>
+      </Link>
 
+      {/* Hamburger toggler */}
       <button
         className="navbar-toggler text-white border-white"
         type="button"
@@ -46,11 +60,11 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <div className="collapse navbar-collapse justify-content-end d-none d-md-flex">
         <ul className="navbar-nav align-items-center gap-3">
-          {['Home', 'Exchange', 'Contact', 'Profile'].map((label) => (
+          {links.map(({ label, href }) => (
             <li className="nav-item" key={label}>
-              <a className="nav-link text-white" href={`/${label.toLowerCase()}`}>
+              <Link href={href} className="nav-link text-white">
                 {label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -69,15 +83,15 @@ const Navbar = () => {
           <button className="btn-close btn-close-white" onClick={toggleMenu}></button>
         </div>
         <ul className="nav flex-column p-3">
-          {['Home', 'Exchange', 'Contact', 'Profile'].map((label) => (
+          {links.map(({ label, href }) => (
             <li className="nav-item" key={label}>
-              <a
+              <Link
+                href={href}
                 className="nav-link text-white"
-                href={`/${label.toLowerCase()}`}
-                onClick={toggleMenu}
+                onClick={closeMenu}
               >
                 {label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
