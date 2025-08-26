@@ -7,15 +7,18 @@ import { Container, Row, Col, Card, Button, Badge, Modal, Form } from 'react-boo
 import Navbar from '../component/header';
 import Slider from 'react-slick';
 import { toast } from 'react-hot-toast';
+import { FaRegCopy } from 'react-icons/fa';
 
 export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
   const [showModal, setShowModal] = useState(false);
   const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(null); // NEW
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [transactionId, setTransactionId] = useState('');
   const router = useRouter();
 
-  // Auth check on load
+  // Check auth token
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -94,13 +97,25 @@ export default function ExchangePage() {
     localStorage.setItem('securePassword', password);
     toast.success('Password saved successfully!');
     handleCloseModal();
-    router.push('/');
+
+    // Show the transaction modal after closing the password modal
+    generateTransactionId();
+    setShowTransactionModal(true);
   };
 
-  // While checking auth, show nothing (or a loader if you prefer)
+  const generateTransactionId = () => {
+    const id = Math.floor(Math.random() * 1e16).toString(36).slice(0, 10).toUpperCase();
+    setTransactionId(id);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(transactionId).then(() => {
+      toast.success('Transaction ID copied to clipboard!');
+    });
+  };
+
   if (isAuthenticated === null) return null;
 
-  // If not authenticated, show login prompt
   if (!isAuthenticated) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -215,7 +230,7 @@ export default function ExchangePage() {
         <img src="/whatsapp-icon.png" alt="WhatsApp" style={{ width: '30px' }} />
       </a>
 
-      {/* === Sell Modal === */}
+      {/* === Password Modal === */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title className="text-primary">Enter Password to Continue</Modal.Title>
@@ -235,10 +250,33 @@ export default function ExchangePage() {
             </Form.Group>
             <div className="d-grid gap-2 mt-4">
               <Button variant="primary" size="lg" onClick={handlePasswordSubmit}>
-                Submit & Go to Home
+                Submit & Continue
               </Button>
             </div>
           </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* === Transaction ID Modal === */}
+      <Modal show={showTransactionModal} onHide={() => setShowTransactionModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="text-success">Transaction Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <img
+            src="/transaction.png"
+            alt="Transaction"
+            className="img-fluid mb-3"
+            style={{ maxWidth: '150px' }}
+          />
+          <div
+            className="d-flex justify-content-center align-items-center border p-3 rounded"
+            style={{ fontSize: '1.2rem', backgroundColor: '#f1f3f5' }}
+          >
+            <span className="me-2 fw-bold">{transactionId}</span>
+            <FaRegCopy onClick={handleCopy} style={{ cursor: 'pointer' }} title="Copy" />
+          </div>
+          <p className="text-muted mt-3">Use this ID for transaction tracking or customer support.</p>
         </Modal.Body>
       </Modal>
     </div>
