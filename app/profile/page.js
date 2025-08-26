@@ -18,6 +18,17 @@ export default function BankPage() {
   const [bankAccounts, setBankAccounts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // 👈 auth state
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem('bankAccounts')) || [];
     setBankAccounts(storedData);
@@ -56,6 +67,21 @@ export default function BankPage() {
 
     setFormVisible(false);
   };
+
+  // 🔐 If still checking auth
+  if (isAuthenticated === null) return null;
+
+  // 🔐 If not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="text-center">
+          <h3>Please login to continue</h3>
+          <a href="/login" className="btn btn-primary mt-3">Go to Login</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

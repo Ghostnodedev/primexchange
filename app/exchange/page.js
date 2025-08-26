@@ -12,7 +12,18 @@ export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
   const [showModal, setShowModal] = useState(false);
   const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // NEW
   const router = useRouter();
+
+  // Auth check on load
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   // Auto-refresh countdown
   useEffect(() => {
@@ -62,9 +73,7 @@ export default function ExchangePage() {
     autoplay: true,
     autoplaySpeed: 3000,
     pauseOnHover: true,
-    responsive: [
-      { breakpoint: 768, settings: { slidesToShow: 1 } },
-    ],
+    responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }],
   };
 
   const handleShowModal = () => {
@@ -87,6 +96,21 @@ export default function ExchangePage() {
     handleCloseModal();
     router.push('/');
   };
+
+  // While checking auth, show nothing (or a loader if you prefer)
+  if (isAuthenticated === null) return null;
+
+  // If not authenticated, show login prompt
+  if (!isAuthenticated) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="text-center">
+          <h3>Please login to continue</h3>
+          <Button variant="primary" href="/login">Go to Login</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ backgroundColor: '#f8f9fc', minHeight: '100vh' }}>
