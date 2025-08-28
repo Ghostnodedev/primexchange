@@ -53,15 +53,15 @@ export default function LoginPage() {
     <div
       className="vh-100 d-flex flex-column"
       style={{
-        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
+        background:
+          "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
         color: "white",
       }}
     >
-      {/* Main Layout */}
-      <div className="d-flex flex-grow-1">
+      <div className="d-flex flex-grow-1 flex-wrap">
         {/* Left Login Box */}
         <div
-          className="d-flex flex-column justify-content-center align-items-center px-5"
+          className="login-box d-flex flex-column justify-content-center align-items-center px-4 px-md-5"
           style={{
             flex: "0 0 40%",
             backgroundColor: "rgba(15, 15, 40, 0.95)",
@@ -75,10 +75,17 @@ export default function LoginPage() {
             ></i>
           </div>
 
-          <form className="w-100" onSubmit={handleSubmit} style={{ maxWidth: "300px" }}>
+          <form
+            className="w-100"
+            onSubmit={handleSubmit}
+            style={{ maxWidth: "300px" }}
+          >
             {/* Username */}
             <div className="mb-3">
-              <label htmlFor="username" className="form-label text-white fw-semibold">
+              <label
+                htmlFor="username"
+                className="form-label text-white fw-semibold"
+              >
                 Username
               </label>
               <input
@@ -94,7 +101,10 @@ export default function LoginPage() {
 
             {/* Email */}
             <div className="mb-3">
-              <label htmlFor="email" className="form-label text-white fw-semibold">
+              <label
+                htmlFor="email"
+                className="form-label text-white fw-semibold"
+              >
                 Email
               </label>
               <input
@@ -110,7 +120,10 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="mb-3">
-              <label htmlFor="password" className="form-label text-white fw-semibold">
+              <label
+                htmlFor="password"
+                className="form-label text-white fw-semibold"
+              >
                 Password
               </label>
               <input
@@ -124,9 +137,12 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Phone Number */}
+            {/* Phone */}
             <div className="mb-3">
-              <label htmlFor="phone" className="form-label text-white fw-semibold">
+              <label
+                htmlFor="phone"
+                className="form-label text-white fw-semibold"
+              >
                 Phone Number
               </label>
               <input
@@ -177,9 +193,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Welcome Section */}
-        <div
-          className="d-flex flex-column justify-content-center align-items-center text-center flex-grow-1"
-        >
+        <div className="welcome-box d-none d-md-flex flex-column justify-content-center align-items-center text-center flex-grow-1">
           <h1 className="fw-bold display-4">Welcome.</h1>
           <p className="text-white-50" style={{ maxWidth: "400px" }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam
@@ -187,12 +201,22 @@ export default function LoginPage() {
           </p>
           <p className="mt-3">
             Already a member?{" "}
-            <a href="#" className="text-info fw-semibold">
+            <a href="/register" className="text-info fw-semibold">
               Sign in now
             </a>
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        /* Mobile full screen fix */
+        @media (max-width: 767px) {
+          .login-box {
+            flex: 1 0 100% !important;
+            border-radius: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
