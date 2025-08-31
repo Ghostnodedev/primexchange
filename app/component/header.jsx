@@ -36,7 +36,7 @@ const Navbar = () => {
   const links = [
     { label: 'Home', href: '/' },
     { label: 'Exchange', href: '/exchange' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Mine', href: '/mine' },
     { label: 'Profile', href: '/profile' },
   ]
 

@@ -1,251 +1,109 @@
-"use client"
-import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import Navbar from '../component/header';
+/* eslint-disable @next/next/no-img-element */
+"use client";
 
-export default function BankPage() {
-  const [formVisible, setFormVisible] = useState(false);
-  const [formData, setFormData] = useState({
-    accountHolderName: '',
-    accountNumber: '',
-    ifscCode: '',
-    bankName: '',
-    branchName: '',
-    accountType: '',
-    mobile: '',
-    email: ''
-  });
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { decryptData } from "../utils/crypo"; // adjust path if needed
 
-  const [bankAccounts, setBankAccounts] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
-
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+export default function ProfilePage() {
+  const [email, setEmail] = useState("");
+  const [totalAmount, setTotalAmount] = useState("0.00");
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
+    // Get email from localStorage
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+
+    // Get and decrypt deposit amount
+    const encryptedAmount = Cookies.get("depositAmount");
+    if (encryptedAmount) {
+      try {
+        const decrypted = decryptData(encryptedAmount);
+        setTotalAmount(parseFloat(decrypted).toFixed(2));
+      } catch (err) {
+        console.error("Failed to decrypt amount:", err);
+      }
     }
   }, []);
-
-  useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem('bankAccounts')) || [];
-    setBankAccounts(storedData);
-    if (storedData.length > 0) {
-      setSelectedId(storedData[0].id);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('bankAccounts', JSON.stringify(bankAccounts));
-  }, [bankAccounts]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newAccount = {
-      id: uuidv4().slice(0, 8),
-      ...formData
-    };
-
-    setBankAccounts((prev) => [newAccount, ...prev]);
-    setFormData({
-      accountHolderName: '',
-      accountNumber: '',
-      ifscCode: '',
-      bankName: '',
-      branchName: '',
-      accountType: '',
-      mobile: '',
-      email: ''
-    });
-
-    setFormVisible(false);
-  };
-
-  if (isAuthenticated === null) return null;
-
-  if (!isAuthenticated) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="text-center">
-          <h3>Please login to continue</h3>
-          <a href="/login" className="btn btn-primary mt-3">Go to Login</a>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
-      className="min-vh-100 d-flex flex-column"
+      className="min-vh-100"
       style={{
-        background: '#f7f9fc',
-        fontFamily: 'Segoe UI, sans-serif',
+        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
       }}
     >
-      <Navbar />
+      {/* Top section */}
+      <div className="container py-4 text-white text-center">
+        <img
+          src="https://randomuser.me/api/portraits/men/75.jpg"
+          alt="Profile"
+          className="rounded-circle border border-4"
+          style={{ width: "120px", height: "120px", objectFit: "cover" }}
+        />
+        <h5 className="mt-3">{email || "someone@gmail.com"}</h5>
+      </div>
 
-      <main
-        className="flex-grow-1 d-flex flex-column align-items-center justify-content-start pt-5 px-4"
-        style={{ width: '100%' }}
+      {/* Nav bar section */}
+      <div className="d-flex justify-content-between align-items-center px-4 py-3 bg-dark rounded mx-4">
+        <div className="d-flex align-items-center gap-4 text-white">
+          <i className="bi bi-house"></i> <span>Home</span>
+          <span>Exchange</span>
+          <span className="text-danger">Logout</span>
+        </div>
+        <div>
+          <button className="btn btn-outline-light me-2">Enter Bank Detail</button>
+          <button className="btn btn-success">Sell Now</button>
+        </div>
+      </div>
+
+      {/* Balance section */}
+      <div className="d-flex justify-content-center gap-4 text-white py-5 flex-wrap">
+        {[
+          { title: "Total Amount", value: `$${totalAmount}` },
+          { title: "Available ($)", value: "$0.00" },
+          { title: "Progressing ($)", value: "$0.00" },
+        ].map((item) => (
+          <div
+            key={item.title}
+            className="bg-dark p-4 rounded text-center"
+            style={{ minWidth: "200px" }}
+          >
+            <div className="text-white">{item.title}</div>
+            <h3>{item.value}</h3>
+          </div>
+        ))}
+      </div>
+
+      {/* Reward section */}
+      <div
+        className="mx-auto bg-pink text-white p-4 rounded"
+        style={{ background: "#d63384", maxWidth: "300px" }}
       >
-        <style jsx>{`
-          .card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border-radius: 10px;
-          }
-
-          .card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-          }
-
-          .selected-card {
-            border: 2px solid #0d6efd !important;
-            box-shadow: 0 0 10px #0d6efd66;
-          }
-
-          .add-btn {
-            font-size: 1.1rem;
-            padding: 0.8rem 2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-          }
-
-          .form-container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 900px;
-          }
-
-          h2 {
-            font-weight: 700;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            color: #0d6efd;
-          }
-
-          p.text-muted {
-            font-size: 1.1rem;
-            margin-top: 2rem;
-          }
-
-          .bank-list {
-            max-width: 900px;
-            width: 100%;
-          }
-        `}</style>
-
-        <h2>
-          <span role="img" aria-label="card">💳</span> Manage Your Bank Accounts
-        </h2>
-
-        {!formVisible && (
-          <div className="d-flex justify-content-center mb-4 w-100" style={{ maxWidth: '900px' }}>
-            <button className="btn btn-success add-btn" onClick={() => setFormVisible(true)}>
-              ➕ Add Bank Account
-            </button>
+        <div className="d-flex justify-content-between align-items-center">
+          <div>
+            <div>Reward Balance</div>
+            <h3>$0.00</h3>
           </div>
-        )}
+          <button className="btn btn-warning fw-bold">Claim Reward</button>
+        </div>
+      </div>
 
-        {formVisible && (
-          <form className="p-4 form-container mb-5" onSubmit={handleSubmit}>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label">Account Holder Name</label>
-                <input type="text" className="form-control" name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Account Number</label>
-                <input type="text" className="form-control" name="accountNumber" value={formData.accountNumber} onChange={handleChange} required />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">IFSC Code</label>
-                <input type="text" className="form-control" name="ifscCode" value={formData.ifscCode} onChange={handleChange} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Bank Name</label>
-                <input type="text" className="form-control" name="bankName" value={formData.bankName} onChange={handleChange} required />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">Branch Name</label>
-                <input type="text" className="form-control" name="branchName" value={formData.branchName} onChange={handleChange} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Account Type</label>
-                <select className="form-select" name="accountType" value={formData.accountType} onChange={handleChange} required>
-                  <option value="">Select type</option>
-                  <option value="Savings">Savings</option>
-                  <option value="Current">Current</option>
-                </select>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">Mobile</label>
-                <input type="tel" className="form-control" name="mobile" value={formData.mobile} onChange={handleChange} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Email</label>
-                <input type="email" className="form-control" name="email" value={formData.email} onChange={handleChange} />
-              </div>
-            </div>
-
-            <div className="text-center mt-4">
-              <button type="submit" className="btn btn-primary px-4 me-2">Save</button>
-              <button type="button" className="btn btn-secondary px-4" onClick={() => setFormVisible(false)}>Cancel</button>
-            </div>
-          </form>
-        )}
-
-        {bankAccounts.length === 0 ? (
-          <p className="text-center text-muted bank-list">No bank accounts added yet.</p>
-        ) : (
-          <div className="row justify-content-center bank-list">
-            {bankAccounts.map((account) => (
-              <div className="col-md-6 col-lg-5 mb-4" key={account.id}>
-                <div className={`card shadow-sm p-4 ${selectedId === account.id ? 'selected-card' : ''}`}>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="text-primary mb-0">{account.accountHolderName}</h5>
-                    <input
-                      type="radio"
-                      name="selectedAccount"
-                      checked={selectedId === account.id}
-                      onChange={() => setSelectedId(account.id)}
-                      className="form-check-input"
-                    />
-                  </div>
-                  <ul className="list-unstyled mb-0">
-                    <li><strong>ID:</strong> {account.id}</li>
-                    <li><strong>Account #:</strong> {account.accountNumber}</li>
-                    <li><strong>Bank:</strong> {account.bankName}</li>
-                    <li><strong>IFSC:</strong> {account.ifscCode}</li>
-                    <li><strong>Branch:</strong> {account.branchName}</li>
-                    <li><strong>Type:</strong> {account.accountType}</li>
-                    <li><strong>Mobile:</strong> {account.mobile}</li>
-                    <li><strong>Email:</strong> {account.email}</li>
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+      {/* WhatsApp Button */}
+      <a
+        href="https://wa.me/your-number"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="position-fixed bottom-0 end-0 m-4"
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+          alt="WhatsApp"
+          style={{ width: "60px", height: "60px" }}
+        />
+      </a>
     </div>
   );
 }
