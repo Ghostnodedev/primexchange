@@ -172,140 +172,175 @@ export default function LoginPage() {
     <div
       className="vh-100 d-flex flex-column"
       style={{
-        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
+        background:
+          "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
         color: "white",
       }}
     >
-      <div className="d-flex flex-grow-1 flex-wrap">
-        {/* Left Section: Login Form */}
-        <div
-          className="login-box d-flex flex-column justify-content-center align-items-center px-4 px-md-5"
-          style={{
-            flex: "0 0 40%",
-            backgroundColor: "rgba(15, 15, 40, 0.95)",
-            borderRadius: "0 30px 30px 0",
-          }}
-        >
-          <div className="text-center mb-4">
-            <i
-              className="bi bi-person-circle"
-              style={{ fontSize: "5rem", color: "#0dcaf0" }}
-            ></i>
+      <div className="container-fluid h-100">
+        <div className="row h-100 g-0">
+          {/* Left Section: Login Form */}
+          <div
+            className="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center px-4 px-md-5"
+            style={{
+              backgroundColor: "rgba(15, 15, 40, 0.95)",
+              borderRadius: "0 30px 30px 0",
+              minHeight: "100vh",
+            }}
+          >
+            <div className="text-center mb-4">
+              <i
+                className="bi bi-person-circle"
+                style={{ fontSize: "5rem", color: "#0dcaf0" }}
+              ></i>
+            </div>
+
+            {/* Extra Text for Mobile */}
+            <p className="text-center text-white-50 d-md-none mb-4 px-3">
+              Welcome back! Please login to your account or register if youre new
+              here.
+            </p>
+
+            <form
+              className="w-100"
+              onSubmit={handleSubmit}
+              style={{ maxWidth: "320px" }}
+            >
+              {/* Username */}
+              <div className="mb-3">
+                <label
+                  htmlFor="username"
+                  className="form-label text-white fw-semibold"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  className="form-control bg-dark text-white border-0 px-3 py-2"
+                  placeholder="Enter your username"
+                  required
+                  style={{ borderRadius: "10px" }}
+                />
+              </div>
+
+              {/* Email */}
+              <div className="mb-3">
+                <label
+                  htmlFor="email"
+                  className="form-label text-white fw-semibold"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  className="form-control bg-dark text-white border-0 px-3 py-2"
+                  placeholder="Enter your email"
+                  required
+                  style={{ borderRadius: "10px" }}
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="mb-3">
+                <label
+                  htmlFor="phone"
+                  className="form-label text-white fw-semibold"
+                >
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  id="phone"
+                  pattern="[0-9]{10}"
+                  className="form-control bg-dark text-white border-0 px-3 py-2"
+                  placeholder="Enter 10-digit phone number"
+                  required
+                  style={{ borderRadius: "10px" }}
+                />
+              </div>
+
+              {/* Password */}
+              <div className="mb-3">
+                <label
+                  htmlFor="password"
+                  className="form-label text-white fw-semibold"
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  className="form-control bg-dark text-white border-0 px-3 py-2"
+                  placeholder="Enter your password"
+                  required
+                  style={{ borderRadius: "10px" }}
+                />
+              </div>
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                className="btn w-100 py-2 fw-bold"
+                style={{
+                  backgroundColor: "#f72585",
+                  borderRadius: "10px",
+                  color: "white",
+                }}
+              >
+                LOGIN
+              </button>
+
+              {/* Remember + Forgot Password */}
+              <div className="d-flex justify-content-between mt-3 text-white-50 small">
+                <div>
+                  <input type="checkbox" id="remember" />{" "}
+                  <label htmlFor="remember">Remember me</label>
+                </div>
+                <a
+                  href="#"
+                  className="text-white-50 text-decoration-none"
+                  data-bs-toggle="modal"
+                  data-bs-target="#emailModal"
+                >
+                  Forgot your password?
+                </a>
+              </div>
+
+              {/* Register Link for Mobile */}
+              <p className="text-center mt-4 d-md-none">
+                Not a member?{" "}
+                <a href="/register" className="text-info fw-semibold">
+                  Register now
+                </a>
+              </p>
+            </form>
+
+            {message && (
+              <div className="alert alert-primary mt-4 text-center w-100">
+                {message}
+              </div>
+            )}
           </div>
 
-          <form className="w-100" onSubmit={handleSubmit} style={{ maxWidth: "320px" }}>
-            {/* Username */}
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label text-white fw-semibold">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                id="username"
-                className="form-control bg-dark text-white border-0 px-3 py-2"
-                placeholder="Enter your username"
-                required
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-
-            {/* Email */}
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label text-white fw-semibold">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                className="form-control bg-dark text-white border-0 px-3 py-2"
-                placeholder="Enter your email"
-                required
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-
-            {/* Phone */}
-            <div className="mb-3">
-              <label htmlFor="phone" className="form-label text-white fw-semibold">
-                Phone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                id="phone"
-                pattern="[0-9]{10}"
-                className="form-control bg-dark text-white border-0 px-3 py-2"
-                placeholder="Enter 10-digit phone number"
-                required
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label text-white fw-semibold">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                className="form-control bg-dark text-white border-0 px-3 py-2"
-                placeholder="Enter your password"
-                required
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-
-            {/* Login Button */}
-            <button
-              type="submit"
-              className="btn w-100 py-2 fw-bold"
-              style={{
-                backgroundColor: "#f72585",
-                borderRadius: "10px",
-                color: "white",
-              }}
-            >
-              LOGIN
-            </button>
-
-            {/* Remember + Forgot Password */}
-            <div className="d-flex justify-content-between mt-3 text-white-50 small">
-              <div>
-                <input type="checkbox" id="remember" />{" "}
-                <label htmlFor="remember">Remember me</label>
-              </div>
-              <a
-                href="#"
-                className="text-white-50 text-decoration-none"
-                data-bs-toggle="modal"
-                data-bs-target="#emailModal"
-              >
-                Forgot your password?
+          {/* Right Section: Welcome Text for md+ screens */}
+          <div className="col-md-7 d-none d-md-flex flex-column justify-content-center align-items-center text-center flex-grow-1 px-5">
+            <h1 className="fw-bold display-4">Welcome.</h1>
+            <p className="text-white-50" style={{ maxWidth: "400px" }}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+            <p className="mt-3">
+              Not a member?{" "}
+              <a href="/register" className="text-info fw-semibold">
+                Register now
               </a>
-            </div>
-          </form>
-
-          {message && (
-            <div className="alert alert-primary mt-4 text-center w-100">{message}</div>
-          )}
-        </div>
-
-        {/* Right Section */}
-        <div className="welcome-box d-none d-md-flex flex-column justify-content-center align-items-center text-center flex-grow-1">
-          <h1 className="fw-bold display-4">Welcome.</h1>
-          <p className="text-white-50" style={{ maxWidth: "400px" }}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          </p>
-          <p className="mt-3">
-            Not a member?{" "}
-            <a href="/register" className="text-info fw-semibold">
-              Register now
-            </a>
-          </p>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -315,14 +350,27 @@ export default function LoginPage() {
           <div className="modal-content bg-dark text-white">
             <div className="modal-header">
               <h5 className="modal-title">Enter your email</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div className="modal-body">
-              <input type="email" id="resetEmail" className="form-control" placeholder="Enter your email" />
+              <input
+                type="email"
+                id="resetEmail"
+                className="form-control"
+                placeholder="Enter your email"
+              />
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button className="btn btn-primary" onClick={handleEmailSubmit}>Send OTP</button>
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Close
+              </button>
+              <button className="btn btn-primary" onClick={handleEmailSubmit}>
+                Send OTP
+              </button>
             </div>
           </div>
         </div>
@@ -334,14 +382,27 @@ export default function LoginPage() {
           <div className="modal-content bg-dark text-white">
             <div className="modal-header">
               <h5 className="modal-title">Verify OTP</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div className="modal-body">
-              <input type="text" id="otp" className="form-control" placeholder="Enter OTP" />
+              <input
+                type="text"
+                id="otp"
+                className="form-control"
+                placeholder="Enter OTP"
+              />
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button className="btn btn-primary" onClick={handleOtpSubmit}>Verify OTP</button>
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Close
+              </button>
+              <button className="btn btn-primary" onClick={handleOtpSubmit}>
+                Verify OTP
+              </button>
             </div>
           </div>
         </div>
@@ -353,15 +414,33 @@ export default function LoginPage() {
           <div className="modal-content bg-dark text-white">
             <div className="modal-header">
               <h5 className="modal-title">Reset Your Password</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
             <div className="modal-body">
-              <input type="password" id="newPassword" className="form-control mb-3" placeholder="New password" />
-              <input type="password" id="confirmPassword" className="form-control" placeholder="Confirm password" />
+              <input
+                type="password"
+                id="newPassword"
+                className="form-control mb-3"
+                placeholder="New password"
+              />
+              <input
+                type="password"
+                id="confirmPassword"
+                className="form-control"
+                placeholder="Confirm password"
+              />
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button className="btn btn-primary" onClick={handleResetPassword}>Reset Password</button>
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Close
+              </button>
+              <button className="btn btn-primary" onClick={handleResetPassword}>
+                Reset Password
+              </button>
             </div>
           </div>
         </div>
