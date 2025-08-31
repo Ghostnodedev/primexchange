@@ -15,24 +15,26 @@ import {
   Form,
 } from "react-bootstrap";
 import { toast } from "react-hot-toast";
-import { encryptData, decryptData } from "../utils/crypo";
+import { encryptData } from "../utils/crypo";
 import Navbar from "../component/header";
 import Slider from "react-slick";
 
 export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
-  const [showModal, setShowModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amountInput, setAmountInput] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const router = useRouter();
 
+  // Check authentication token presence
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsAuthenticated(!!token);
   }, []);
 
+  // Timer countdown for rate refresh
   useEffect(() => {
     const interval = setInterval(() => {
       setSeconds((prev) => (prev <= 1 ? 60 : prev - 1));
@@ -40,12 +42,14 @@ export default function ExchangePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => {
-    setShowModal(false);
+  // Handlers for modals
+  const handleShowPasswordModal = () => setShowPasswordModal(true);
+  const handleClosePasswordModal = () => {
+    setShowPasswordModal(false);
     setPassword("");
   };
 
+  // Password submit validation & flow
   const handlePasswordSubmit = () => {
     if (password.length !== 10 || isNaN(Number(password))) {
       toast.error("Password must be exactly 10 digits.");
@@ -53,42 +57,20 @@ export default function ExchangePage() {
     }
     localStorage.setItem("securePassword", password);
     toast.success("Password saved!");
-    handleCloseModal();
+    handleClosePasswordModal();
     setShowDepositModal(true);
   };
 
+  // Deposit amount submit and redirect to Deposit page
   const handleDepositRedirect = () => {
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+    if (!amountInput || isNaN(amountInput) || Number(amountInput) <= 0) {
       toast.error("Please enter a valid amount.");
       return;
     }
 
-    const newAmount = parseFloat(amount);
-    let currentAmount = 0;
+    const newAmount = parseFloat(amountInput);
 
-    // Get existing total amount from cookie and decrypt
-    const existingEncrypted = Cookies.get("depositAmount");
-
-    if (existingEncrypted) {
-      try {
-        const decrypted = decryptData(existingEncrypted);
-        currentAmount = parseFloat(decrypted) || 0;
-      } catch (e) {
-        console.error("Error decrypting existing amount:", e);
-      }
-    }
-
-    const updatedTotal = currentAmount + newAmount;
-
-    // Encrypt and store updated total in cookie
-    const encryptedTotal = encryptData(updatedTotal.toString());
-    Cookies.set("depositAmount", encryptedTotal, {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-
-    // Also store the last deposit amount in a separate cookie
+    // Store lastDepositAmount encrypted for Deposit page to read
     const encryptedNewAmount = encryptData(newAmount.toString());
     Cookies.set("lastDepositAmount", encryptedNewAmount, {
       expires: 1,
@@ -97,7 +79,8 @@ export default function ExchangePage() {
     });
 
     setShowDepositModal(false);
-    toast.success(`$${newAmount} added! Total: $${updatedTotal.toFixed(2)}`);
+    toast.success(`$${newAmount.toFixed(2)} saved! Redirecting to deposit page...`);
+
     router.push("/deposite");
   };
 
@@ -119,6 +102,7 @@ export default function ExchangePage() {
     );
   }
 
+  // Example rates and testimonials data
   const rates = [
     { usd: 2999, inr: 95.5 },
     { usd: 4999, inr: 96.5 },
@@ -142,6 +126,7 @@ export default function ExchangePage() {
     },
   ];
 
+  // React Slick slider settings
   const settings = {
     dots: true,
     infinite: true,
@@ -175,7 +160,7 @@ export default function ExchangePage() {
           <p className="lead mt-3">
             Secure, Fast, and Transparent — Trusted by thousands.
           </p>
-          <Button variant="warning" size="lg" onClick={handleShowModal}>
+          <Button variant="warning" size="lg" onClick={handleShowPasswordModal}>
             Deposit Now
           </Button>
         </Container>
@@ -232,7 +217,9 @@ export default function ExchangePage() {
                 <Card className="shadow-sm border-0 rounded-4 p-4 h-100">
                   <div className="mb-3">
                     {[...Array(item.rating)].map((_, i) => (
-                      <span key={i} style={{ color: "#fbbf24", fontSize: "1.2rem" }}>★</span>
+                      <span key={i} style={{ color: "#fbbf24", fontSize: "1.2rem" }}>
+                        ★
+                      </span>
                     ))}
                   </div>
                   <p className="text-muted">{item.text}</p>
@@ -283,7 +270,7 @@ export default function ExchangePage() {
       </a>
 
       {/* Password Modal */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
+      <Modal show={showPasswordModal} onHide={handleClosePasswordModal} centered>
         <Modal.Header closeButton>
           <Modal.Title className="text-primary">
             Enter Password to Continue
@@ -315,29 +302,23 @@ export default function ExchangePage() {
         </Modal.Body>
       </Modal>
 
-      {/* Deposit Modal */}
+      {/* Deposit Amount Modal */}
       <Modal show={showDepositModal} onHide={() => setShowDepositModal(false)} centered>
-        <Modal.Body className="p-4">
-          <h5 className="fw-bold mb-3">Enter Amount</h5>
-          <div className="input-group mb-3">
-            <input
+        <Modal.Header closeButton>
+          <Modal.Title>Enter Deposit Amount</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group controlId="depositAmount">
+            <Form.Control
               type="number"
-              className="form-control"
-              placeholder="Enter deposit amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              min="0"
+              value={amountInput}
+              onChange={(e) => setAmountInput(e.target.value)}
             />
-            <span className="input-group-text bg-light">
-              <img
-                src="/usdt-icon.png"
-                alt="USDT"
-                style={{ width: "20px", marginRight: "5px" }}
-              />
-              USDT
-            </span>
-          </div>
-          <div className="d-grid">
-            <Button variant="primary" onClick={handleDepositRedirect}>
+          </Form.Group>
+          <div className="d-grid gap-2 mt-4">
+            <Button variant="success" onClick={handleDepositRedirect}>
               Deposit
             </Button>
           </div>

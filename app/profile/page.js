@@ -3,30 +3,44 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { decryptData } from "../utils/crypo"; // adjust path if needed
+import { decryptData } from "../utils/crypo";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [totalAmount, setTotalAmount] = useState("0.00");
+  const router = useRouter();
 
   useEffect(() => {
-    // Get email from localStorage
     const storedEmail = localStorage.getItem("email");
     if (storedEmail) {
       setEmail(storedEmail);
     }
 
-    // Get and decrypt deposit amount
     const encryptedAmount = Cookies.get("depositAmount");
     if (encryptedAmount) {
       try {
         const decrypted = decryptData(encryptedAmount);
-        setTotalAmount(parseFloat(decrypted).toFixed(2));
+        const parsed = parseFloat(decrypted);
+        if (!isNaN(parsed)) {
+          setTotalAmount(parsed.toFixed(2));
+        }
       } catch (err) {
         console.error("Failed to decrypt amount:", err);
       }
     }
   }, []);
+
+  const handleLogout = () => {
+    // Clear user data
+    localStorage.removeItem("email");
+    Cookies.remove("depositAmount");
+    // Add any other cleanup you need
+
+    // Redirect to login or landing page
+    router.push("/login"); // Change this to your login route
+  };
 
   return (
     <div
@@ -35,7 +49,6 @@ export default function ProfilePage() {
         background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
       }}
     >
-      {/* Top section */}
       <div className="container py-4 text-white text-center">
         <img
           src="https://randomuser.me/api/portraits/men/75.jpg"
@@ -46,20 +59,30 @@ export default function ProfilePage() {
         <h5 className="mt-3">{email || "someone@gmail.com"}</h5>
       </div>
 
-      {/* Nav bar section */}
       <div className="d-flex justify-content-between align-items-center px-4 py-3 bg-dark rounded mx-4">
         <div className="d-flex align-items-center gap-4 text-white">
-          <i className="bi bi-house"></i> <span>Home</span>
-          <span>Exchange</span>
-          <span className="text-danger">Logout</span>
+          <Link href="/" className="d-flex align-items-center gap-1 text-white text-decoration-none">
+            <i className="bi bi-house"></i> <span>Home</span>
+          </Link>
+          <Link href="/exchange" className="text-white text-decoration-none">
+            <span>Exchange</span>
+          </Link>
+          <span
+            className="text-danger cursor-pointer"
+            onClick={handleLogout}
+            style={{ cursor: "pointer" }}
+          >
+            Logout
+          </span>
         </div>
         <div>
           <button className="btn btn-outline-light me-2">Enter Bank Detail</button>
-          <button className="btn btn-success">Sell Now</button>
+          <Link href="/exchange">
+            <button className="btn btn-success">Sell Now</button>
+          </Link>
         </div>
       </div>
 
-      {/* Balance section */}
       <div className="d-flex justify-content-center gap-4 text-white py-5 flex-wrap">
         {[
           { title: "Total Amount", value: `$${totalAmount}` },
@@ -71,15 +94,14 @@ export default function ProfilePage() {
             className="bg-dark p-4 rounded text-center"
             style={{ minWidth: "200px" }}
           >
-            <div className="text-white">{item.title}</div>
+            <div>{item.title}</div>
             <h3>{item.value}</h3>
           </div>
         ))}
       </div>
 
-      {/* Reward section */}
       <div
-        className="mx-auto bg-pink text-white p-4 rounded"
+        className="mx-auto text-white p-4 rounded"
         style={{ background: "#d63384", maxWidth: "300px" }}
       >
         <div className="d-flex justify-content-between align-items-center">
@@ -91,7 +113,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* WhatsApp Button */}
       <a
         href="https://wa.me/your-number"
         target="_blank"
