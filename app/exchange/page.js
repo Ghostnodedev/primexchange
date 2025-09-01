@@ -140,6 +140,12 @@ export default function ExchangePage() {
     responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }],
   };
 
+  const handlesell = ()=>{
+    toast.success("Please Add an Bank account to continue");
+
+    router.push("/mine");
+  }
+
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
       <Navbar />
