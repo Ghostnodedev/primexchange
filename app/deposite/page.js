@@ -13,7 +13,7 @@ export default function DepositPage() {
   const [timer, setTimer] = useState(1800);
   const [inputId, setInputId] = useState("");
   const [depositId] = useState("KPXLUN1BTSH9WAM");
-  const [address] = useState("TXCp9wCpnZzjAp6nSNqY4885Z5fDLc9gE");
+  const [address] = useState("TY6Ee4uRZogxhu2j3i3Jhp9wLkU8TX3a");
   const [amount, setAmount] = useState(null);
   const [createTime, setCreateTime] = useState("");
   const router = useRouter();
@@ -118,7 +118,7 @@ export default function DepositPage() {
         <h5 className="text-center mb-4">Scan The QR Code And Pay</h5>
         <div className="d-flex justify-content-center mb-2">
           <img
-            src="/qr-sample.png"
+            src="/qrcode.jpeg"
             alt="QR Code"
             className="rounded"
             style={{ maxWidth: "180px" }}

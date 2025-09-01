@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import './navbar.css'
 
 const Navbar = () => {
@@ -42,9 +43,15 @@ const Navbar = () => {
 
   return (
     <nav className="navbar navbar-expand-md bg-black border-bottom px-4 py-2">
-      {/* Brand */}
-      <Link href="/" className="navbar-brand text-white fw-bold">
-        MyApp
+      {/* Brand Logo */}
+      <Link href="/" className="navbar-brand d-flex align-items-center">
+        <Image
+          src="/Prime_Xchange__1_-removebg-preview.png" // <-- replace with your logo path
+          alt="Logo"
+          width={80} // adjust so it matches text height
+          height={50}
+          className="d-inline-block align-text-top"
+        />
       </Link>
 
       {/* Hamburger toggler */}
@@ -79,8 +86,16 @@ const Navbar = () => {
       {/* Mobile Slide-in Menu */}
       <div className={`mobile-slide-menu ${isOpen ? 'open' : ''}`}>
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-          <span className="fw-bold text-white fs-5">MyApp</span>
-          <button className="btn-close btn-close-white" onClick={toggleMenu}></button>
+          <Image
+            src="/logo.png" // <-- same logo for mobile
+            alt="Logo"
+            width={120}
+            height={30}
+          />
+          <button
+            className="btn-close btn-close-white"
+            onClick={toggleMenu}
+          ></button>
         </div>
         <ul className="nav flex-column p-3">
           {links.map(({ label, href }) => (
