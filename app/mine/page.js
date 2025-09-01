@@ -1,168 +1,315 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import Cookies from 'js-cookie';
-import Navbar from '../component/header';
-import { encryptData, decryptData } from '../utils/crypo';
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { FaPlus, FaUniversity } from "react-icons/fa";
+// import Navbar from "../component/header";
 
-export default function BankPage() {
-  const [formVisible, setFormVisible] = useState(false);
-  const [formData, setFormData] = useState({
-    accountHolderName: '',
-    accountNumber: '',
-    ifscCode: '',
-    bankName: '',
-    branchName: '',
-    accountType: '',
-    mobile: '',
-    email: ''
-  });
+/**
+ * BankDetails Manager
+ * - Form adds bank accounts and then hides
+ * - Cards show saved accounts with radio to select default
+ * - Accounts and selectedId are persisted in cookies
+ */
 
-  const [bankAccounts, setBankAccounts] = useState([]);
+export default function BankManager() {
+  const [accounts, setAccounts] = useState([]);
+  const [showForm, setShowForm] = useState(true); // show form by default if no accounts
   const [selectedId, setSelectedId] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-  // Check auth
+  // On mount: load accounts + selected from cookies
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setIsAuthenticated(!!token);
-  }, []);
-
-  // Load encrypted bank data from cookie
-  useEffect(() => {
-    const encrypted = Cookies.get('bankData');
-    if (encrypted) {
-      try {
-        const data = decryptData(encrypted);
-        setBankAccounts(data);
-        if (data.length > 0) setSelectedId(data[0].id);
-      } catch (err) {
-        console.error('Decryption failed', err);
+    try {
+      const saved = Cookies.get("bankAccounts");
+      const selected = Cookies.get("selectedBank");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setAccounts(parsed);
+        setShowForm(parsed.length === 0); // if no saved accounts, show form
+      } else {
+        setShowForm(true);
       }
+      if (selected) setSelectedId(String(selected));
+    } catch (err) {
+      console.error("Failed to load bank accounts from cookies", err);
     }
   }, []);
 
-  // Save encrypted bank data to cookie
+  // whenever accounts change, persist in cookie
   useEffect(() => {
-    const encrypted = encryptData(bankAccounts);
-    Cookies.set('bankData', encrypted, {
-      secure: true,
-      sameSite: 'Strict',
-      expires: 7 // days
-    });
-  }, [bankAccounts]);
+    try {
+      Cookies.set("bankAccounts", JSON.stringify(accounts), { expires: 7 });
+    } catch (err) {
+      console.error("Failed to save bank accounts to cookies", err);
+    }
+  }, [accounts]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  // when selectedId changes, persist in cookie
+  useEffect(() => {
+    if (selectedId !== null) {
+      Cookies.set("selectedBank", String(selectedId), { expires: 7 });
+    } else {
+      Cookies.remove("selectedBank");
+    }
+  }, [selectedId]);
+
+  // helper to create compact unique id
+  const makeId = () =>
+    Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const form = e.target;
+    const bankName = form.bankName.value.trim();
+    const type = form.type.value;
+    const holderName = form.holderName.value.trim();
+    const ifsc = form.ifsc.value.trim();
+    const accountNumber = form.accountNumber.value.trim();
+
+    if (!bankName || !type || !holderName || !ifsc || !accountNumber) {
+      alert("Please fill all fields");
+      return;
+    }
+
     const newAccount = {
-      id: uuidv4().slice(0, 8),
-      ...formData
+      id: makeId(),
+      bankName,
+      type,
+      holderName,
+      ifsc,
+      accountNumber,
     };
-    setBankAccounts(prev => [newAccount, ...prev]);
-    setFormData({
-      accountHolderName: '',
-      accountNumber: '',
-      ifscCode: '',
-      bankName: '',
-      branchName: '',
-      accountType: '',
-      mobile: '',
-      email: ''
+
+    setAccounts((prev) => {
+      const updated = [...prev, newAccount];
+      // if this is the first account, auto-select it
+      if (prev.length === 0) setSelectedId(String(newAccount.id));
+      return updated;
     });
-    setFormVisible(false);
+
+    form.reset();
+    setShowForm(false);
   };
 
-  if (isAuthenticated === null) return null;
-
-  if (!isAuthenticated) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="text-center">
-          <h3>Please login to continue</h3>
-          <a href="/login" className="btn btn-primary mt-3">Go to Login</a>
-        </div>
-      </div>
-    );
-  }
+  const handleSelect = (id) => {
+    setSelectedId(String(id));
+  };
 
   return (
-    <div className="min-vh-100 d-flex flex-column" style={{ background: '#f7f9fc' }}>
-      <Navbar />
+    <div style={pageStyle}>
+      <div style={containerStyle}>
+        {/* <Navbar /> */}
+        <h1 style={titleStyle}>💳 Manage Bank Accounts</h1>
+        {/* Cards grid */}
+        {accounts.length > 0 && (
+          <div style={gridStyle}>
+            {accounts.map((acc) => {
+              const isSelected = String(acc.id) === String(selectedId);
+              return (
+                <div
+                  key={acc.id}
+                  style={{
+                    ...cardStyle,
+                    border: isSelected ? "2px solid #ffd700" : "1px solid rgba(255,255,255,0.08)",
+                    boxShadow: isSelected ? "0 14px 40px rgba(255,215,0,0.08)" : cardStyle.boxShadow,
+                    transform: isSelected ? "translateY(-4px)" : "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleSelect(acc.id)}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+                    <div>
+                      <FaUniversity size={28} style={{ color: "#ffd700", marginBottom: 8 }} />
+                      <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankName}</h3>
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}><strong>Type:</strong> {acc.type}</p>
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}><strong>Holder:</strong> {acc.holderName}</p>
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}><strong>IFSC:</strong> {acc.ifsc}</p>
+                      <p style={{ margin: "4px 0 0 0", color: "rgba(255,255,255,0.85)" }}><strong>Account:</strong> {acc.accountNumber}</p>
+                    </div>
 
-      <main className="flex-grow-1 d-flex flex-column align-items-center justify-content-start pt-5 px-4" style={{ width: '100%' }}>
-        <h2 className="text-primary">💳 Manage Your Bank Accounts</h2>
-
-        {!formVisible && (
-          <button className="btn btn-success mb-4" onClick={() => setFormVisible(true)}>
-            ➕ Add Bank Account
-          </button>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                      <input
+                        type="radio"
+                        name="selectedBank"
+                        checked={isSelected}
+                        onChange={() => handleSelect(acc.id)}
+                        aria-label={`Select ${acc.bankName}`}
+                        style={{ width: 20, height: 20, accentColor: "#ffd700", cursor: "pointer" }}
+                        onClick={(e) => e.stopPropagation()} // stop card click double trigger
+                      />
+                      {isSelected && <span style={{ fontSize: 12, color: "#ffd700" }}>Default</span>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
 
-        {formVisible && (
-          <form className="bg-white p-4 rounded shadow w-100 mb-4" style={{ maxWidth: 900 }} onSubmit={handleSubmit}>
-            <div className="row g-3">
-              {["accountHolderName", "accountNumber", "ifscCode", "bankName", "branchName", "accountType", "mobile", "email"].map((field, i) => (
-                <div className="col-md-6" key={i}>
-                  <label className="form-label">{field.replace(/([A-Z])/g, ' $1')}</label>
-                  {field === "accountType" ? (
-                    <select name={field} className="form-select" value={formData[field]} onChange={handleChange} required>
-                      <option value="">Select type</option>
-                      <option value="Savings">Savings</option>
-                      <option value="Current">Current</option>
-                    </select>
-                  ) : (
-                    <input
-                      type={field === "email" ? "email" : field === "mobile" ? "tel" : "text"}
-                      name={field}
-                      className="form-control"
-                      value={formData[field]}
-                      onChange={handleChange}
-                      required={field !== "branchName" && field !== "mobile" && field !== "email"}
-                    />
-                  )}
-                </div>
-              ))}
+        {/* Form (visible when showForm) */}
+        {showForm && (
+          <form onSubmit={handleSubmit} style={formContainerStyle}>
+            <h2 style={{ marginTop: 0 }}>Add Bank Account</h2>
+
+            <div style={rowStyle}>
+              <label style={labelStyle}>Bank Name</label>
+              <input name="bankName" style={inputFieldStyle} placeholder="e.g., HDFC Bank" required />
             </div>
-            <div className="text-center mt-4">
-              <button type="submit" className="btn btn-primary me-2">Save</button>
-              <button type="button" className="btn btn-secondary" onClick={() => setFormVisible(false)}>Cancel</button>
+
+            <div style={rowStyle}>
+              <label style={labelStyle}>Account Type</label>
+              <select name="type" style={inputFieldStyle} defaultValue="Savings" required>
+                <option value="Savings">Savings</option>
+                <option value="Current">Current</option>
+                <option value="Salary">Salary</option>
+              </select>
+            </div>
+
+            <div style={rowStyle}>
+              <label style={labelStyle}>Holder Name</label>
+              <input name="holderName" style={inputFieldStyle} placeholder="Account holder full name" required />
+            </div>
+
+            <div style={rowStyle}>
+              <label style={labelStyle}>IFSC Code</label>
+              <input name="ifsc" style={inputFieldStyle} placeholder="e.g., HDFC0001234" required />
+            </div>
+
+            <div style={rowStyle}>
+              <label style={labelStyle}>Account Number</label>
+              <input name="accountNumber" style={inputFieldStyle} placeholder="Enter account number" required />
+            </div>
+
+            <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
+              <button type="submit" style={saveBtnStyle}>Save Account</button>
+              <button
+                type="button"
+                onClick={() => {
+                  // if no accounts exist, keep the form visible; otherwise hide
+                  setShowForm(false);
+                }}
+                style={cancelBtnStyle}
+              >
+                Cancel
+              </button>
             </div>
           </form>
         )}
 
-        {bankAccounts.length === 0 ? (
-          <p className="text-muted">No bank accounts added yet.</p>
-        ) : (
-          <div className="row justify-content-center w-100" style={{ maxWidth: 900 }}>
-            {bankAccounts.map(account => (
-              <div className="col-md-6 mb-4" key={account.id}>
-                <div className={`card p-4 shadow ${selectedId === account.id ? 'border-primary' : ''}`}>
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="mb-0">{account.accountHolderName}</h5>
-                    <input type="radio" name="selectedAccount" checked={selectedId === account.id} onChange={() => setSelectedId(account.id)} />
-                  </div>
-                  <ul className="list-unstyled small">
-                    <li><strong>ID:</strong> {account.id}</li>
-                    <li><strong>Account #:</strong> {account.accountNumber}</li>
-                    <li><strong>Bank:</strong> {account.bankName}</li>
-                    <li><strong>IFSC:</strong> {account.ifscCode}</li>
-                    <li><strong>Branch:</strong> {account.branchName}</li>
-                    <li><strong>Type:</strong> {account.accountType}</li>
-                    <li><strong>Mobile:</strong> {account.mobile}</li>
-                    <li><strong>Email:</strong> {account.email}</li>
-                  </ul>
-                </div>
-              </div>
-            ))}
+        {/* Plus button to add more */}
+        {!showForm && (
+          <div style={{ textAlign: "center", marginTop: 28 }}>
+            <button
+              title="Add bank"
+              onClick={() => setShowForm(true)}
+              style={plusBtnStyle}
+            >
+              <FaPlus color="#000" />
+            </button>
+            <div style={{ marginTop: 10, color: "rgba(255,255,255,0.8)" }}>Add another account</div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }
+
+/* ---------------- styles ---------------- */
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "linear-gradient(135deg, #0f1724 0%, #2b2445 50%, #6b4b8a 100%)",
+  color: "#fff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "40px 20px",
+  fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial",
+};
+
+const containerStyle = {
+  width: "100%",
+  maxWidth: 1100,
+};
+
+const titleStyle = {
+  textAlign: "center",
+  fontSize: 34,
+  marginBottom: 22,
+  fontWeight: 700,
+  background: "linear-gradient(90deg,#fff,#ffd700)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gap: 18,
+  marginBottom: 18,
+};
+
+const cardStyle = {
+  background: "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02))",
+  borderRadius: 14,
+  padding: 18,
+  boxShadow: "0 10px 30px rgba(2,6,23,0.6)",
+  transition: "all 220ms ease",
+};
+
+const formContainerStyle = {
+  background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+  borderRadius: 12,
+  padding: 20,
+  maxWidth: 520,
+  margin: "18px auto 0",
+  boxShadow: "0 14px 40px rgba(2,6,23,0.6)",
+};
+
+const rowStyle = { marginBottom: 12, display: "flex", flexDirection: "column", gap: 6 };
+const labelStyle = { fontSize: 13, color: "rgba(255,255,255,0.85)", fontWeight: 600 };
+const inputFieldStyle = {
+  padding: "10px 12px",
+  borderRadius: 8,
+  border: "1px solid rgba(255,255,255,0.12)",
+  background: "rgba(0,0,0,0.2)",
+  color: "#fff",
+  outline: "none",
+  fontSize: 14,
+};
+
+const saveBtnStyle = {
+  background: "#ffd700",
+  color: "#000",
+  border: "none",
+  padding: "10px 16px",
+  borderRadius: 8,
+  fontWeight: 700,
+  cursor: "pointer",
+  flex: 1,
+};
+
+const cancelBtnStyle = {
+  background: "transparent",
+  color: "#fff",
+  border: "1px solid rgba(255,255,255,0.12)",
+  padding: "10px 14px",
+  borderRadius: 8,
+  cursor: "pointer",
+};
+
+const plusBtnStyle = {
+  background: "#ffd700",
+  color: "#000",
+  border: "none",
+  borderRadius: "50%",
+  width: 64,
+  height: 64,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 20,
+  boxShadow: "0 12px 30px rgba(0,0,0,0.45)",
+  cursor: "pointer",
+};

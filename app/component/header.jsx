@@ -39,6 +39,8 @@ const Navbar = () => {
     { label: 'Exchange', href: '/exchange' },
     { label: 'Mine', href: '/mine' },
     { label: 'Profile', href: '/profile' },
+    { label: 'Contact', href: '/contact' },
+
   ]
 
   return (
@@ -48,8 +50,8 @@ const Navbar = () => {
         <Image
           src="/Prime_Xchange__1_-removebg-preview.png" // <-- replace with your logo path
           alt="Logo"
-          width={80} // adjust so it matches text height
-          height={50}
+          width={100} // adjust so it matches text height
+          height={90}
           className="d-inline-block align-text-top"
         />
       </Link>

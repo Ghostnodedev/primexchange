@@ -211,6 +211,7 @@ a.secondary {
   min-height: 100vh;
   background-image: url('/freepik__the-style-is-dark-and-mysterious-inspired-by-neoex__53096.png');
   background-size: cover;
+  padding-top: 100px;
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
