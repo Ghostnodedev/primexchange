@@ -183,7 +183,7 @@ export default function ExchangePage() {
               <p className="text-muted">Auto-refresh in {seconds}s</p>
             </Col>
             <Col md={3} className="text-center mt-4 mt-md-0">
-              <Button variant="danger" size="lg">
+              <Button variant="danger" size="lg" onClick={handlesell}>
                 Sell Now
               </Button>
             </Col>
