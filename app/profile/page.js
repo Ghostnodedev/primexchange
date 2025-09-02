@@ -20,7 +20,7 @@ export default function ProfilePage() {
     if (token) {
       setIsAuthenticated(true);
 
-      const storedEmail = localStorage.getItem("email");
+      const storedEmail = localStorage.getItem("username");
       if (storedEmail) setEmail(storedEmail);
 
       const encryptedAmount = Cookies.get("depositAmount");

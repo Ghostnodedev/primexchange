@@ -209,7 +209,7 @@ a.secondary {
 .heroContainer {
   width: 100%;
   min-height: 100vh;
-  background-image: url('/freepik__the-style-is-dark-and-mysterious-inspired-by-neoex__53096.png');
+  background-image: url('/herosection.png'); /* replace with your image path */
   background-size: cover;
   padding-top: 100px;
   background-repeat: no-repeat;
