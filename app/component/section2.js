@@ -1,5 +1,4 @@
-import styles from'./step2.css'
-
+import './step2.css';
 
 export default function StepsSection() {
   const steps = [
@@ -22,11 +21,14 @@ export default function StepsSection() {
 
   return (
     <section className="steps-section">
-      <div className="steps-glass">
-        {steps.map((step) => (
-          <div key={step.number} className="step-item">
-            <div className="circle">{step.number}</div>
-            <div className="step-content">
+      <div className="steps-content">
+        {steps.map((step, index) => (
+          <div key={step.number} className="step-wrapper">
+            <div className="circle">
+              {step.number}
+              {index < steps.length - 1 && <div className="dotted-line" />}
+            </div>
+            <div className="step-details">
               <h3>{step.title}</h3>
               <p>{step.desc}</p>
             </div>

@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { decryptData, encryptData } from "../utils/crypo"; 
+import { decryptData, encryptData } from "../utils/crypo";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FaRegCopy } from "react-icons/fa";
 import { toast } from "react-hot-toast";
@@ -49,12 +49,16 @@ export default function DepositPage() {
   useEffect(() => {
     const now = new Date();
     const pad = (n) => n.toString().padStart(2, "0");
-    const formatted = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const formatted = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
+      now.getDate()
+    )} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     setCreateTime(formatted);
   }, []);
 
   const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const min = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
     const sec = (seconds % 60).toString().padStart(2, "0");
     return `${min}:${sec}`;
   };
@@ -66,6 +70,7 @@ export default function DepositPage() {
 
   const handleCancel = () => {
     toast.error("Transaction cancelled.");
+    router.push("/exchange");
   };
 
   const handleSubmitTxid = () => {
@@ -116,17 +121,33 @@ export default function DepositPage() {
         style={{ width: "100%", maxWidth: "500px" }}
       >
         <h5 className="text-center mb-4">Scan The QR Code And Pay</h5>
-        <div className="d-flex justify-content-center mb-2">
+
+        {/* QR Code container with glow */}
+        <div
+          className="d-flex justify-content-center mb-3 p-3"
+          style={{
+            borderRadius: "20px",
+            boxShadow:
+              "0 0 20px 6px rgba(140, 39, 224, 0.6), 0 0 40px 12px rgba(140, 39, 224, 0.4)",
+            backgroundColor: "#000",
+            maxWidth: "fit-content",
+            margin: "0 auto 20px",
+          }}
+        >
           <img
             src="/qrcode.jpeg"
             alt="QR Code"
             className="rounded"
-            style={{ maxWidth: "180px" }}
+            style={{ maxWidth: "180px", borderRadius: "16px" }}
           />
         </div>
+
         <p className="text-center text-white mb-4">⏳ {formatTime(timer)} Remaining</p>
 
-        <p className="text-white text-center mb-4" style={{ fontSize: "0.9rem" }}>
+        <p
+          className="text-white text-center mb-4"
+          style={{ fontSize: "0.9rem" }}
+        >
           If you have transaction fees, don’t forget to add it. The transfer
           amount must match the deposit amount.
         </p>
@@ -137,12 +158,17 @@ export default function DepositPage() {
             value={inputId}
             onChange={(e) => setInputId(e.target.value)}
           />
-          <Button variant="success" onClick={handleSubmitTxid}>Submit</Button>
+          <Button variant="success" onClick={handleSubmitTxid}>
+            Submit
+          </Button>
         </InputGroup>
 
-        <div className="bg-black p-3 rounded-3 mb-3">
+        <div
+          className="bg-black p-3 rounded-3 mb-3"
+          style={{ boxShadow: "0 0 12px rgba(140, 39, 224, 0.4)" }}
+        >
           <div className="mb-2">
-            <small className="text-muted">Deposit Amount</small>
+            <small className="text">Deposit Amount</small>
             <div className="d-flex align-items-center justify-content-between">
               <span>{amount !== null ? amount : "Loading..."}</span>
               <img src="/usdt-icon.png" alt="USDT" style={{ width: "20px" }} />
@@ -152,27 +178,33 @@ export default function DepositPage() {
           <hr className="bg-secondary" />
 
           <div className="mb-2">
-            <small className="text-muted">Deposit Address</small>
+            <small className="text">Deposit Address</small>
             <div className="d-flex align-items-center justify-content-between">
               <span className="text-break">{address}</span>
-              <FaRegCopy onClick={() => handleCopy(address)} style={{ cursor: "pointer" }} />
+              <FaRegCopy
+                onClick={() => handleCopy(address)}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           </div>
 
           <hr className="bg-secondary" />
 
           <div className="mb-2">
-            <small className="text-muted">Deposit Id</small>
+            <small className="text">Deposit Id</small>
             <div className="d-flex align-items-center justify-content-between">
               <span>{depositId}</span>
-              <FaRegCopy onClick={() => handleCopy(depositId)} style={{ cursor: "pointer" }} />
+              <FaRegCopy
+                onClick={() => handleCopy(depositId)}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           </div>
 
           <hr className="bg-secondary" />
 
           <div className="mb-2">
-            <small className="text-muted">Network</small>
+            <small className="text">Network</small>
             <div className="d-flex align-items-center justify-content-between">
               <span>TRC20</span>
               <FaRegCopy
@@ -185,7 +217,7 @@ export default function DepositPage() {
           <hr className="bg-secondary" />
 
           <div className="mb-2 d-flex justify-content-between align-items-center">
-            <small className="text-muted">Created Time</small>
+            <small className="text">Created Time</small>
             <span>{createTime}</span>
           </div>
 

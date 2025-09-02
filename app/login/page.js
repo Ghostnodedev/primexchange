@@ -45,7 +45,7 @@ export default function LoginPage() {
         localStorage.setItem("username", formdata.username);
 
         setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.push("/"), 1500);
+        setTimeout(() => router.push("/profile"), 1500);
       } else {
         toast.error(data.message || "Login failed. Check your credentials.");
       }

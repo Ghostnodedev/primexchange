@@ -34,13 +34,13 @@ const Navbar = () => {
     setIsOpen(false)
   }
 
+  // Add profile link ONLY if logged in
   const links = [
     { label: 'Home', href: '/' },
     { label: 'Exchange', href: '/exchange' },
     { label: 'Mine', href: '/mine' },
-    { label: 'Profile', href: '/profile' },
+    ...(token ? [{ label: 'Profile', href: '/profile' }] : []), // Conditional Profile link
     { label: 'Contact', href: '/contact' },
-
   ]
 
   return (
@@ -48,9 +48,9 @@ const Navbar = () => {
       {/* Brand Logo */}
       <Link href="/" className="navbar-brand d-flex align-items-center">
         <Image
-          src="/Prime_Xchange__1_-removebg-preview.png" // <-- replace with your logo path
+          src="/Prime_Xchange__1_-removebg-preview.png"
           alt="Logo"
-          width={100} // adjust so it matches text height
+          width={100}
           height={90}
           className="d-inline-block align-text-top"
         />
@@ -89,7 +89,7 @@ const Navbar = () => {
       <div className={`mobile-slide-menu ${isOpen ? 'open' : ''}`}>
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
           <Image
-            src="/logo.png" // <-- same logo for mobile
+            src="/logo.png"
             alt="Logo"
             width={120}
             height={30}

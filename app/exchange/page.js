@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
@@ -17,6 +17,7 @@ import {
 import { toast } from "react-hot-toast";
 import { encryptData } from "../utils/crypo";
 import Navbar from "../component/header";
+import Footer from "../component/footer";
 import Slider from "react-slick";
 
 export default function ExchangePage() {
@@ -25,8 +26,10 @@ export default function ExchangePage() {
   const [password, setPassword] = useState("");
   const [amountInput, setAmountInput] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const [showDepositModal, setShowDepositModal] = useState(false);
+  const [showDepositModalPage, setShowDepositModalPage] = useState(false);
+  const [network, setNetwork] = useState("erc20"); // New network dropdown state
   const router = useRouter();
+  const depositModalRef = useRef(null);
 
   // Check authentication token presence
   useEffect(() => {
@@ -58,7 +61,7 @@ export default function ExchangePage() {
     localStorage.setItem("securePassword", password);
     toast.success("Password saved!");
     handleClosePasswordModal();
-    setShowDepositModal(true);
+    setShowDepositModalPage(true);
   };
 
   // Deposit amount submit and redirect to Deposit page
@@ -77,10 +80,27 @@ export default function ExchangePage() {
       sameSite: "Strict",
     });
 
-    setShowDepositModal(false);
-    toast.success(`$${newAmount.toFixed(2)} saved! Redirecting to deposit page...`);
+    Cookies.set("selectedNetwork", network, {
+      expires: 1,
+      secure: true,
+      sameSite: "Strict",
+    });
+
+    setShowDepositModalPage(false);
+    toast.success(
+      `$${newAmount.toFixed(2)} on ${network.toUpperCase()} saved! Redirecting to deposit page...`
+    );
 
     router.push("/deposite");
+  };
+
+  // Prevent closing modal when clicking outside deposit modal container
+  const handleDepositModalOutsideClick = (e) => {
+    if (depositModalRef.current && !depositModalRef.current.contains(e.target)) {
+      // Prevent modal from closing on outside click
+      // Uncomment below if you want to close on outside click:
+      // setShowDepositModalPage(false);
+    }
   };
 
   const handlesell = () => {
@@ -90,7 +110,7 @@ export default function ExchangePage() {
 
   if (isAuthenticated === null) return null;
 
-  // If not logged in → show lavish login screen
+  // If not logged in → show login screen
   if (!isAuthenticated) {
     return (
       <div
@@ -176,7 +196,28 @@ export default function ExchangePage() {
       text: "Fast, reliable, and hassle-free service. I got my INR within minutes of sending USDT.",
     },
     {
-      name: "Seema Patel",
+      name: "zoya Patel",
+      role: "Financial Advisor",
+      img: "/users/user2.jpg",
+      rating: 4,
+      text: "Honestly impressed with the speed and transparency.",
+    },
+    {
+      name: "kane smith",
+      role: "Trader",
+      img: "/users/user2.jpg",
+      rating: 4,
+      text: "Honestly impressed with the speed and transparency.",
+    },    
+    {
+      name: "ranveer singhnya",
+      role: "Financial Advisor",
+      img: "/users/user2.jpg",
+      rating: 4,
+      text: "Honestly impressed with the speed and transparency.",
+    },
+    {
+      name: "anjali singh",
       role: "Financial Advisor",
       img: "/users/user2.jpg",
       rating: 4,
@@ -185,18 +226,32 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    arrows: true,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    pauseOnHover: true,
-    responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }],
-  };
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 3,      // default for desktop
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 2000,
+  responsive: [
+    {
+      breakpoint: 992,   // tablets and small desktops
+      settings: {
+        slidesToShow: 2,
+      },
+    },
+    {
+      breakpoint: 576,   // mobile devices
+      settings: {
+        slidesToShow: 1,
+        centerMode: true,    // optional: center the single slide for better look
+        centerPadding: '20px',
+      },
+    },
+  ],
+};
+
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
@@ -267,37 +322,79 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-        <Container className="mt-5">
-          <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
-          <Slider {...settings}>
-            {testimonials.map((item, idx) => (
-              <div key={idx} className="px-3">
-                <Card className="shadow-sm border-0 rounded-4 p-4 h-100">
-                  <div className="mb-3">
-                    {[...Array(item.rating)].map((_, i) => (
-                      <span key={i} style={{ color: "#fbbf24", fontSize: "1.2rem" }}>
-                        ★
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-muted">{item.text}</p>
-                  <div className="d-flex align-items-center mt-4">
-                    <img
-                      src={item.img}
-                      alt={item.name}
-                      className="rounded-circle me-3"
-                      style={{ width: "50px", height: "50px" }}
-                    />
-                    <div>
-                      <h6 className="mb-0 fw-bold">{item.name}</h6>
-                      <small className="text-muted">{item.role}</small>
-                    </div>
-                  </div>
-                </Card>
-              </div>
+<Container className="mt-5">
+  <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
+  <Slider {...settings}>
+    {testimonials.map((item, idx) => (
+      <div key={idx} className="px-3">
+        <Card
+          className="shadow-lg border-0 rounded-5 p-5 h-100"
+          style={{
+            minHeight: "350px",       // Taller cards
+            transition: "transform 0.3s ease",
+            cursor: "pointer",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.boxShadow = "0 20px 40px rgba(140, 39, 224, 0.4)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow = "rgba(0, 0, 0, 0.1) 0px 4px 6px";
+          }}
+        >
+          <div className="mb-3">
+            {[...Array(item.rating)].map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  color: "#fbbf24",
+                  fontSize: "1.6rem",  // Bigger stars
+                  marginRight: "2px",
+                  filter: "drop-shadow(0 0 2px #fbbf24)",
+                }}
+              >
+                ★
+              </span>
             ))}
-          </Slider>
-        </Container>
+          </div>
+          <p
+            className="text-muted"
+            style={{
+              fontSize: "1.1rem",
+              lineHeight: "1.6",
+              minHeight: "120px",
+              marginBottom: "2.5rem",
+              fontStyle: "italic",
+              color: "#555",
+            }}
+          >
+            {item.text}
+          </p>
+          <div className="d-flex align-items-center mt-auto">
+            <img
+              src={item.img}
+              alt={item.name}
+              className="rounded-circle me-3"
+              style={{
+                width: "65px",
+                height: "65px",
+                border: "3px solid #8c27e0",
+                boxShadow: "0 0 10px rgba(140, 39, 224, 0.6)",
+              }}
+            />
+            <div>
+              <h6 className="mb-0 fw-bold" style={{ color: "#241654" }}>
+                {item.name}
+              </h6>
+              <small className="text-muted">{item.role}</small>
+            </div>
+          </div>
+        </Card>
+      </div>
+    ))}
+  </Slider>
+</Container>
       </Container>
 
       {/* WhatsApp Floating Button */}
@@ -360,28 +457,77 @@ export default function ExchangePage() {
         </Modal.Body>
       </Modal>
 
-      {/* Deposit Amount Modal */}
-      <Modal show={showDepositModal} onHide={() => setShowDepositModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Enter Deposit Amount</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group controlId="depositAmount">
-            <Form.Control
-              type="number"
-              placeholder="Enter amount"
-              min="0"
-              value={amountInput}
-              onChange={(e) => setAmountInput(e.target.value)}
-            />
-          </Form.Group>
-          <div className="d-grid gap-2 mt-4">
-            <Button variant="success" onClick={handleDepositRedirect}>
-              Deposit
-            </Button>
+      {/* BIGGER FULL PAGE DEPOSIT MODAL */}
+      {showDepositModalPage && (
+        <div
+          onClick={handleDepositModalOutsideClick}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            backdropFilter: "blur(6px)",
+            zIndex: 1050,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "40px",
+          }}
+        >
+          <div
+            ref={depositModalRef}
+            style={{
+              background: "white",
+              borderRadius: "16px",
+              padding: "40px",
+              maxWidth: "480px",
+              width: "100%",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h4 className="mb-4 text-primary fw-bold text-center">
+              Enter Deposit Amount & Network
+            </h4>
+            <Form>
+              <Form.Group controlId="networkSelect" className="mb-3">
+                <Form.Label>Select Network</Form.Label>
+                <Form.Select
+                  value={network}
+                  onChange={(e) => setNetwork(e.target.value)}
+                >
+                  <option value="erc20">ERC20</option>
+                  <option value="bep20">BEP20</option>
+                  <option value="trc20">TRC20</option>
+                </Form.Select>
+              </Form.Group>
+
+              <Form.Group controlId="amountInput" className="mb-4">
+                <Form.Label>Amount (USDT)</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  placeholder="Enter amount"
+                  value={amountInput}
+                  onChange={(e) => setAmountInput(e.target.value)}
+                />
+              </Form.Group>
+
+              <div className="d-grid gap-2">
+                <Button variant="success" size="lg" onClick={handleDepositRedirect}>
+                  Continue to Deposit
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => setShowDepositModalPage(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </Form>
           </div>
-        </Modal.Body>
-      </Modal>
+        </div>
+      )}
+      <Footer/>
     </div>
   );
 }

@@ -7,47 +7,37 @@ const Footer = () => {
   return (
     <footer
       style={{
-        background: "linear-gradient(135deg, #1e1e2f, #111)",
-        color: "#fff",
-        padding: "3rem 1rem",
+        background: "linear-gradient(135deg, #0f1624, #1a2638)",
+        color: "#f0f4f8",
+        padding: "4rem 1rem 3rem",
         textAlign: "center",
-        boxShadow: "0 -4px 20px rgba(0,0,0,0.4)",
+        boxShadow: "0 -6px 30px rgba(0, 0, 0, 0.7)",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       }}
     >
-
       {/* Navigation Links */}
       <ul
         style={{
           listStyle: "none",
           padding: 0,
-          margin: "0 auto 2rem",
-          maxWidth: "700px",
+          margin: "0 auto 2.5rem",
+          maxWidth: "720px",
           display: "flex",
           justifyContent: "center",
-          gap: "2rem",
+          gap: "2.8rem",
           flexWrap: "wrap",
+          fontWeight: "600",
+          fontSize: "1.1rem",
+          letterSpacing: "0.04em",
         }}
       >
-        <li>
-          <Link href="/" style={linkStyle}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link href="/contact" style={linkStyle}>
-            Contact
-          </Link>
-        </li>
-        <li>
-          <Link href="/account" style={linkStyle}>
-            Account
-          </Link>
-        </li>
-        <li>
-          <Link href="/exchange" style={linkStyle}>
-            Exchange
-          </Link>
-        </li>
+        {["Home", "Contact", "Account", "Exchange"].map((label) => (
+          <li key={label}>
+            <Link href={`/${label.toLowerCase() === 'home' ? '' : label.toLowerCase()}`} style={linkStyle}>
+              {label}
+            </Link>
+          </li>
+        ))}
       </ul>
 
       {/* Social Media Icons */}
@@ -55,26 +45,40 @@ const Footer = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          gap: "1.2rem",
-          marginBottom: "2rem",
+          gap: "1.8rem",
+          marginBottom: "3rem",
         }}
       >
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={iconStyle}>
-          <FaFacebookF />
-        </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" style={iconStyle}>
-          <FaTwitter />
-        </a>
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={iconStyle}>
-          <FaInstagram />
-        </a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={iconStyle}>
-          <FaLinkedinIn />
-        </a>
+        {[{
+          icon: <FaFacebookF />, url: "https://facebook.com"
+        }, {
+          icon: <FaTwitter />, url: "https://twitter.com"
+        }, {
+          icon: <FaInstagram />, url: "https://instagram.com"
+        }, {
+          icon: <FaLinkedinIn />, url: "https://linkedin.com"
+        }].map(({ icon, url }, i) => (
+          <a
+            key={i}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={iconStyle}
+            onMouseEnter={(e) => e.currentTarget.style.background = "linear-gradient(45deg, #4facfe, #00f2fe)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
+          >
+            {icon}
+          </a>
+        ))}
       </div>
 
       {/* Copyright */}
-      <p style={{ fontSize: "0.9rem", color: "#aaa" }}>
+      <p style={{
+        fontSize: "0.95rem",
+        color: "#a0aec0",
+        fontWeight: "400",
+        letterSpacing: "0.03em",
+      }}>
         &copy; {new Date().getFullYear()} MyApp. All rights reserved.
       </p>
     </footer>
@@ -83,20 +87,29 @@ const Footer = () => {
 
 // Shared Styles
 const linkStyle = {
-  color: "#ddd",
+  color: "#cbd5e1",
   textDecoration: "none",
-  fontWeight: "600",
-  fontSize: "1rem",
-  transition: "color 0.3s",
+  transition: "color 0.3s ease",
+  cursor: "pointer",
 };
+Object.assign(linkStyle, {
+  ':hover': {
+    color: "#4facfe",
+    textShadow: "0 0 8px #4facfe",
+  }
+});
 
 const iconStyle = {
   color: "#fff",
-  fontSize: "1.2rem",
+  fontSize: "1.6rem",
   background: "rgba(255,255,255,0.1)",
-  padding: "10px",
+  padding: "14px",
   borderRadius: "50%",
-  transition: "all 0.3s",
+  boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+  transition: "background 0.3s ease, transform 0.3s ease",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 export default Footer;
