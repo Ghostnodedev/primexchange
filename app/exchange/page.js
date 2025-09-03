@@ -235,71 +235,42 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    responsive: [
-      {
-        breakpoint: 992, // Tablet & below
-        settings: {
-          slidesToShow: 2,
-        },
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 3, // default for desktop
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 2000,
+  responsive: [
+    {
+      breakpoint: 992, // Tablets
+      settings: {
+        slidesToShow: 2,
+        centerMode: false,
+        centerPadding: "0px",
       },
-      {
-        breakpoint: 576, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
+    },
+    {
+      breakpoint: 768, // Small tablets & large phones
+      settings: {
+        slidesToShow: 1,
+        centerMode: false, // 🔑 avoids narrow look
+        centerPadding: "0px",
       },
-      {
-        breakpoint: 320, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
+    },
+    {
+      breakpoint: 576, // Mobile phones
+      settings: {
+        slidesToShow: 1,
+        centerMode: false,
+        centerPadding: "0px",
       },
-      {
-        breakpoint: 315, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
-      },
-      {
-        breakpoint: 300, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
-      },
-      {
-        breakpoint: 250, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
-      },
-      {
-        breakpoint: 200, // Mobile
-        settings: {
-          slidesToShow: 1,
-          centerMode: true,
-          centerPadding: "20px",
-        },
-      },
-    ],
-  };
+    },
+  ],
+};
+
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
