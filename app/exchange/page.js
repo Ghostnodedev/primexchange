@@ -455,80 +455,80 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-    <Container className="mt-5">
-      <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
-      <Slider {...settings}>
-        {testimonials.map((item, idx) => (
-          <div key={idx} className="p-3">
-            <Card
-              className="shadow-lg border-0 rounded-5 h-100 d-flex flex-column"
-              style={{
-                minHeight: "350px",
-                transition: "transform 0.3s ease",
-                cursor: "pointer",
-                width: "100%", // ✅ full width always
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow =
-                  "0 20px 40px rgba(140, 39, 224, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow =
-                  "rgba(0, 0, 0, 0.1) 0px 4px 6px";
-              }}
-            >
-              <div className="mb-3">
-                {[...Array(item.rating)].map((_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      color: "#fbbf24",
-                      fontSize: "1.6rem",
-                      marginRight: "2px",
-                      filter: "drop-shadow(0 0 2px #fbbf24)",
-                    }}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <p
-                className="text-muted flex-grow-1"
-                style={{
-                  fontSize: "1.1rem",
-                  lineHeight: "1.6",
-                  marginBottom: "2rem",
-                  fontStyle: "italic",
-                }}
-              >
-                {item.text}
-              </p>
-              <div className="d-flex align-items-center mt-auto">
-                <img
-                  src={item.img}
-                  alt={item.name}
-                  className="rounded-circle me-3"
-                  style={{
-                    width: "65px",
-                    height: "65px",
-                    border: "3px solid #8c27e0",
-                    boxShadow: "0 0 10px rgba(140, 39, 224, 0.6)",
-                  }}
-                />
-                <div>
-                  <h6 className="mb-0 fw-bold" style={{ color: "#241654" }}>
-                    {item.name}
-                  </h6>
-                  <small className="text-muted">{item.role}</small>
-                </div>
-              </div>
-            </Card>
+{/* Testimonials */}
+<Container className="mt-5">
+  <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
+
+  <Slider
+    dots={true}
+    infinite={true}
+    speed={500}
+    slidesToShow={3} // desktop
+    slidesToScroll={1}
+    autoplay={true}
+    autoplaySpeed={2500}
+    responsive={[
+      {
+        breakpoint: 992, // tablets
+        settings: { slidesToShow: 2 },
+      },
+      {
+        breakpoint: 768, // phones
+        settings: { slidesToShow: 1 },
+      },
+    ]}
+  >
+    {testimonials.map((item, idx) => (
+      <div key={idx} className="slider-card-wrapper">
+        <Card
+          className="slider-card shadow-lg border-0 rounded-5 h-100 d-flex flex-column"
+          style={{
+            minHeight: "350px",
+            transition: "transform 0.3s ease",
+            cursor: "pointer",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.boxShadow =
+              "0 20px 40px rgba(140, 39, 224, 0.4)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
+              "rgba(0, 0, 0, 0.1) 0px 4px 6px";
+          }}
+        >
+          <div className="mb-3">
+            {[...Array(item.rating)].map((_, i) => (
+              <span key={i} className="star">★</span>
+            ))}
           </div>
-        ))}
-      </Slider>
-    </Container>
+          <p className="testimonial-text">{item.text}</p>
+          <div className="d-flex align-items-center mt-auto">
+            <img
+              src={item.img}
+              alt={item.name}
+              className="rounded-circle me-3"
+              style={{
+                width: "65px",
+                height: "65px",
+                border: "3px solid #8c27e0",
+                boxShadow: "0 0 10px rgba(140, 39, 224, 0.6)",
+              }}
+            />
+            <div>
+              <h6 className="mb-0 fw-bold" style={{ color: "#241654" }}>
+                {item.name}
+              </h6>
+              <small className="text-muted">{item.role}</small>
+            </div>
+          </div>
+        </Card>
+      </div>
+    ))}
+  </Slider>
+</Container>
+
       </Container>
 
       {/* WhatsApp Floating Button */}
