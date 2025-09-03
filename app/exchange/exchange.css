@@ -80,9 +80,25 @@
   margin-bottom: 12px;
 }
 
-.slick-slide > div {
+/* ✅ Force full width slides */
+.slick-slide {
   display: flex !important;
-  justify-content: center;
-  width: 100% !important;
+  justify-content: center !important;
 }
+
+.slick-slide > div {
+  flex: 1 0 100% !important; /* ✅ each slide takes full width */
+  max-width: 100% !important;
+}
+
+/* ✅ On small devices, only one card visible */
+@media (max-width: 768px) {
+  .slick-track {
+    display: flex !important;
+  }
+  .slick-slide {
+    width: 100% !important;
+  }
+}
+
 
