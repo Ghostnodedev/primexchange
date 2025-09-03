@@ -235,42 +235,57 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
-const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 3, // default for desktop
-  slidesToScroll: 1,
-  autoplay: true,
-  autoplaySpeed: 2000,
-  responsive: [
-    {
-      breakpoint: 992, // Tablets
-      settings: {
-        slidesToShow: 2,
-        centerMode: false,
-        centerPadding: "0px",
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3, // default for desktop
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 2000,
+    responsive: [
+      {
+        breakpoint: 992, // Tablets
+        settings: {
+          slidesToShow: 2,
+          centerMode: false,
+          centerPadding: "0px",
+        },
       },
-    },
-    {
-      breakpoint: 768, // Small tablets & large phones
-      settings: {
-        slidesToShow: 1,
-        centerMode: false, // 🔑 avoids narrow look
-        centerPadding: "0px",
+      {
+        breakpoint: 768, // Small tablets & large phones
+        settings: {
+          slidesToShow: 1,
+          centerMode: false, // 🔑 avoids narrow look
+          centerPadding: "0px",
+        },
       },
-    },
-    {
-      breakpoint: 576, // Mobile phones
-      settings: {
-        slidesToShow: 1,
-        centerMode: false,
-        centerPadding: "0px",
+      {
+        breakpoint: 576, // Mobile phones
+        settings: {
+          slidesToShow: 1,
+          centerMode: false,
+          centerPadding: "0px",
+        },
       },
-    },
-  ],
-};
-
+      {
+        breakpoint: 400, // Mobile phones
+        settings: {
+          slidesToShow: 1,
+          centerMode: false,
+          centerPadding: "0px",
+        },
+      },
+      {
+        breakpoint: 300, // Mobile phones
+        settings: {
+          slidesToShow: 1,
+          centerMode: false,
+          centerPadding: "0px",
+        },
+      },
+    ],
+  };
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
