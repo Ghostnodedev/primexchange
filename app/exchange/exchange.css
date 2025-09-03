@@ -88,3 +88,18 @@
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Force each slick slide to take full width on mobile */
+@media (max-width: 768px) {
+  .slick-slide {
+    width: 100% !important;
+  }
+
+  .slick-track {
+    display: flex !important;
+  }
+
+  .slick-slide > div {
+    width: 100%;
+  }
+}
+
