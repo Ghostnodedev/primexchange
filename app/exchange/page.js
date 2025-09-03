@@ -228,18 +228,37 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    arrows: true,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    pauseOnHover: true,
-    responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }],
-  };
+ const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 2, // default on desktop
+  slidesToScroll: 1,
+  arrows: true,
+  autoplay: true,
+  autoplaySpeed: 3000,
+  pauseOnHover: true,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 2, // tablets
+      },
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 1, // phones
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1, // smaller phones
+      },
+    },
+  ],
+};
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
