@@ -228,37 +228,43 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2, // default on desktop
-    slidesToScroll: 1,
-    arrows: true,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2, // tablets
-        },
+const settings = {
+  arrows: true,
+  autoplay: true,
+  autoplaySpeed: 3000,
+  dots: true,
+  infinite: true,
+  pauseOnHover: true,
+  speed: 500,
+  slidesToShow: 2,        // default on big screens (desktop/tablet)
+  slidesToScroll: 1,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 1,   // 1 slide on screens smaller than 1024px
+        slidesToScroll: 1,
       },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1, // phones
-        },
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 1,   // 1 slide on mobile devices smaller than 768px
+        slidesToScroll: 1,
       },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1, // smaller phones
-        },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        slidesToShow: 1,   // just to be safe, 1 slide on very small devices
+        slidesToScroll: 1,
       },
-    ],
-  };
+    },
+  ],
+};
+
+
+  console.log(settings);
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
