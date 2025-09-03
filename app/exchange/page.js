@@ -432,7 +432,7 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-        <Container className="mt-5">
+ <Container className="mt-5">
           <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
           <Slider {...settings}>
             {testimonials.map((item, idx) => (
