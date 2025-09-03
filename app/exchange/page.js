@@ -455,17 +455,18 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-<Container className="mt-5">
+    <Container className="mt-5">
       <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
       <Slider {...settings}>
         {testimonials.map((item, idx) => (
-          <div key={idx} className="px-2 w-100">
+          <div key={idx} className="p-3">
             <Card
-              className="shadow-lg border-0 rounded-5 p-5 h-100 w-100"
+              className="shadow-lg border-0 rounded-5 h-100 d-flex flex-column"
               style={{
                 minHeight: "350px",
                 transition: "transform 0.3s ease",
                 cursor: "pointer",
+                width: "100%", // ✅ full width always
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
@@ -494,14 +495,12 @@ export default function ExchangePage() {
                 ))}
               </div>
               <p
-                className="text-muted"
+                className="text-muted flex-grow-1"
                 style={{
                   fontSize: "1.1rem",
                   lineHeight: "1.6",
-                  minHeight: "120px",
-                  marginBottom: "2.5rem",
+                  marginBottom: "2rem",
                   fontStyle: "italic",
-                  color: "#555",
                 }}
               >
                 {item.text}

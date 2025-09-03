@@ -79,3 +79,10 @@
 .deposit-modal-buttons > *:not(:last-child) {
   margin-bottom: 12px;
 }
+
+.slick-slide > div {
+  display: flex !important;
+  justify-content: center;
+  width: 100% !important;
+}
+
