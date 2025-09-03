@@ -17,7 +17,7 @@
 .steps-content {
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: linear-gradient(135deg, #247BA0, #5C7AEA);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   border-radius: 24px;
   align-items: center;
@@ -77,11 +77,11 @@
   border-radius: 20px;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
   flex: 1;
-  transition: background 0.3s ease;
+  transition: background 0.5s ease;
 }
 
 .step-details:hover {
-  background: #ece8ffcc;
+  background: #a08ff2cc;
 }
 
 .step-details h3 {

@@ -1,0 +1,81 @@
+/* Button Hover Effects */
+.login-button,
+.deposit-button,
+.sell-button {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.login-button:hover,
+.deposit-button:hover,
+.sell-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px #25D366;
+}
+
+/* Specific buttons colors */
+.login-button {
+  background-color: #25d366;
+  border-radius: 30px;
+  padding: 10px 30px;
+  color: white;
+  border: none;
+  box-shadow: 0 0 20px rgba(37, 211, 102, 0.6);
+}
+
+.login-button:hover {
+  background-color: #1ebe54;
+}
+
+.deposit-button {
+  background-color: #3b82f6;
+  border-radius: 30px;
+  padding: 12px 36px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  box-shadow: 0 6px 12px rgba(7, 58, 141, 0.6);
+}
+
+.deposit-button:hover {
+  background-color: #2563eb;
+}
+
+.sell-button {
+  background-color: #ef4444;
+  border-radius: 30px;
+  padding: 12px 36px;
+  font-weight: 600;
+  color: white;
+  border: none;
+  box-shadow: 0 6px 12px rgba(51, 2, 2, 0.6);
+}
+
+.sell-button:hover {
+  background-color: #b91c1c;
+}
+
+/* Testimonials card transition */
+.testimonial-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Lock icon pulse animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(37, 211, 102, 1);
+  }
+}
+
+.lock-icon {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+/* Spacing between deposit modal buttons */
+.deposit-modal-buttons > *:not(:last-child) {
+  margin-bottom: 12px;
+}

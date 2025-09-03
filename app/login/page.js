@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [emailForReset, setEmailForReset] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -15,9 +16,9 @@ export default function LoginPage() {
     }
   }, []);
 
-  // ✅ Login Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const formdata = {
       username: e.target.username.value,
@@ -37,28 +38,25 @@ export default function LoginPage() {
       );
 
       const data = await res.json();
-
       if (res.ok) {
         const { token } = data;
         toast.success("Login successful!");
         localStorage.setItem("authToken", token);
         localStorage.setItem("username", formdata.username);
-
         setMessage("Login successful! Redirecting...");
         setTimeout(() => router.push("/profile"), 1500);
       } else {
         toast.error(data.message || "Login failed. Check your credentials.");
       }
     } catch (err) {
-      console.error(err);
       toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ Forgot Password - Request OTP
   const handleEmailSubmit = async () => {
     const email = document.getElementById("resetEmail").value;
-
     if (!email) return toast.error("Email is required.");
 
     try {
@@ -70,31 +68,19 @@ export default function LoginPage() {
           body: JSON.stringify({ email }),
         }
       );
-
       const data = await res.json();
-
       if (res.ok) {
-        toast.success("OTP sent to email. Verify to reset your password.");
+        toast.success("OTP sent to email.");
         setOtpSent(true);
         setEmailForReset(email);
-
-        window.bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("emailModal")
-        ).hide();
-
-        window.bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("otpModal")
-        ).show();
-      } else {
-        toast.error(data.message || "Email not found.");
-      }
-    } catch (err) {
-      console.error(err);
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("emailModal")).hide();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("otpModal")).show();
+      } else toast.error(data.message || "Email not found.");
+    } catch {
       toast.error("Network error.");
     }
   };
 
-  // ✅ Verify OTP
   const handleOtpSubmit = async () => {
     const otp = document.getElementById("otp").value;
     if (!otp) return toast.error("OTP is required.");
@@ -110,37 +96,22 @@ export default function LoginPage() {
       );
 
       const data = await res.json();
-
       if (res.ok) {
-        toast.success("OTP verified. Set a new password.");
-
-        window.bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("otpModal")
-        ).hide();
-
-        window.bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("passwordModal")
-        ).show();
-      } else {
-        toast.error(data.message || "Invalid OTP.");
-      }
-    } catch (err) {
-      console.error(err);
+        toast.success("OTP verified.");
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("otpModal")).hide();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("passwordModal")).show();
+      } else toast.error(data.message || "Invalid OTP.");
+    } catch {
       toast.error("Something went wrong.");
     }
   };
 
-  // ✅ Reset Password
   const handleResetPassword = async () => {
     const newPassword = document.getElementById("newPassword").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    if (!newPassword || !confirmPassword) {
-      return toast.error("All fields are required.");
-    }
-    if (newPassword !== confirmPassword) {
-      return toast.error("Passwords do not match.");
-    }
+    if (!newPassword || !confirmPassword) return toast.error("All fields are required.");
+    if (newPassword !== confirmPassword) return toast.error("Passwords do not match.");
 
     try {
       const res = await fetch(
@@ -153,17 +124,11 @@ export default function LoginPage() {
       );
 
       const data = await res.json();
-
       if (res.ok) {
-        toast.success("Password reset successfully!");
-        window.bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("passwordModal")
-        ).hide();
-      } else {
-        toast.error(data.message || "Password reset failed.");
-      }
-    } catch (err) {
-      console.error(err);
+        toast.success("Password reset successful.");
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("passwordModal")).hide();
+      } else toast.error(data.message || "Password reset failed.");
+    } catch {
       toast.error("Something went wrong.");
     }
   };
@@ -172,131 +137,82 @@ export default function LoginPage() {
     <div
       className="vh-100 d-flex flex-column"
       style={{
-        background:
-          "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
+        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
         color: "white",
       }}
     >
-      <div className="container-fluid h-100">
+      <div className="container-fluid flex-grow-1">
         <div className="row h-100 g-0">
-          {/* Left Section: Login Form */}
+          {/* Login Section */}
           <div
             className="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center px-4 px-md-5"
             style={{
               backgroundColor: "rgba(15, 15, 40, 0.95)",
               borderRadius: "0 30px 30px 0",
-              minHeight: "100vh",
+              boxShadow: "0 0 30px rgba(0,0,0,0.15)",
             }}
           >
             <div className="text-center mb-4">
               <i
-                className="bi bi-person-circle"
-                style={{ fontSize: "5rem", color: "#0dcaf0" }}
+                className="bi bi-shield-lock"
+                style={{ fontSize: "4rem", color: "#0dcaf0" }}
               ></i>
+              <h2 className="fw-bold mt-2">Login to PrimExchange</h2>
             </div>
-
-            {/* Extra Text for Mobile */}
-            <p className="text-center text-white-50 d-md-none mb-4 px-3">
-              Welcome back! Please login to your account or register if youre new
-              here.
-            </p>
 
             <form
               className="w-100"
               onSubmit={handleSubmit}
-              style={{ maxWidth: "320px" }}
+              style={{ maxWidth: "340px" }}
             >
-              {/* Username */}
-              <div className="mb-3">
-                <label
-                  htmlFor="username"
-                  className="form-label text-white fw-semibold"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  id="username"
-                  className="form-control bg-dark text-white border-0 px-3 py-2"
-                  placeholder="Enter your username"
-                  required
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
+              {["username", "email", "phone", "password"].map((field, i) => (
+                <div className="mb-3" key={i}>
+                  <label className="form-label fw-semibold" htmlFor={field}>
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    type={
+                      field === "password"
+                        ? "password"
+                        : field === "email"
+                        ? "email"
+                        : "text"
+                    }
+                    name={field}
+                    id={field}
+                    className="form-control bg-dark text-white"
+                    placeholder={`Enter your ${field}`}
+                    required
+                    style={{ borderRadius: "10px", padding: "10px" }}
+                    pattern={field === "phone" ? "[0-9]{10}" : undefined}
+                  />
+                </div>
+              ))}
 
-              {/* Email */}
-              <div className="mb-3">
-                <label
-                  htmlFor="email"
-                  className="form-label text-white fw-semibold"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="form-control bg-dark text-white border-0 px-3 py-2"
-                  placeholder="Enter your email"
-                  required
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-
-              {/* Phone */}
-              <div className="mb-3">
-                <label
-                  htmlFor="phone"
-                  className="form-label text-white fw-semibold"
-                >
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  id="phone"
-                  pattern="[0-9]{10}"
-                  className="form-control bg-dark text-white border-0 px-3 py-2"
-                  placeholder="Enter 10-digit phone number"
-                  required
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-
-              {/* Password */}
-              <div className="mb-3">
-                <label
-                  htmlFor="password"
-                  className="form-label text-white fw-semibold"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  className="form-control bg-dark text-white border-0 px-3 py-2"
-                  placeholder="Enter your password"
-                  required
-                  style={{ borderRadius: "10px" }}
-                />
-              </div>
-
-              {/* Login Button */}
               <button
                 type="submit"
                 className="btn w-100 py-2 fw-bold"
+                disabled={loading}
                 style={{
                   backgroundColor: "#f72585",
                   borderRadius: "10px",
                   color: "white",
                 }}
               >
-                LOGIN
+                {loading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Logging in...
+                  </>
+                ) : (
+                  "LOGIN"
+                )}
               </button>
 
-              {/* Remember + Forgot Password */}
               <div className="d-flex justify-content-between mt-3 text-white-50 small">
                 <div>
                   <input type="checkbox" id="remember" />{" "}
@@ -304,41 +220,42 @@ export default function LoginPage() {
                 </div>
                 <a
                   href="#"
-                  className="text-white-50 text-decoration-none"
+                  className="text-decoration-none"
                   data-bs-toggle="modal"
                   data-bs-target="#emailModal"
                 >
-                  Forgot your password?
+                  Forgot password?
                 </a>
               </div>
+            </form>
 
-              {/* Register Link for Mobile */}
-              <p className="text-center mt-4 d-md-none">
+            {/* Register link for mobile */}
+            <div className="mt-3 text-center d-md-none">
+              <p className="text-white-50">
                 Not a member?{" "}
                 <a href="/register" className="text-info fw-semibold">
                   Register now
                 </a>
               </p>
-            </form>
+            </div>
 
             {message && (
-              <div className="alert alert-primary mt-4 text-center w-100">
-                {message}
-              </div>
+              <div className="alert alert-info mt-3 text-center w-100">{message}</div>
             )}
           </div>
 
-          {/* Right Section: Welcome Text for md+ screens */}
-          <div className="col-md-7 d-none d-md-flex flex-column justify-content-center align-items-center text-center flex-grow-1 px-5">
+          {/* Right Panel (optional content) */}
+          <div className="col-md-7 d-none d-md-flex flex-column justify-content-center align-items-center text-center px-5">
             <h1 className="fw-bold display-4">Welcome.</h1>
             <p className="text-white-50" style={{ maxWidth: "400px" }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              PrimExchange is your secure gateway to trading. Log in to access your
+              dashboard.
             </p>
             <p className="mt-3">
               Not a member?{" "}
               <a href="/register" className="text-info fw-semibold">
                 Register now
-              </a>
+                            </a>
             </p>
           </div>
         </div>
@@ -352,7 +269,7 @@ export default function LoginPage() {
               <h5 className="modal-title">Enter your email</h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close btn-close-white"
                 data-bs-dismiss="modal"
               ></button>
             </div>
@@ -384,7 +301,7 @@ export default function LoginPage() {
               <h5 className="modal-title">Verify OTP</h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close btn-close-white"
                 data-bs-dismiss="modal"
               ></button>
             </div>
@@ -398,9 +315,9 @@ export default function LoginPage() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Close
+                Cancel
               </button>
-              <button className="btn btn-primary" onClick={handleOtpSubmit}>
+              <button className="btn btn-success" onClick={handleOtpSubmit}>
                 Verify OTP
               </button>
             </div>
@@ -416,7 +333,7 @@ export default function LoginPage() {
               <h5 className="modal-title">Reset Your Password</h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close btn-close-white"
                 data-bs-dismiss="modal"
               ></button>
             </div>
@@ -436,9 +353,9 @@ export default function LoginPage() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Close
+                Cancel
               </button>
-              <button className="btn btn-primary" onClick={handleResetPassword}>
+              <button className="btn btn-warning" onClick={handleResetPassword}>
                 Reset Password
               </button>
             </div>
@@ -448,3 +365,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+      
