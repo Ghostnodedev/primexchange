@@ -239,50 +239,32 @@ export default function ExchangePage() {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3, // default for desktop
+    slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2000,
     responsive: [
       {
-        breakpoint: 992, // Tablets
+        breakpoint: 992, // Tablet & below
         settings: {
           slidesToShow: 2,
-          centerMode: false,
-          centerPadding: "0px",
         },
       },
       {
-        breakpoint: 768, // Small tablets & large phones
+        breakpoint: 576, // Mobile
         settings: {
           slidesToShow: 1,
-          centerMode: false, // 🔑 avoids narrow look
-          centerPadding: "0px",
+          centerMode: true,
+          centerPadding: "20px",
         },
       },
       {
-        breakpoint: 576, // Mobile phones
+        breakpoint: 320, // Mobile
         settings: {
           slidesToShow: 1,
-          centerMode: false,
-          centerPadding: "0px",
-        },
-      },
-      {
-        breakpoint: 400, // Mobile phones
-        settings: {
-          slidesToShow: 1,
-          centerMode: false,
-          centerPadding: "0px",
-        },
-      },
-      {
-        breakpoint: 300, // Mobile phones
-        settings: {
-          slidesToShow: 1,
-          centerMode: false,
-          centerPadding: "0px",
-        },
+          centerMode: true,
+          centerPadding: "20px",
+        }
       },
     ],
   };
@@ -292,104 +274,102 @@ export default function ExchangePage() {
       <Navbar />
 
       {/* Banner */}
-      <div
-        className="banner-section d-flex align-items-center text-center text-white"
-        style={{
-          position: "relative",
-          minHeight: "450px",
-          padding: "80px 20px",
-          overflow: "hidden",
-          backgroundImage:
-            "linear-gradient(150deg, rgba(79,70,229,0.8), rgba(59,130,246,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
+<div
+  className="banner-section d-flex align-items-center text-center text-white"
+  style={{
+    position: "relative",
+    minHeight: "450px",
+    padding: "80px 20px",
+    overflow: "hidden",
+    backgroundImage:
+      "linear-gradient(150deg, rgba(79,70,229,0.8), rgba(59,130,246,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
 
-          // borderRadius: "12px",
-        }}
-      >
-        {/* Shiny gloss effect */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: "-150%",
-            width: "50%",
-            height: "100%",
-            background:
-              "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
-            transform: "skewX(-25deg)",
-            animation: "shine 10s infinite",
-            pointerEvents: "none",
-            zIndex: 1,
-            borderRadius: "12px",
-          }}
-        ></div>
+    // borderRadius: "12px",
+  }}
+>
+  {/* Shiny gloss effect */}
+  <div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: "-150%",
+      width: "50%",
+      height: "100%",
+      background:
+        "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
+      transform: "skewX(-25deg)",
+      animation: "shine 10s infinite",
+      pointerEvents: "none",
+      zIndex: 1,
+      borderRadius: "12px",
+    }}
+  ></div>
 
-        <Container style={{ position: "relative", zIndex: 2 }}>
-          <h1
-            className="fw-bold display-3"
-            style={{
-              textShadow: "2px 2px 6px rgba(0, 0, 0, 0.6)",
-              letterSpacing: "1.5px",
-            }}
-          >
-            Buy & Sell USDT at the Best Rates
-          </h1>
-          <p
-            className="lead mt-3 mb-5"
-            style={{
-              textShadow: "1px 1px 4px rgba(0,0,0,0.5)",
-              fontSize: "1.35rem",
-            }}
-          >
-            Secure, Fast, and Transparent — Trusted by thousands.
-          </p>
-          <Button
-            size="lg"
-            style={{
-              background: "linear-gradient(180deg, #059669 0%, #07285eff 100%)",
-              border: "none",
-              borderRadius: "30px",
-              padding: "14px 42px",
-              fontWeight: "700",
-              color: "#fff",
-              boxShadow: "5px 5px 8px 2px rgba(0, 0, 0, 0.4)",
-              transition: "all 0.3s ease",
-              letterSpacing: "0.5px",
-              fontSize: "1.1rem",
-            }}
-            onClick={handleShowPasswordModal}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background =
-                "linear-gradient(135deg, #9eaac5ff 0%, #031955ff 100%)";
-              e.currentTarget.style.boxShadow =
-                "0 12px 28px rgba(59, 130, 246, 0.5)";
-            }}
-            // onMouseOut={(e) => {
-            //   e.currentTarget.style.background =
-            //     "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)";
-            //   e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
-            // }}
-          >
-            🚀 Deposit Now
-          </Button>
-        </Container>
+  <Container style={{ position: "relative", zIndex: 2 }}>
+    <h1
+      className="fw-bold display-3"
+      style={{
+        textShadow: "2px 2px 6px rgba(0, 0, 0, 0.6)",
+        letterSpacing: "1.5px",
+      }}
+    >
+      Buy & Sell USDT at the Best Rates
+    </h1>
+    <p
+      className="lead mt-3 mb-5"
+      style={{ textShadow: "1px 1px 4px rgba(0,0,0,0.5)", fontSize: "1.35rem" }}
+    >
+      Secure, Fast, and Transparent — Trusted by thousands.
+    </p>
+<Button
+  size="lg"
+  style={{
+    background: "linear-gradient(180deg, #059669 0%, #07285eff 100%)",
+    border: "none",
+    borderRadius: "30px",
+    padding: "14px 42px",
+    fontWeight: "700",
+    color: "#fff",
+    boxShadow: "5px 5px 8px 2px rgba(0, 0, 0, 0.4)",
+    transition: "all 0.3s ease",
+    letterSpacing: "0.5px",
+    fontSize: "1.1rem",
+  }}
+  onClick={handleShowPasswordModal}
+  onMouseOver={(e) => {
+    e.currentTarget.style.background =
+      "linear-gradient(135deg, #9eaac5ff 0%, #031955ff 100%)";
+    e.currentTarget.style.boxShadow = "0 12px 28px rgba(59, 130, 246, 0.5)";
+  }}
+  // onMouseOut={(e) => {
+  //   e.currentTarget.style.background =
+  //     "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)";
+  //   e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
+  // }}
+>
+  🚀 Deposit Now
+</Button>
 
-        <style jsx>{`
-          @keyframes shine {
-            0% {
-              left: -150%;
-            }
-            50% {
-              left: 150%;
-            }
-            100% {
-              left: -150%;
-            }
-          }
-        `}</style>
-      </div>
+  </Container>
+
+  <style jsx>{`
+    @keyframes shine {
+      0% {
+        left: -150%;
+      }
+      50% {
+        left: 150%;
+      }
+      100% {
+        left: -150%;
+      }
+    }
+  `}</style>
+</div>
+
 
       {/* Exchange Info */}
       <Container className="py-5">
@@ -414,15 +394,12 @@ export default function ExchangePage() {
                   boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
                 }}
                 onClick={handlesell}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#B91C1C")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#EF4444")
-                }
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#B91C1C")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#EF4444")}
               >
                 Sell Now
               </Button>
+
             </Col>
             <Col md={3} className="text-end mt-4 mt-md-0">
               <div
@@ -455,79 +432,69 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-{/* Testimonials */}
-<Container className="mt-5">
-  <h3 className="fw-bold mb-5 text-center text-dark">Testimonials</h3>
-
+{/* 🔥 Testimonials Slider */}
+<Container className="py-5">
+  <h2 className="text-center mb-4 fw-bold">🔥 Cool Responsive Slider</h2>
   <Slider
     dots={true}
     infinite={true}
-    speed={500}
-    slidesToShow={3} // desktop
-    slidesToScroll={1}
     autoplay={true}
-    autoplaySpeed={2500}
+    autoplaySpeed={3000}
+    speed={800}
+    slidesToShow={3}   // desktop
+    slidesToScroll={1}
     responsive={[
       {
-        breakpoint: 992, // tablets
-        settings: { slidesToShow: 2 },
+        breakpoint: 992, // tablet
+        settings: {
+          slidesToShow: 2,
+        },
       },
       {
-        breakpoint: 768, // phones
-        settings: { slidesToShow: 1 },
+        breakpoint: 576, // mobile
+        settings: {
+          slidesToShow: 1,
+        },
       },
     ]}
   >
-    {testimonials.map((item, idx) => (
-      <div key={idx} className="slider-card-wrapper">
-        <Card
-          className="slider-card shadow-lg border-0 rounded-5 h-100 d-flex flex-column"
-          style={{
-            minHeight: "350px",
-            transition: "transform 0.3s ease",
-            cursor: "pointer",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-            e.currentTarget.style.boxShadow =
-              "0 20px 40px rgba(140, 39, 224, 0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow =
-              "rgba(0, 0, 0, 0.1) 0px 4px 6px";
-          }}
-        >
-          <div className="mb-3">
-            {[...Array(item.rating)].map((_, i) => (
-              <span key={i} className="star">★</span>
-            ))}
-          </div>
-          <p className="testimonial-text">{item.text}</p>
-          <div className="d-flex align-items-center mt-auto">
-            <img
-              src={item.img}
-              alt={item.name}
-              className="rounded-circle me-3"
-              style={{
-                width: "65px",
-                height: "65px",
-                border: "3px solid #8c27e0",
-                boxShadow: "0 0 10px rgba(140, 39, 224, 0.6)",
-              }}
-            />
-            <div>
-              <h6 className="mb-0 fw-bold" style={{ color: "#241654" }}>
-                {item.name}
-              </h6>
-              <small className="text-muted">{item.role}</small>
+    {testimonials.map((t, idx) => (
+      <div key={idx} className="px-3">
+        <Card className="shadow-lg border-0 rounded-4 overflow-hidden card-hover h-100">
+          <Card.Img
+            variant="top"
+            src={t.img}
+            alt={t.name}
+            style={{ height: "220px", objectFit: "cover" }}
+          />
+          <Card.Body className="text-center">
+            <Card.Title className="fw-bold">{t.name}</Card.Title>
+            <Card.Subtitle className="mb-2 text-muted">
+              {t.role}
+            </Card.Subtitle>
+            <Card.Text style={{ fontSize: "0.95rem" }}>{t.text}</Card.Text>
+            <div className="text-warning mb-2">
+              {"⭐".repeat(t.rating)}
             </div>
-          </div>
+            <Button variant="primary" className="rounded-pill px-4">
+              Learn More
+            </Button>
+          </Card.Body>
         </Card>
       </div>
     ))}
   </Slider>
 </Container>
+
+<style jsx global>{`
+  .card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+`}</style>
 
       </Container>
 
@@ -558,151 +525,154 @@ export default function ExchangePage() {
         />
       </a>
 
-      {/* Password Modal */}
-      <Modal
-        show={showPasswordModal}
-        onHide={handleClosePasswordModal}
-        centered
-        backdrop="static"
-        keyboard={false}
-        dialogClassName="password-modal"
-      >
-        <Modal.Header closeButton className="border-0">
-          <Modal.Title
-            className="text-black fw-bold"
-            style={{ fontSize: "1.8rem" }}
-          >
-            🔐 Enter Your 6-Digit Password
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body
+
+{/* Password Modal */}
+<Modal
+  show={showPasswordModal}
+  onHide={handleClosePasswordModal}
+  centered
+  backdrop="static"
+  keyboard={false}
+  dialogClassName="password-modal"
+>
+  <Modal.Header closeButton className="border-0">
+    <Modal.Title className="text-black fw-bold" style={{ fontSize: "1.8rem" }}>
+      🔐 Enter Your 6-Digit Password
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body
+    style={{
+      background:"rgba(10, 10, 20, 0.8)",
+      borderRadius: "12px",
+      boxShadow: "0 8px 3px 0 rgba(31, 38, 135, 0.37)",
+      backdropFilter: "blur(10px)",
+      WebkitBackdropFilter: "blur(10px)",
+      border: "1px solid rgba(37, 4, 93, 0.18)",
+      color: "#fff",
+      padding: "2rem",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    }}
+  >
+    <div
+      style={{
+        marginBottom: "1.5rem",
+        animation: "pulse 2s infinite",
+        fontSize: "3rem",
+      }}
+      aria-hidden="true"
+    >
+      🔒
+    </div>
+    <Form
+      style={{
+        width: "100%",
+        maxWidth: "320px",
+      }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handlePasswordSubmit();
+      }}
+    >
+      <Form.Group controlId="formPassword" className="mb-4">
+        <Form.Label
+          className="fw-semibold"
           style={{
-            background: "rgba(10, 10, 20, 0.8)",
-            borderRadius: "12px",
-            boxShadow: "0 8px 3px 0 rgba(31, 38, 135, 0.37)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid rgba(37, 4, 93, 0.18)",
-            color: "#fff",
-            padding: "2rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            fontSize: "1.2rem",
+            letterSpacing: "1px",
           }}
         >
-          <div
-            style={{
-              marginBottom: "1.5rem",
-              animation: "pulse 2s infinite",
-              fontSize: "3rem",
-            }}
-            aria-hidden="true"
-          >
-            🔒
-          </div>
-          <Form
-            style={{
-              width: "100%",
-              maxWidth: "320px",
-            }}
-            onSubmit={(e) => {
-              e.preventDefault();
-              handlePasswordSubmit();
-            }}
-          >
-            <Form.Group controlId="formPassword" className="mb-4">
-              <Form.Label
-                className="fw-semibold"
-                style={{
-                  fontSize: "1.2rem",
-                  letterSpacing: "1px",
-                }}
-              >
-                Password
-              </Form.Label>
-              <Form.Control
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                maxLength={6}
-                placeholder="Enter 6-digit password"
-                autoFocus
-                style={{
-                  fontSize: "1.5rem",
-                  textAlign: "center",
-                  borderRadius: "30px",
-                  border: "2px solid #6e57f7",
-                  backgroundColor: "rgba(30, 30, 60, 0.8)",
-                  color: "#fff",
-                  boxShadow: "0 0 10px #6e57f7",
-                  transition: "border-color 0.3s ease",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "#a08fff")}
-                onBlur={(e) => (e.target.style.borderColor = "#6e57f7")}
-                pattern="\d{6}"
-                title="Please enter exactly 6 digits"
-                inputMode="numeric"
-              />
-            </Form.Group>
-            <Button
-              variant="primary"
-              type="submit"
-              className="w-100 fw-bold"
-              style={{
-                backgroundColor: "#6e57f7",
-                borderRadius: "30px",
-                padding: "12px 0",
-                fontSize: "1.25rem",
-                boxShadow: "0 8px 15px rgba(110, 87, 247, 0.5)",
-                transition: "background-color 0.3s ease, box-shadow 0.3s ease",
-                border: "none",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "#a08fff";
-                e.currentTarget.style.boxShadow =
-                  "0 15px 25px rgba(160, 143, 255, 0.6)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "#6e57f7";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 15px rgba(110, 87, 247, 0.5)";
-              }}
-            >
-              Unlock
-            </Button>
-          </Form>
-        </Modal.Body>
+          Password
+        </Form.Label>
+        <Form.Control
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          maxLength={6}
+          placeholder="Enter 6-digit password"
+          autoFocus
+          style={{
+            fontSize: "1.5rem",
+            textAlign: "center",
+            borderRadius: "30px",
+            border: "2px solid #6e57f7",
+            backgroundColor: "rgba(30, 30, 60, 0.8)",
+            color: "#fff",
+            boxShadow: "0 0 10px #6e57f7",
+            transition: "border-color 0.3s ease",
+          }}
+          onFocus={(e) =>
+            (e.target.style.borderColor = "#a08fff")
+          }
+          onBlur={(e) =>
+            (e.target.style.borderColor = "#6e57f7")
+          }
+          pattern="\d{6}"
+          title="Please enter exactly 6 digits"
+          inputMode="numeric"
+        />
+      </Form.Group>
+      <Button
+        variant="primary"
+        type="submit"
+        className="w-100 fw-bold"
+        style={{
+          backgroundColor: "#6e57f7",
+          borderRadius: "30px",
+          padding: "12px 0",
+          fontSize: "1.25rem",
+          boxShadow: "0 8px 15px rgba(110, 87, 247, 0.5)",
+          transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+          border: "none",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = "#a08fff";
+          e.currentTarget.style.boxShadow =
+            "0 15px 25px rgba(160, 143, 255, 0.6)";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = "#6e57f7";
+          e.currentTarget.style.boxShadow =
+            "0 8px 15px rgba(110, 87, 247, 0.5)";
+        }}
+      >
+        Unlock
+      </Button>
+    </Form>
+  </Modal.Body>
 
-        <style jsx>{`
-          @keyframes pulse {
-            0% {
-              transform: scale(1);
-              opacity: 1;
-            }
-            50% {
-              transform: scale(1.1);
-              opacity: 0.7;
-            }
-            100% {
-              transform: scale(1);
-              opacity: 1;
-            }
-          }
-          .password-modal .modal-content {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-          }
-          .password-modal .btn-close {
-            filter: invert(1);
-            opacity: 0.75;
-            transition: opacity 0.3s ease;
-          }
-          .password-modal .btn-close:hover {
-            opacity: 1;
-          }
-        `}</style>
-      </Modal>
+  <style jsx>{`
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .password-modal .modal-content {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .password-modal .btn-close {
+      filter: invert(1);
+      opacity: 0.75;
+      transition: opacity 0.3s ease;
+    }
+    .password-modal .btn-close:hover {
+      opacity: 1;
+    }
+  `}</style>
+</Modal>
+
 
       {/* BIGGER FULL PAGE DEPOSIT MODAL */}
       {showDepositModalPage && (
