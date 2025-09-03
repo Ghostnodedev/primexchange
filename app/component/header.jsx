@@ -89,7 +89,7 @@ const Navbar = () => {
       <div className={`mobile-slide-menu ${isOpen ? 'open' : ''}`}>
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
           <Image
-            src="/logo.png"
+            src="/Prime_Xchange__1_-removebg-preview.png"
             alt="Logo"
             width={120}
             height={30}
