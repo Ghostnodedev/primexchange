@@ -274,6 +274,30 @@ export default function ExchangePage() {
           centerPadding: "20px",
         },
       },
+      {
+        breakpoint: 300, // Mobile
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px",
+        },
+      },
+      {
+        breakpoint: 250, // Mobile
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px",
+        },
+      },
+      {
+        breakpoint: 200, // Mobile
+        settings: {
+          slidesToShow: 1,
+          centerMode: true,
+          centerPadding: "20px",
+        },
+      },
     ],
   };
 
