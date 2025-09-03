@@ -228,37 +228,37 @@ export default function ExchangePage() {
   ];
 
   // React Slick slider settings
- const settings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 2, // default on desktop
-  slidesToScroll: 1,
-  arrows: true,
-  autoplay: true,
-  autoplaySpeed: 3000,
-  pauseOnHover: true,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 2, // tablets
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2, // default on desktop
+    slidesToScroll: 1,
+    arrows: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2, // tablets
+        },
       },
-    },
-    {
-      breakpoint: 768,
-      settings: {
-        slidesToShow: 1, // phones
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1, // phones
+        },
       },
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        slidesToShow: 1, // smaller phones
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1, // smaller phones
+        },
       },
-    },
-  ],
-};
+    ],
+  };
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
@@ -428,63 +428,70 @@ export default function ExchangePage() {
         </Row>
 
         {/* Testimonials */}
-<Container className="mt-5">
-  <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
-  <div style={{ padding: "0 15px" }}>
-    <Slider {...settings}>
-      {testimonials.map((item, idx) => (
-        <div key={idx} className="px-3">
-          <Card
-            className="testimonial-card shadow border-0 rounded-4 p-4"
-            style={{
-              minHeight: "350px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              background: "#fff",
-              textAlign: "center",
-              padding: "30px 25px",
-              fontSize: "1.1rem",
-              lineHeight: "1.7",
-            }}
-          >
-            <div>
-              <div className="mb-3">
-                {[...Array(item.rating)].map((_, i) => (
-                  <span
-                    key={i}
+        <Container className="mt-5">
+          <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
+          <div style={{ padding: "0 15px" }}>
+            <Slider {...settings}>
+              {testimonials.map((item, idx) => (
+                <div key={idx} className="px-3">
+                  <Card
+                    className="testimonial-card shadow border-0 rounded-4 p-4"
                     style={{
-                      color: "#fbbf24",
-                      fontSize: "1.4rem",
-                      marginRight: "2px",
+                      minHeight: "350px",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      background: "#fff",
+                      textAlign: "center",
+                      padding: "30px 25px",
+                      fontSize: "1.1rem",
+                      lineHeight: "1.7",
                     }}
                   >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <p className="text-muted fst-italic" style={{ fontSize: "1.05rem" }}>
-                “{item.text}”
-              </p>
-            </div>
-            <div className="d-flex align-items-center justify-content-center mt-4">
-              <img
-                src={item.img}
-                alt={item.name}
-                className="rounded-circle me-3"
-                style={{ width: "60px", height: "60px", objectFit: "cover" }}
-              />
-              <div className="text-start">
-                <h6 className="mb-0 fw-bold">{item.name}</h6>
-                <small className="text-muted">{item.role}</small>
-              </div>
-            </div>
-          </Card>
-        </div>
-      ))}
-    </Slider>
-  </div>
-</Container>
+                    <div>
+                      <div className="mb-3">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <span
+                            key={i}
+                            style={{
+                              color: "#fbbf24",
+                              fontSize: "1.4rem",
+                              marginRight: "2px",
+                            }}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <p
+                        className="text-muted fst-italic"
+                        style={{ fontSize: "1.05rem" }}
+                      >
+                        “{item.text}”
+                      </p>
+                    </div>
+                    <div className="d-flex align-items-center justify-content-center mt-4">
+                      <img
+                        src={item.img}
+                        alt={item.name}
+                        className="rounded-circle me-3"
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <div className="text-start">
+                        <h6 className="mb-0 fw-bold">{item.name}</h6>
+                        <small className="text-muted">{item.role}</small>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </Container>
       </Container>
 
       {/* WhatsApp Floating Button */}
