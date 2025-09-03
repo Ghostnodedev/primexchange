@@ -80,24 +80,26 @@
   margin-bottom: 12px;
 }
 
-/* Force slick slides to behave correctly */
+/* Force slick to respect breakpoints */
+.slick-slider {
+  overflow: hidden !important;
+}
+
+.slick-list {
+  margin: 0 -8px; /* spacing control */
+}
+
 .slick-slide {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: stretch !important;
+  float: none !important;
+  display: block !important;
+  height: auto !important;
 }
 
 .slick-slide > div {
-  width: 100% !important;   /* Slide always takes full width */
-  padding: 0 8px;           /* Add spacing between slides */
-  box-sizing: border-box;
-}
-
-/* On small screens, make sure only 1 slide shows */
-@media (max-width: 768px) {
-  .slick-slide > div {
-    padding: 0 12px;  /* give breathing space */
-  }
+  width: 100% !important;   /* ✅ Each slide always full width */
+  max-width: 100% !important;
+  padding: 0 8px !important; /* spacing between cards */
+  box-sizing: border-box !important;
 }
 
 
