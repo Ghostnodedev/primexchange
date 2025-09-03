@@ -80,26 +80,75 @@
   margin-bottom: 12px;
 }
 
-/* Force slick to respect breakpoints */
-.slick-slider {
-  overflow: hidden !important;
+.sliderWrapper {
+  width: 100%;
+  padding: 40px 20px;
+  text-align: center;
+  background: #f9fafc;
 }
 
-.slick-list {
-  margin: 0 -8px; /* spacing control */
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-.slick-slide {
-  float: none !important;
-  display: block !important;
-  height: auto !important;
+.slider {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
 }
 
-.slick-slide > div {
-  width: 100% !important;   /* ✅ Each slide always full width */
-  max-width: 100% !important;
-  padding: 0 8px !important; /* spacing between cards */
-  box-sizing: border-box !important;
+.sliderInner {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.card {
+  min-width: 100%;
+  max-width: 100%;
+  flex: 0 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet - 2 cards */
+@media (min-width: 576px) {
+  .card {
+    min-width: 50%;
+    max-width: 50%;
+  }
+}
+
+/* Desktop - 3 cards */
+@media (min-width: 992px) {
+  .card {
+    min-width: 33.33%;
+    max-width: 33.33%;
+  }
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+.controls button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border: none;
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.controls button:hover {
+  background: #0056b3;
 }
 
 
