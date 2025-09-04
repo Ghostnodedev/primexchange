@@ -183,7 +183,7 @@ export default function ProfilePage() {
         {[
           { title: "Total Amount", value: `$${totalAmount}`},
           { title: "Available ($)", value: "$0.00" },
-          { title: "Progressing ($)", value: `$${get}` },
+          { title: "processing ($)", value: `$${get}` },
         ].map((item) => (
           <div
             key={item.title}
