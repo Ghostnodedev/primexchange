@@ -92,7 +92,7 @@ const Navbar = () => {
             src="/Prime_Xchange__1_-removebg-preview.png"
             alt="Logo"
             width={120}
-            height={30}
+            height={120}
           />
           <button
             className="btn-close btn-close-white"
