@@ -602,8 +602,6 @@ export default function ExchangePage() {
                   value={network}
                   onChange={(e) => setNetwork(e.target.value)}
                 >
-                  <option value="erc20">ERC20</option>
-                  <option value="bep20">BEP20</option>
                   <option value="trc20">TRC20</option>
                 </Form.Select>
               </Form.Group>
