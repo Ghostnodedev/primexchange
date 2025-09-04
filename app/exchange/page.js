@@ -197,48 +197,6 @@ export default function ExchangePage() {
     { usd: 9999, inr: 97.5 },
   ];
 
-  // const testimonials = [
-  //  
-  // ];
-
-  // React Slick slider settings
-// const settings = {
-//   arrows: true,
-//   autoplay: true,
-//   autoplaySpeed: 3000,
-//   dots: true,
-//   infinite: true,
-//   pauseOnHover: true,
-//   speed: 500,
-//   slidesToShow: 2,        // default on big screens (desktop/tablet)
-//   slidesToScroll: 1,
-//   responsive: [
-//     {
-//       breakpoint: 1024,
-//       settings: {
-//         slidesToShow: 1,   // 1 slide on screens smaller than 1024px
-//         slidesToScroll: 1,
-//       },
-//     },
-//     {
-//       breakpoint: 768,
-//       settings: {
-//         slidesToShow: 1,   // 1 slide on mobile devices smaller than 768px
-//         slidesToScroll: 1,
-//       },
-//     },
-//     {
-//       breakpoint: 480,
-//       settings: {
-//         slidesToShow: 1,   // just to be safe, 1 slide on very small devices
-//         slidesToScroll: 1,
-//       },
-//     },
-//   ],
-// };
-
-
-  // console.log(settings);
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
@@ -346,132 +304,91 @@ export default function ExchangePage() {
 
       {/* Exchange Info */}
       <Container className="py-5">
-        <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
-          <Row className="align-items-center">
-            <Col md={6}>
-              <h2 className="fw-bold fs-2 text-primary">
-                Current Exchange Rate
-              </h2>
-              <p className="text-muted">Auto-refresh in {seconds}s</p>
-            </Col>
-            <Col md={3} className="text-center mt-4 mt-md-0">
-              <Button
-                size="lg"
-                style={{
-                  backgroundColor: "#EF4444",
-                  borderColor: "#7b0404ff",
-                  borderRadius: "30px",
-                  padding: "12px 36px",
-                  fontWeight: "600",
-                  color: "white",
-                  boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
-                }}
-                onClick={handlesell}
-                onMouseOver={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#B91C1C")
-                }
-                onMouseOut={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#EF4444")
-                }
-              >
-                Sell Now
-              </Button>
-            </Col>
-            <Col md={3} className="text-end mt-4 mt-md-0">
-              <div
-                style={{
-                  fontSize: "2.5rem",
-                  fontWeight: "700",
-                  color: "#1e2a78",
-                }}
-              >
-                ₹95{" "}
-                <Badge bg="warning" text="dark">
-                  BASE
-                </Badge>
-              </div>
-              <small className="text-muted">1 USDT = ₹95</small>
-            </Col>
-          </Row>
-        </Card>
+<Container className="py-5">
+  <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
+    <Row className="align-items-center">
+      {/* Left Section */}
+      <Col md={6}>
+        <h2 className="fw-bold fs-2 text-primary">Current Exchange Rate</h2>
+        <p className="text-muted">Auto-refresh in {seconds}s</p>
+      </Col>
 
-        {/* Rates */}
-        <Row className="g-4">
-          {rates.map((rate, idx) => (
-            <Col key={idx} xs={12} md={4}>
-              <Card className="text-center shadow-sm rounded-3 py-4">
-                <h5 className="fw-bold">${rate.usd}</h5>
-                <p className="text-primary fs-5">₹{rate.inr}</p>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+      {/* Sell Button */}
+      <Col
+        md={3}
+        className="text-center mt-4 mt-md-0"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        <Button
+          size="lg"
+          style={{
+            backgroundColor: "#EF4444",
+            borderColor: "#7b0404ff",
+            borderRadius: "30px",
+            padding: "12px 36px",
+            fontWeight: "600",
+            color: "white",
+            boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
+            marginLeft: "20px", // 👈 pushes right only a bit
+          }}
+          onClick={handlesell}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#B91C1C")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor = "#EF4444")
+          }
+        >
+          Sell Now
+        </Button>
+      </Col>
 
-        {/* Testimonials */}
-        {/* <Container className="mt-5">
-          <h3 className="fw-bold mb-4 text-center text-dark">Testimonials</h3>
-          <div style={{ padding: "0 15px" }}>
-            <Slider {...settings}>
-              {testimonials.map((item, idx) => (
-                <div key={idx} className="px-3">
-                  <Card
-                    className="testimonial-card shadow border-0 rounded-4 p-4"
-                    style={{
-                      minHeight: "350px",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      background: "#fff",
-                      textAlign: "center",
-                      padding: "30px 25px",
-                      fontSize: "1.1rem",
-                      lineHeight: "1.7",
-                    }}
-                  >
-                    <div>
-                      <div className="mb-3">
-                        {[...Array(item.rating)].map((_, i) => (
-                          <span
-                            key={i}
-                            style={{
-                              color: "#fbbf24",
-                              fontSize: "1.4rem",
-                              marginRight: "2px",
-                            }}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <p
-                        className="text-muted fst-italic"
-                        style={{ fontSize: "1.05rem" }}
-                      >
-                        “{item.text}”
-                      </p>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-center mt-4">
-                      <img
-                        src={item.img}
-                        alt={item.name}
-                        className="rounded-circle me-3"
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div className="text-start">
-                        <h6 className="mb-0 fw-bold">{item.name}</h6>
-                        <small className="text-muted">{item.role}</small>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              ))}
-            </Slider>
-          </div>
-        </Container> */}
+      {/* Price & Badge */}
+      <Col md={3} className="text-center text-md-end mt-4 mt-md-0">
+        <div
+          style={{
+            fontSize: "2.5rem",
+            fontWeight: "700",
+            color: "#1e2a78",
+          }}
+        >
+          ₹95{" "}
+          {/* Desktop view: inline badge */}
+          <span className="d-none d-md-inline">
+            <Badge
+              bg="warning"
+              text="dark"
+              style={{
+                fontSize: "1.2rem", // bigger on desktop
+                padding: "8px 20px",
+              }}
+            >
+              BASE
+            </Badge>
+          </span>
+        </div>
+
+        {/* Mobile view: badge beneath */}
+        <div className="d-block d-md-none mt-2">
+          <Badge
+            bg="warning"
+            text="dark"
+            style={{
+              fontSize: "1.3rem", // bigger on mobile too
+              padding: "10px 24px",
+            }}
+          >
+            BASE
+          </Badge>
+        </div>
+
+        <small className="text-muted d-block mt-1">1 USDT = ₹95</small>
+      </Col>
+    </Row>
+  </Card>
+</Container>
+
+
         <TestimonialSlider />
       </Container>
 
