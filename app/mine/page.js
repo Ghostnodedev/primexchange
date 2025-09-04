@@ -381,14 +381,16 @@ const labelStyle = {
   fontWeight: 600,
 };
 const inputFieldStyle = {
-  padding: "10px 12px",
+  padding: "12px 14px",
   borderRadius: 8,
   border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(0,0,0,0.2)",
+  background: "rgba(0,0,0,0.25)",
   color: "#fff",
   outline: "none",
-  fontSize: 14,
-  width: 120,
+  fontSize: 15,
+  width: "100%",       // ✅ Full width by default
+  maxWidth: 400,       // ✅ Keeps it nice on desktop
+  boxSizing: "border-box",
 };
 const saveBtnStyle = {
   background: "#ffd700",

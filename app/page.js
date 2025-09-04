@@ -10,7 +10,10 @@ export default function Home() {
     <>
       <Navbar />
       <div className={styles.heroContainer}>
-        <div className={styles.heroContent}></div>
+        <div className={styles.heroContent}>
+          <h1>Welcome to Crypto World</h1>
+          <p>Explore, trade, and stay ahead in the digital finance revolution.</p>
+        </div>
       </div>
       <StepSection />
       <Homefetch />

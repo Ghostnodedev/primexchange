@@ -44,7 +44,7 @@ function CryptoCard({ symbol, name, changePercent, price, icon, trend }) {
   return (
     <div
       style={{
-        background: "linear-gradient(135deg, #256382ff, #005f89)",
+        background: "linear-gradient(135deg, #080234ff, #055671ff)",
         borderRadius: "20px",
         padding: "22px",
         color: "#f3e5e5ff",

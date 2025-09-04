@@ -208,24 +208,24 @@ a.secondary {
    ========================= */
 .heroContainer {
   width: 100%;
-  min-height: 100vh;
-  background-image: url('/herosection.png'); /* replace with your image path */
+  height: 100vh; /* ensure full screen */
+  background-image: url('/crypto.jpg'); /* replace with your image path */
   background-size: cover;
-  padding-top: 100px;
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
   display: flex;
-  flex-direction: column;
+  align-items: center;  /* center horizontally */
+  justify-content: flex-end; /* push content to bottom */
   overflow: hidden;
+  flex-direction: column;
 }
 
 .heroContainer::before {
   content: "";
   position: absolute;
   inset: 0;
-  /* darker overlay for better contrast over image */
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.7); /* overlay */
   z-index: 0;
 }
 
@@ -234,16 +234,9 @@ a.secondary {
   z-index: 1;
   color: #f8fafc;
   padding: 2rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   text-align: center;
-
-  /* subtle panel for readability on busy images */
   max-width: 900px;
-  margin: 0 auto;
+  margin-bottom: 3rem; /* spacing from bottom */
   backdrop-filter: blur(2px);
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
 }
@@ -260,9 +253,14 @@ a.secondary {
 
 .heroContent p {
   color: #e5e7eb;
+  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {
+  .heroContent {
+    margin-bottom: 2rem; /* less gap on mobile */
+  }
+
   .heroContent h1 {
     font-size: 2rem;
   }
