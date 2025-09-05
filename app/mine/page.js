@@ -2,7 +2,9 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { FaPlus, FaUniversity } from "react-icons/fa";
+import { decryptData } from "../utils/crypo";
 import toast from "react-hot-toast";
+import { Button} from "react-bootstrap";
 
 export default function BankManager() {
   const [accounts, setAccounts] = useState([]);
@@ -10,6 +12,13 @@ export default function BankManager() {
   const [selectedId, setSelectedId] = useState(null);
   const [amount, setAmount] = useState("");
   const [sold, setSold] = useState(false);
+  const [totalAmount, setTotalAmount] = useState("0.00");
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  
+    useEffect(() => {
+      const token = localStorage.getItem("authToken");
+      setIsAuthenticated(!!token);
+    }, []);
 
   // Load accounts from cookies
   useEffect(() => {
@@ -33,6 +42,16 @@ export default function BankManager() {
   useEffect(() => {
     try {
       Cookies.set("bankAccounts", JSON.stringify(accounts), { expires: 7 });
+      const encryptedAmount = Cookies.get("depositAmount");
+      if (encryptedAmount) {
+        try {
+          const decrypted = decryptData(encryptedAmount);
+          const parsed = parseFloat(decrypted);
+          if (!isNaN(parsed)) setTotalAmount(parsed.toFixed(2));
+        } catch (err) {
+          console.error("Failed to decrypt amount:", err);
+        }
+      }
     } catch (err) {
       console.error("Failed to save bank accounts to cookies", err);
     }
@@ -84,14 +103,113 @@ export default function BankManager() {
     setSelectedId(String(id));
   };
 
-  const handleSell = () => {
-    if (!amount) {
-      toast.error("Enter amount first!");
-      return;
-    }
-    setSold(true);
-    toast.success("Sell Successful!");
-  };
+const handleSell = () => {
+  if (!amount) {
+    toast.error("Enter amount first!");
+    return;
+  }
+
+  const numericAmount = parseFloat(amount);
+  const numericTotal = parseFloat(totalAmount);
+
+  if (isNaN(numericAmount) || numericAmount <= 0) {
+    toast.error("Invalid amount.");
+    return;
+  }
+
+  if (!numericTotal || numericTotal <= 0) {
+    toast.error("Please deposit funds before managing bank accounts.");
+    return;
+  }
+
+  if (numericAmount > numericTotal) {
+    toast.error("Insufficient funds to sell this amount.");
+    return;
+  }
+
+  setSold(true);
+  toast.success("Sell Successful!");
+};
+
+
+  const savebank = () => {
+    toast.success("Bank account saved!");
+  }
+
+    if (isAuthenticated === null) return null;
+
+  // If not logged in → show login screen
+  if (!isAuthenticated) {
+    return (
+      <div
+        className="vh-100 d-flex flex-column align-items-center justify-content-center text-center"
+        style={{
+          background: "linear-gradient(135deg, #000428 0%, #004e92 100%)",
+          color: "white",
+          padding: "2rem",
+        }}
+      >
+        <div
+          className="p-5 rounded-4 shadow-lg"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            backdropFilter: "blur(10px)",
+            maxWidth: "500px",
+            width: "100%",
+            animation: "fadeIn 1s ease-in-out",
+          }}
+        >
+          <div
+            style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1.5rem",
+              boxShadow: "0 0 20px rgba(37, 211, 102, 0.7)",
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              fill="#25D366"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8 1a4 4 0 0 0-4 4v3H3a1 1 0 0 
+                0-1 1v6a1 1 0 0 0 1 1h10a1 
+                1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V5a4 
+                4 0 0 0-4-4m3 7H5V5a3 3 0 1 1 
+                6 0z"
+              />
+            </svg>
+          </div>
+          <h2 className="fw-bold mb-3">Access Restricted</h2>
+          <p style={{ fontSize: "1.1rem", opacity: 0.85 }}>
+            Please log in to unlock the Exchange and explore live crypto
+            trading.
+          </p>
+          <Button
+            variant="success"
+            size="lg"
+            href="/login"
+            style={{
+              borderRadius: "30px",
+              padding: "10px 30px",
+              marginTop: "1.2rem",
+              boxShadow: "0 0 20px rgba(37, 211, 102, 0.6)",
+            }}
+          >
+            🔑 Go to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={pageStyle}>
@@ -133,16 +251,36 @@ export default function BankManager() {
                         style={{ color: "#ffd700", marginBottom: 8 }}
                       />
                       <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankName}</h3>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
                         <strong>Type:</strong> {acc.type}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
                         <strong>Holder:</strong> {acc.holderName}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
                         <strong>IFSC:</strong> {acc.ifsc}
                       </p>
-                      <p style={{ margin: "4px 0 0 0", color: "rgba(255,255,255,0.85)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0 0 0",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
                         <strong>Account:</strong> {acc.accountNumber}
                       </p>
                     </div>
@@ -235,7 +373,7 @@ export default function BankManager() {
               />
             </div>
             <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
-              <button type="submit" style={saveBtnStyle}>
+              <button onClick={savebank} type="submit" style={saveBtnStyle}>
                 Save Account
               </button>
               <button
@@ -290,7 +428,13 @@ export default function BankManager() {
                       onChange={(e) => setAmount(e.target.value)}
                       style={inputFieldStyle}
                     />
-                    <div style={{ minWidth: 100, display: "flex", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        minWidth: 100,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
                       <button
                         onClick={handleSell}
                         disabled={!amount}
@@ -311,7 +455,9 @@ export default function BankManager() {
                     </div>
                   </>
                 ) : (
-                  <span style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}>
+                  <span
+                    style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}
+                  >
                     ✅ Sold
                   </span>
                 )}
@@ -388,8 +534,8 @@ const inputFieldStyle = {
   color: "#fff",
   outline: "none",
   fontSize: 15,
-  width: "100%",       // ✅ Full width by default
-  maxWidth: 400,       // ✅ Keeps it nice on desktop
+  width: "100%", // ✅ Full width by default
+  maxWidth: 400, // ✅ Keeps it nice on desktop
   boxSizing: "border-box",
 };
 const saveBtnStyle = {
