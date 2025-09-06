@@ -16,44 +16,49 @@ export default function LoginPage() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const formdata = {
-      username: e.target.username.value,
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      password: e.target.password.value,
-    };
-
-    try {
-      const res = await fetch(
-        "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formdata),
-        }
-      );
-
-      const data = await res.json();
-      if (res.ok) {
-        const { token } = data;
-        toast.success("Login successful!");
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("username", formdata.username);
-        setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.push("/profile"), 1500);
-      } else {
-        toast.error(data.message || "Login failed. Check your credentials.");
-      }
-    } catch (err) {
-      toast.error("Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+  const formdata = {
+    username: e.target.username.value,
+    email: e.target.email.value,
+    phone: e.target.phone.value,
+    password: e.target.password.value,
   };
+
+  try {
+    const res = await fetch(
+      "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formdata.email, password: formdata.password }), // only send email & password
+      }
+    );
+
+    const data = await res.json();
+    if (res.ok) {
+      const { token, user } = data;
+      toast.success("Login successful!");
+
+      // ✅ Store token and email in localStorage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userEmail", user.email); // store email dynamically
+      localStorage.setItem("username", formdata.username);
+
+      setMessage("Login successful! Redirecting...");
+      setTimeout(() => router.push("/profile"), 1500);
+    } else {
+      toast.error(data.message || "Login failed. Check your credentials.");
+    }
+  } catch (err) {
+    toast.error("Something went wrong.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleEmailSubmit = async () => {
     const email = document.getElementById("resetEmail").value;
