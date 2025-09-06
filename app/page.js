@@ -10,11 +10,29 @@ export default function Home() {
     <>
       <Navbar />
       <div className={styles.heroContainer}>
-        <div className={styles.heroContent}>
-          <h1>Welcome to Crypto World</h1>
-          <p>Explore, trade, and stay ahead in the digital finance revolution.</p>
+        {/* Left Content */}
+        <div className={styles.heroLeft}>
+          <h1>
+            <span className={styles.highlight}>Welcome to Crypto World</span>
+            <br />
+            Explore, trade, and stay ahead in the <br />
+            <strong>digital finance revolution</strong>
+          </h1>
+          <p>Trust the chain. Grow your gain.</p>
+          <button className={styles.exchangeBtn}>Exchange !</button>
+        </div>
+
+        {/* Right Content (Images) */}
+        <div className={styles.heroRight}>
+          <img src="/banner2.jpg" alt="Team work" className={styles.heroImageTop} />
+          <img
+            src="/banner.jpg"
+            alt="Trading on phone"
+            className={styles.heroImageBottom}
+          />
         </div>
       </div>
+
       <StepSection />
       <Homefetch />
 
@@ -23,29 +41,14 @@ export default function Home() {
         href="https://wa.me/1234567890"
         target="_blank"
         rel="noopener noreferrer"
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          zIndex: 1000,
-          backgroundColor: "#25D366",
-          width: "55px",
-          height: "55px",
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-        }}
+        className={styles.whatsappBtn}
       >
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
           alt="WhatsApp"
-          style={{ width: "32px", height: "32px" }}
         />
       </a>
 
-      {/* Footer section */}
       <Footer />
     </>
   );

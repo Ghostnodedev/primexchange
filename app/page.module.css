@@ -207,61 +207,168 @@ a.secondary {
    Hero
    ========================= */
 .heroContainer {
-  width: 100%;
-  height: 150vh; /* ensure full screen */
-  background-image: url('/cryptot.jpg'); /* replace with your image path */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: relative;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-end; /* push content to bottom */
+  padding: 4rem 8%;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #011121 0%, transparent 60%),
+              radial-gradient(circle at bottom right, #6600ff 0%, transparent 70%),
+              linear-gradient(135deg, #1a0033, #330066, #660099);
+  color: white;
+  flex-wrap: wrap;
+  position: relative;
   overflow: hidden;
-  flex-direction: column;
 }
 
-.heroContainer::before {
+.heroContainer::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7); /* overlay */
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, #010847 0%, transparent 100%);
+  border-radius: 50%;
+  top: -200px;
+  right: -200px;
+  opacity: 0.6;
+  filter: blur(80px);
   z-index: 0;
 }
 
-.heroContent {
-  position: relative;
-  z-index: 1;
-  color: #f8fafc;
-  padding: 2rem;
-  text-align: center;
-  max-width: 900px;
-  margin-bottom: 3rem; /* spacing from bottom */
-  backdrop-filter: blur(2px);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+
+/* Left Section */
+.heroLeft {
+  flex: 1;
+  max-width: 550px;
+  z-index: 2;
 }
 
-.heroContent h1 {
+.heroLeft h1 {
   font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 0.75rem;
-  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.highlight {
+  background: linear-gradient(90deg, #030444, #023986);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 
-.heroContent p {
-  color: #e5e7eb;
+.heroLeft p {
+  margin-top: 1rem;
   font-size: 1.2rem;
+  color: #ddd;
 }
 
-@media (max-width: 768px) {
-  .heroContent {
-    margin-bottom: 2rem; /* less gap on mobile */
+.exchangeBtn {
+  margin-top: 2rem;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #ec4899, #ef4444);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exchangeBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* Right Section */
+.heroRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroImageTop,
+.heroImageBottom {
+  width: 450px;
+  height: 250px;
+  border-radius: 12px;
+  box-shadow: 10px 15px 8px 20px rgba(2, 8, 31, 0.3);
+  object-fit: cover;
+}
+
+.heroImageTop {
+  align-self: flex-end;
+}
+
+.heroImageBottom {
+  align-self: flex-start;
+}
+
+/* WhatsApp Floating Button */
+.whatsappBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #25d366;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.whatsappBtn img {
+  width: 32px;
+  height: 32px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .heroContainer {
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem 5%;
   }
 
-  .heroContent h1 {
+  .heroLeft {
+    max-width: 100%;
+  }
+
+  .heroRight {
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .heroImageTop,
+  .heroImageBottom {
+    width: 45%;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroLeft h1 {
     font-size: 2rem;
+  }
+
+  .exchangeBtn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .heroRight {
+    flex-direction: column;
+  }
+
+  .heroImageTop,
+  .heroImageBottom {
+    width: 80%;
   }
 }
