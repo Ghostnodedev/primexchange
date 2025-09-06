@@ -50,7 +50,6 @@ export default function ProfilePage() {
           console.error("Failed to decrypt amount:", err);
         }
       } else {
-      setget(false);
     }
   },[])
 
@@ -128,7 +127,7 @@ export default function ProfilePage() {
         />
         <h4 className="mt-3" style={{ color: "#fff" }}>
           {email || "someone@gmail.com"}
-        </h4>
+        </h4> 
       </div>
 
       {/* Navigation Bar */}
