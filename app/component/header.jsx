@@ -47,13 +47,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-md border-bottom px-4 py-2 " style = {{background : "#0D1B2A"}} >
       {/* Brand Logo */}
       <Link href="/" className="navbar-brand d-flex align-items-center">
-        <Image
-          src="/Prime_Xchange__1_-removebg-preview.png"
-          alt="Logo"
-          width={100}
-          height={90}
-          className="d-inline-block align-text-top"
-        />
+      <strong className="text-white">PrimeXchange</strong>
       </Link>
 
       {/* Hamburger toggler */}
