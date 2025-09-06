@@ -191,7 +191,7 @@ export default function ExchangePage() {
   }
 
   // Example rates and testimonials data
-  const rates = [
+  let prices = [
     { usd: 2999, inr: 95.5 },
     { usd: 4999, inr: 96.5 },
     { usd: 9999, inr: 97.5 },
@@ -207,11 +207,11 @@ export default function ExchangePage() {
         className="banner-section d-flex align-items-center text-center text-white"
         style={{
           position: "relative",
-          minHeight: "450px",
+          minHeight: "550px",
           padding: "80px 20px",
           overflow: "hidden",
           backgroundImage:
-            "linear-gradient(150deg, rgba(79,70,229,0.8), rgba(59,130,246,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80')",
+            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://t3.ftcdn.net/jpg/15/19/98/20/240_F_1519982014_SJOhZfUcZLRTFfzjvJ1UC7KR3qBqEd17.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
@@ -259,7 +259,7 @@ export default function ExchangePage() {
           <Button
             size="lg"
             style={{
-              background: "linear-gradient(180deg, #059669 0%, #07285eff 100%)",
+              background: "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
               border: "none",
               borderRadius: "30px",
               padding: "14px 42px",
@@ -381,16 +381,79 @@ export default function ExchangePage() {
             BASE
           </Badge>
         </div>
-
         <small className="text-muted d-block mt-1">1 USDT = ₹95</small>
       </Col>
     </Row>
   </Card>
 </Container>
 
+    <div className="card-section">
+      {prices.map((item, idx) => (
+        <div key={idx} className="card">
+          <h3>${item.usd}</h3>
+          <p>₹{item.inr}</p>
+        </div>
+      ))}
+
+      <style jsx>{`
+        .card-section {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: stretch;
+          flex-wrap: wrap;
+        }
+
+        .card {
+          flex: 1 1 250px;
+          max-width: 400px;
+          background: #fff;
+          border: 3px solid transparent;
+          border-radius: 30px;
+          padding: 30px;
+          text-align: center;
+          box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+          margin: 0;
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .card p {
+          margin-top: 8px;
+          font-size: 1rem;
+          color: #8b5cf6;
+          font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .card-section {
+            flex-direction: column;
+            align-items: center;
+          }
+          .card {
+            width: 100%;
+            max-width: 350px;
+            max-height: 150px;
+          }
+        }
+      `}</style>
+    </div>
 
         <TestimonialSlider />
       </Container>
+
+
 
       {/* WhatsApp Floating Button */}
       <a
