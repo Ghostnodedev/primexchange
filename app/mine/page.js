@@ -65,7 +65,17 @@ export default function BankManager() {
 
   const handleSelect = (id) => setSelectedId(String(id));
 
-const handleSell = () => {
+const handleSell = async () => {
+  if (accounts.length === 0) {
+    toast.error("Please add a bank account first!");
+    return;
+  }
+
+  if (!selectedId) {
+    toast.error("Select a bank account to sell from!");
+    return;
+  }
+
   // Get deposit amount from cookie
   const encryptedAmount = Cookies.get("depositAmount");
   let availableBalance = 0;
@@ -107,7 +117,7 @@ const handleSell = () => {
 
   // Save updated balance in cookie
   const encryptedNewBalance = encryptData(newBalance.toString());
-  Cookies.set("SellAmount", encryptedNewBalance, {
+  Cookies.set("depositAmount", encryptedNewBalance, {
     expires: 1,
     secure: true,
     sameSite: "Strict",
@@ -117,8 +127,36 @@ const handleSell = () => {
   setTotalAmount(newBalance.toFixed(2));
   setSold(true);
 
-  toast.success("Sell Successful!");
+  // Find selected account
+  const selectedAcc = accounts.find((acc) => String(acc.id) === String(selectedId));
+  if (!selectedAcc) {
+    toast.error("No valid account found!");
+    return;
+  }
+
+  // Payload for DB
+  const payload = {
+    ...selectedAcc,
+    sellamount: sellAmount,
+    amount: newBalance,
+    email: storedEmail || "unknown",
+  };
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to update sell");
+
+    toast.success("Sell Successful & Saved to DB!");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update DB");
+  }
 };
+
 
 
   const handleSubmit = async (e) => {
