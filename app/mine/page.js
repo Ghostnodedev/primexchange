@@ -5,6 +5,7 @@ import { FaPlus, FaUniversity } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { Button } from "react-bootstrap";
 import { decryptData, encryptData } from "../utils/crypo";
+import jsPDF from "jspdf"; // ✅ Add jsPDF
 
 const API_URL =
   "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account"; // POST URL
@@ -18,7 +19,8 @@ export default function BankManager() {
   const [totalAmount, setTotalAmount] = useState("0.00");
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [storedEmail, setStoredEmail] = useState(null);
-
+  const [lastInvoice, setLastInvoice] = useState(null); 
+  
   // Auth & email
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -66,96 +68,116 @@ export default function BankManager() {
   const handleSelect = (id) => setSelectedId(String(id));
 
 const handleSell = async () => {
-  if (accounts.length === 0) {
-    toast.error("Please add a bank account first!");
-    return;
-  }
-
-  if (!selectedId) {
-    toast.error("Select a bank account to sell from!");
-    return;
-  }
-
-  // Get deposit amount from cookie
-  const encryptedAmount = Cookies.get("depositAmount");
-  let availableBalance = 0;
-
-  if (encryptedAmount) {
-    try {
-      const decrypted = decryptData(encryptedAmount);
-      const parsed = parseFloat(decrypted);
-      if (!isNaN(parsed)) {
-        availableBalance = parsed;
-        setTotalAmount(parsed.toFixed(2));
-      }
-    } catch (err) {
-      console.error("Failed to decrypt amount:", err);
+    // --- your same validations & flow ---
+    if (accounts.length === 0) {
+      toast.error("Please add a bank account first!");
+      return;
     }
-  }
+    if (!selectedId) {
+      toast.error("Select a bank account to sell from!");
+      return;
+    }
 
-  // Validate input
-  if (!amount) {
-    toast.error("Enter amount first!");
-    return;
-  }
+    const encryptedAmount = Cookies.get("depositAmount");
+    let availableBalance = 0;
+    if (encryptedAmount) {
+      try {
+        const decrypted = decryptData(encryptedAmount);
+        const parsed = parseFloat(decrypted);
+        if (!isNaN(parsed)) {
+          availableBalance = parsed;
+          setTotalAmount(parsed.toFixed(2));
+        }
+      } catch (err) {
+        console.error("Failed to decrypt amount:", err);
+      }
+    }
 
-  const sellAmount = parseFloat(amount);
+    if (!amount) {
+      toast.error("Enter amount first!");
+      return;
+    }
+    const sellAmount = parseFloat(amount);
+    if (isNaN(sellAmount) || sellAmount <= 0) {
+      toast.error("Invalid amount!");
+      return;
+    }
+    if (sellAmount > availableBalance) {
+      toast.error("Insufficient balance!");
+      return;
+    }
 
-  if (isNaN(sellAmount) || sellAmount <= 0) {
-    toast.error("Invalid amount!");
-    return;
-  }
+    const newBalance = availableBalance - sellAmount;
+    const encryptedNewBalance = encryptData(newBalance.toString());
+    Cookies.set("depositAmount", encryptedNewBalance, {
+      expires: 1,
+      secure: true,
+      sameSite: "Strict",
+    });
+    setTotalAmount(newBalance.toFixed(2));
+    setSold(true);
 
-  // Check balance
-  if (sellAmount > availableBalance) {
-    toast.error("Insufficient balance!");
-    return;
-  }
+    const selectedAcc = accounts.find(
+      (acc) => String(acc.id) === String(selectedId)
+    );
+    if (!selectedAcc) {
+      toast.error("No valid account found!");
+      return;
+    }
 
-  // New balance after sell
-  const newBalance = availableBalance - sellAmount;
+    const payload = {
+      ...selectedAcc,
+      sellamount: sellAmount,
+      amount: newBalance,
+      email: storedEmail || "unknown",
+    };
 
-  // Save updated balance in cookie
-  const encryptedNewBalance = encryptData(newBalance.toString());
-  Cookies.set("depositAmount", encryptedNewBalance, {
-    expires: 1,
-    secure: true,
-    sameSite: "Strict",
-  });
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Failed to update sell");
 
-  // Update state
-  setTotalAmount(newBalance.toFixed(2));
-  setSold(true);
+      toast.success("Sell Successful & Saved to DB!");
 
-  // Find selected account
-  const selectedAcc = accounts.find((acc) => String(acc.id) === String(selectedId));
-  if (!selectedAcc) {
-    toast.error("No valid account found!");
-    return;
-  }
-
-  // Payload for DB
-  const payload = {
-    ...selectedAcc,
-    sellamount: sellAmount,
-    amount: newBalance,
-    email: storedEmail || "unknown",
+      // ✅ Save invoice details for download
+      setLastInvoice({
+        account: selectedAcc,
+        sellAmount,
+        newBalance,
+        date: new Date().toLocaleString(),
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update DB");
+    }
   };
 
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error("Failed to update sell");
 
-    toast.success("Sell Successful & Saved to DB!");
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to update DB");
-  }
-};
+    const handleDownloadInvoice = () => {
+    if (!lastInvoice) return;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("🧾 Primexchange", 20, 20);
+    doc.text("🧾 Transaction Invoice", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Date: ${lastInvoice.date}`, 20, 40);
+    doc.text(`Account Holder: ${lastInvoice.account.holdername}`, 20, 55);
+    doc.text(`Bank: ${lastInvoice.account.bankname}`, 20, 70);
+    doc.text(`Account No: ${lastInvoice.account.accountno}`, 20, 85);
+    doc.text(`IFSC: ${lastInvoice.account.ifsc}`, 20, 100);
+
+    doc.text(`Sell Amount: $${lastInvoice.sellAmount}`, 20, 120);
+    doc.text(`Remaining Balance: $${lastInvoice.newBalance}`, 20, 135);
+
+    doc.text("✔ Transaction Completed Successfully", 20, 160);
+
+    doc.save(`invoice_${Date.now()}.pdf`);
+  };
 
 
 
@@ -488,11 +510,24 @@ const handleSell = async () => {
                     </div>
                   </>
                 ) : (
-                  <span
-                    style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}
-                  >
-                    ✅ Sold
-                  </span>
+                  <><span
+                      style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}
+                    >
+                      ✅ Sold
+                    </span><button
+                      onClick={handleDownloadInvoice}
+                      style={{
+                        background: "#ffd700",
+                        color: "#000",
+                        border: "none",
+                        padding: "10px 14px",
+                        borderRadius: 8,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                        Save Invoice
+                      </button></>
                 )}
               </div>
             </div>
