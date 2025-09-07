@@ -16,6 +16,7 @@ import {
   Form,
 } from "react-bootstrap";
 import { toast } from "react-hot-toast";
+import "./exchange.css";
 import { encryptData } from "../utils/crypo";
 import Navbar from "../component/header";
 import Footer from "../component/footer";
@@ -197,7 +198,6 @@ export default function ExchangePage() {
     { usd: 9999, inr: 97.5 },
   ];
 
-
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
       <Navbar />
@@ -238,15 +238,13 @@ export default function ExchangePage() {
         ></div>
 
         <Container style={{ position: "relative", zIndex: 2 }}>
-          <h1
-            className="fw-bold display-3"
-            style={{
-              textShadow: "2px 2px 6px rgba(0, 0, 0, 0.6)",
-              letterSpacing: "1.5px",
-            }}
-          >
-            Buy & Sell USDT at the Best Rates
-          </h1>
+          <div className="hero">
+            <h1 className="typingEffect">Buy & Sell USDT at the Best Rates</h1>
+            <p className="subTextFade">
+              Trusted by thousands. Instant transactions. Real-time rates.
+            </p>
+          </div>
+
           <p
             className="lead mt-3 mb-5"
             style={{
@@ -259,7 +257,8 @@ export default function ExchangePage() {
           <Button
             size="lg"
             style={{
-              background: "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
+              background:
+                "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
               border: "none",
               borderRadius: "30px",
               padding: "14px 42px",
@@ -304,156 +303,155 @@ export default function ExchangePage() {
 
       {/* Exchange Info */}
       <Container className="py-5">
-<Container className="py-5">
-  <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
-    <Row className="align-items-center">
-      {/* Left Section */}
-      <Col md={6}>
-        <h2 className="fw-bold fs-2 text-primary">Current Exchange Rate</h2>
-        <p className="text-muted">Auto-refresh in {seconds}s</p>
-      </Col>
+        <Container className="py-5">
+          <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
+            <Row className="align-items-center">
+              {/* Left Section */}
+              <Col md={6}>
+                <h2 className="fw-bold fs-2 text-primary">
+                  Current Exchange Rate
+                </h2>
+                <p className="text-muted">Auto-refresh in {seconds}s</p>
+              </Col>
 
-      {/* Sell Button */}
-      <Col
-        md={3}
-        className="text-center mt-4 mt-md-0"
-        style={{ display: "flex", justifyContent: "center" }}
-      >
-        <Button
-          size="lg"
-          style={{
-            backgroundColor: "#EF4444",
-            borderColor: "#7b0404ff",
-            borderRadius: "30px",
-            padding: "12px 36px",
-            fontWeight: "600",
-            color: "white",
-            boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
-            marginLeft: "20px", // 👈 pushes right only a bit
-          }}
-          onClick={handlesell}
-          onMouseOver={(e) =>
-            (e.currentTarget.style.backgroundColor = "#B91C1C")
-          }
-          onMouseOut={(e) =>
-            (e.currentTarget.style.backgroundColor = "#EF4444")
-          }
-        >
-          Sell Now
-        </Button>
-      </Col>
+              {/* Sell Button */}
+              <Col
+                md={3}
+                className="text-center mt-4 mt-md-0"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  size="lg"
+                  style={{
+                    backgroundColor: "#EF4444",
+                    borderColor: "#7b0404ff",
+                    borderRadius: "30px",
+                    padding: "12px 36px",
+                    fontWeight: "600",
+                    color: "white",
+                    boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
+                    marginLeft: "20px", // 👈 pushes right only a bit
+                  }}
+                  onClick={handlesell}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#B91C1C")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#EF4444")
+                  }
+                >
+                  Sell Now
+                </Button>
+              </Col>
 
-      {/* Price & Badge */}
-      <Col md={3} className="text-center text-md-end mt-4 mt-md-0">
-        <div
-          style={{
-            fontSize: "2.5rem",
-            fontWeight: "700",
-            color: "#1e2a78",
-          }}
-        >
-          ₹95{" "}
-          {/* Desktop view: inline badge */}
-          <span className="d-none d-md-inline">
-            <Badge
-              bg="warning"
-              text="dark"
-              style={{
-                fontSize: "1.2rem", // bigger on desktop
-                padding: "8px 20px",
-              }}
-            >
-              BASE
-            </Badge>
-          </span>
+              {/* Price & Badge */}
+              <Col md={3} className="text-center text-md-end mt-4 mt-md-0">
+                <div
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "700",
+                    color: "#1e2a78",
+                  }}
+                >
+                  ₹95 {/* Desktop view: inline badge */}
+                  <span className="d-none d-md-inline">
+                    <Badge
+                      bg="warning"
+                      text="dark"
+                      style={{
+                        fontSize: "1.2rem", // bigger on desktop
+                        padding: "8px 20px",
+                      }}
+                    >
+                      BASE
+                    </Badge>
+                  </span>
+                </div>
+
+                {/* Mobile view: badge beneath */}
+                <div className="d-block d-md-none mt-2">
+                  <Badge
+                    bg="warning"
+                    text="dark"
+                    style={{
+                      fontSize: "1.3rem", // bigger on mobile too
+                      padding: "10px 24px",
+                    }}
+                  >
+                    BASE
+                  </Badge>
+                </div>
+                <small className="text-muted d-block mt-1">1 USDT = ₹95</small>
+              </Col>
+            </Row>
+          </Card>
+        </Container>
+
+        <div className="card-section">
+          {prices.map((item, idx) => (
+            <div key={idx} className="card">
+              <h3>${item.usd}</h3>
+              <p>₹{item.inr}</p>
+            </div>
+          ))}
+
+          <style jsx>{`
+            .card-section {
+              display: flex;
+              gap: 20px;
+              justify-content: center;
+              align-items: stretch;
+              flex-wrap: wrap;
+            }
+
+            .card {
+              flex: 1 1 250px;
+              max-width: 400px;
+              background: #fff;
+              border: 3px solid transparent;
+              border-radius: 30px;
+              padding: 30px;
+              text-align: center;
+              box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
+              transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .card:hover {
+              transform: translateY(-6px);
+              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+            }
+
+            .card h3 {
+              margin: 0;
+              font-size: 1.4rem;
+              font-weight: 700;
+              color: #111827;
+            }
+
+            .card p {
+              margin-top: 8px;
+              font-size: 1rem;
+              color: #8b5cf6;
+              font-weight: 500;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+              .card-section {
+                flex-direction: column;
+                align-items: center;
+              }
+              .card {
+                width: 100%;
+                max-width: 350px;
+                max-height: 150px;
+              }
+            }
+          `}</style>
         </div>
-
-        {/* Mobile view: badge beneath */}
-        <div className="d-block d-md-none mt-2">
-          <Badge
-            bg="warning"
-            text="dark"
-            style={{
-              fontSize: "1.3rem", // bigger on mobile too
-              padding: "10px 24px",
-            }}
-          >
-            BASE
-          </Badge>
-        </div>
-        <small className="text-muted d-block mt-1">1 USDT = ₹95</small>
-      </Col>
-    </Row>
-  </Card>
-</Container>
-
-    <div className="card-section">
-      {prices.map((item, idx) => (
-        <div key={idx} className="card">
-          <h3>${item.usd}</h3>
-          <p>₹{item.inr}</p>
-        </div>
-      ))}
-
-      <style jsx>{`
-        .card-section {
-          display: flex;
-          gap: 20px;
-          justify-content: center;
-          align-items: stretch;
-          flex-wrap: wrap;
-        }
-
-        .card {
-          flex: 1 1 250px;
-          max-width: 400px;
-          background: #fff;
-          border: 3px solid transparent;
-          border-radius: 30px;
-          padding: 30px;
-          text-align: center;
-          box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-        }
-
-        .card h3 {
-          margin: 0;
-          font-size: 1.4rem;
-          font-weight: 700;
-          color: #111827;
-        }
-
-        .card p {
-          margin-top: 8px;
-          font-size: 1rem;
-          color: #8b5cf6;
-          font-weight: 500;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-          .card-section {
-            flex-direction: column;
-            align-items: center;
-          }
-          .card {
-            width: 100%;
-            max-width: 350px;
-            max-height: 150px;
-          }
-        }
-      `}</style>
-    </div>
 
         <TestimonialSlider />
       </Container>
-
-
 
       {/* WhatsApp Floating Button */}
       <a

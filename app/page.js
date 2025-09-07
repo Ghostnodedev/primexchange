@@ -9,29 +9,25 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className={styles.heroContainer}>
-        {/* Left Content */}
-        <div className={styles.heroLeft}>
-          <h1>
-            <span className={styles.highlight}>Welcome to Crypto World</span>
-            <br />
-            Explore, trade, and stay ahead in the <br />
-            <strong>digital finance revolution</strong>
-          </h1>
-          <p>Trust the chain. Grow your gain.</p>
-          <button className={styles.exchangeBtn}>Exchange !</button>
-        </div>
+<div className={styles.heroContainer}>
+  {/* Left Content */}
+  <div className={styles.heroLeft}>
+    <h1 className={styles.heroHeading}>
+      <span className={styles.highlight}>Welcome to Crypto World</span>
+      <br />
+      <span className={styles.subheading}>Explore, trade, and stay ahead in the</span> <br />
+      <strong className={styles.strongText}>digital finance revolution</strong>
+    </h1>
+    <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p>
+    <button className={styles.exchangeBtn}>Exchange !</button>
+  </div>
 
-        {/* Right Content (Images) */}
-        <div className={styles.heroRight}>
-          <img src="/banner2.jpg" alt="Team work" className={styles.heroImageTop} />
-          <img
-            src="/banner.jpg"
-            alt="Trading on phone"
-            className={styles.heroImageBottom}
-          />
-        </div>
-      </div>
+  {/* Right Content (Images) */}
+  <div className={styles.heroRight}>
+    <img src="/banner2.jpg" alt="Team work" className={styles.heroImageTop} />
+  </div>
+</div>
+
 
       <StepSection />
       <Homefetch />

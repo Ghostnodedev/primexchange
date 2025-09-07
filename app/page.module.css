@@ -250,7 +250,7 @@ a.secondary {
 }
 
 .highlight {
-  background: linear-gradient(90deg, #030444, #023986);
+  background: linear-gradient(135deg, #070bcb, #89b3ee);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -264,22 +264,54 @@ a.secondary {
 }
 
 .exchangeBtn {
-  margin-top: 2rem;
-  padding: 0.8rem 2rem;
-  font-size: 1rem;
+  opacity: 1; /* Always visible */
+  animation: pulseGlow 3s ease-in-out infinite;
+  border-radius: 10px;
+  padding: 14px 36px;
+  font-size: 1.1rem;
   font-weight: 600;
-  background: linear-gradient(90deg, #ec4899, #ef4444);
-  color: #fff;
-  border: none;
-  border-radius: 30px;
   cursor: pointer;
+  border: none;
+  user-select: none;
+  will-change: transform;
   transition: all 0.3s ease;
+
+  background: linear-gradient(135deg, #00ffe7, #0077ff);
+  color: #000;
+
+  box-shadow:
+    0 0 12px rgba(0, 255, 255, 0.5),
+    0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 8px rgba(0, 255, 255, 0.4);
 }
 
 .exchangeBtn:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+  transform: scale(1.05);
+  box-shadow:
+    0 0 30px rgba(0, 255, 255, 0.8),
+    0 0 50px rgba(0, 255, 255, 0.6),
+    inset 0 0 12px rgba(0, 255, 255, 0.7);
+  animation: none; /* Pause pulse on hover */
 }
+
+/* Gentle glowing pulse animation that does NOT affect opacity */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(0, 255, 255, 0.5),
+      0 0 20px rgba(0, 255, 255, 0.3),
+      inset 0 0 8px rgba(0, 255, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.7),
+      0 0 40px rgba(0, 255, 255, 0.5),
+      inset 0 0 15px rgba(0, 255, 255, 0.6);
+    transform: scale(1.03);
+  }
+}
+
 
 /* Right Section */
 .heroRight {
@@ -291,10 +323,9 @@ a.secondary {
   justify-content: center;
 }
 
-.heroImageTop,
-.heroImageBottom {
-  width: 450px;
-  height: 250px;
+.heroImageTop {
+  width: 650px;
+  height: 550px;
   border-radius: 12px;
   box-shadow: 10px 15px 8px 20px rgba(2, 8, 31, 0.3);
   object-fit: cover;
@@ -304,9 +335,6 @@ a.secondary {
   align-self: flex-end;
 }
 
-.heroImageBottom {
-  align-self: flex-start;
-}
 
 /* WhatsApp Floating Button */
 .whatsappBtn {
@@ -347,8 +375,7 @@ a.secondary {
     margin-top: 2rem;
   }
 
-  .heroImageTop,
-  .heroImageBottom {
+  .heroImageTop {
     width: 45%;
   }
 }
@@ -367,8 +394,151 @@ a.secondary {
     flex-direction: column;
   }
 
-  .heroImageTop,
-  .heroImageBottom {
-    width: 80%;
+  .heroImageTop {
+    width: 100%;
   }
+}
+
+/* Maintain your original colors on text */
+
+/* Container perspective for subtle 3D depth */
+.heroContainer {
+  perspective: 1000px;
+}
+
+/* Left Content slide in with smooth 3D fade */
+.heroLeft {
+  opacity: 0;
+  transform-style: preserve-3d;
+  animation: slideIn3DFade 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes slideIn3DFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px) rotateY(15deg) translateZ(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0) translateZ(0);
+  }
+}
+
+/* Heading fade + subtle scale + slight 3D rotation for elegance */
+.heroHeading {
+  opacity: 0;
+  transform-style: preserve-3d;
+  animation: fadeScaleRotate 1.2s ease-out forwards;
+  animation-delay: 0.8s;
+}
+
+@keyframes fadeScaleRotate {
+  0% {
+    opacity: 0;
+    transform: scale(0.97) rotateX(6deg) translateZ(-20px);
+    filter: brightness(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateX(0) translateZ(0);
+    filter: brightness(1);
+  }
+}
+
+/* Highlight pop-in 3D with subtle glow (no color change) */
+.highlight {
+  animation: popIn3D 1.2s ease-out forwards;
+  animation-delay: 1s;
+  opacity: 0;
+  /* Preserve your color, but add subtle glow */
+  text-shadow:
+    0 0 6px rgba(0, 255, 255, 0.25),
+    0 0 10px rgba(0, 255, 255, 0.15);
+  display: inline-block;
+  transform-style: preserve-3d;
+}
+
+@keyframes popIn3D {
+  0% {
+    transform: rotateX(80deg) rotateY(30deg) scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(15deg) rotateY(10deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Subheading & Strong Text fade + slide */
+.subheading,
+.strongText {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s ease forwards;
+  animation-fill-mode: forwards;
+}
+
+.subheading {
+  animation-delay: 1.3s;
+}
+
+.strongText {
+  animation-delay: 1.6s;
+}
+
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Paragraph fade with delay */
+.heroSubText {
+  opacity: 0;
+  animation: fadeInSlow 1.2s ease forwards;
+  animation-delay: 1.9s;
+  font-size: 1.15rem;
+  margin-top: 24px;
+  /* keep your original color */
+}
+
+@keyframes fadeInSlow {
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Right Content slide in with subtle 3D fade */
+.heroRight {
+  opacity: 0;
+  transform-style: preserve-3d;
+  animation: slideIn3DFadeRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 1.4s;
+}
+
+@keyframes slideIn3DFadeRight {
+  0% {
+    opacity: 0;
+    transform: translateX(60px) rotateY(-15deg) translateZ(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateY(0) translateZ(0);
+  }
+}
+
+/* Image subtle parallax hover */
+.heroImageTop {
+  border-radius: 15px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  will-change: transform;
+}
+
+.heroImageTop:hover {
+  transform: translateZ(20px) scale(1.04) rotateY(4deg);
+  box-shadow: 0 25px 70px rgba(0, 255, 255, 0.5);
 }

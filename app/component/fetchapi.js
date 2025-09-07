@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 function generateRandomTrend(length = 7) {
   let values = [Math.random() * 100];
@@ -11,6 +11,8 @@ function generateRandomTrend(length = 7) {
 }
 
 function CryptoCard({ symbol, name, price_change_percentage_24h, current_price, image, trend }) {
+  const cardRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
   const isPositive = price_change_percentage_24h >= 0;
   const strokeColor = isPositive ? "url(#positiveGradient)" : "url(#negativeGradient)";
 
@@ -28,8 +30,27 @@ function CryptoCard({ symbol, name, price_change_percentage_24h, current_price, 
       .join(' ');
   }
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
+      ref={cardRef}
       style={{
         background: "linear-gradient(135deg, #080234ff, #055671ff)",
         borderRadius: "20px",
@@ -38,27 +59,45 @@ function CryptoCard({ symbol, name, price_change_percentage_24h, current_price, 
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        boxShadow: "0 8px 24px rgba(15, 0.2, 0.5, 0.9)",
+        boxShadow: isVisible
+          ? "0 12px 32px rgba(99,102,241,0.6)"
+          : "0 8px 24px rgba(15, 0.2, 0.5, 0.9)",
         backdropFilter: "blur(15px)",
-        transition: "transform 0.5s ease, box-shadow 0.5s ease",
         cursor: "pointer",
         height: "200px",
+        transform: isVisible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
+        opacity: isVisible ? 1 : 0,
+        transition: "opacity 0.7s ease, transform 0.7s ease, box-shadow 0.5s ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px) scale(1.03)";
-        e.currentTarget.style.boxShadow = "0 12px 32px rgba(99,102,241,0.6)";
+        e.currentTarget.style.transform = "translateY(-6px) scale(1.05)";
+        e.currentTarget.style.boxShadow = "0 18px 40px rgba(99,102,241,0.9)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0) scale(1)";
-        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.6)";
+        e.currentTarget.style.boxShadow = isVisible
+          ? "0 12px 32px rgba(99,102,241,0.6)"
+          : "0 8px 24px rgba(15, 0.2, 0.5, 0.9)";
       }}
     >
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <img src={image} alt={name} style={{ width: 40, height: 40 }} />
-        <div>
-          <div style={{ fontWeight: 700, fontSize: "1.1rem" }}>{name}</div>
-          <div style={{ fontSize: "0.9rem", color: "#94a3b8" }}>{symbol.toUpperCase()}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", overflow: "hidden" }}>
+        <img src={image} alt={name} style={{ width: 40, height: 40, flexShrink: 0 }} />
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "150px",
+            }}
+            title={name}
+          >
+            {name}
+          </div>
+          <div style={{ fontSize: "0.9rem", color: "#94a3b8", textTransform: "uppercase" }}>{symbol}</div>
         </div>
       </div>
 
@@ -81,7 +120,7 @@ function CryptoCard({ symbol, name, price_change_percentage_24h, current_price, 
       </div>
 
       {/* Trend Chart */}
-      <svg viewBox="0 0 100 30" width="100%" height="40px">
+      <svg viewBox="0 0 100 30" width="100%" height="40px" style={{ marginTop: "10px" }}>
         <defs>
           <linearGradient id="positiveGradient" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#22c55e" />
@@ -97,6 +136,7 @@ function CryptoCard({ symbol, name, price_change_percentage_24h, current_price, 
           stroke={strokeColor}
           strokeWidth="2.5"
           fill="none"
+          style={{ transition: "stroke-dashoffset 1.5s ease" }}
         />
       </svg>
     </div>
@@ -107,7 +147,6 @@ export default function CryptoCardGrid() {
   const [cryptoData, setCryptoData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Get a consistent daily seed (like "2025-09-06")
   const getTodayKey = () => {
     const now = new Date();
     return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
@@ -121,7 +160,6 @@ export default function CryptoCardGrid() {
       const savedData = localStorage.getItem("dailyCryptoData");
       const savedDate = localStorage.getItem("dailyCryptoDate");
 
-      // Use cached data if it exists and is from today
       if (savedData && savedDate === todayKey) {
         setCryptoData(JSON.parse(savedData));
         setLoading(false);
@@ -132,16 +170,13 @@ export default function CryptoCardGrid() {
         const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd");
         const data = await res.json();
 
-        // Shuffle using today's date as seed
         const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 16);
 
-        // Add fake trend data
         const withTrends = shuffled.map((crypto) => ({
           ...crypto,
           trend: generateRandomTrend(7),
         }));
 
-        // Save to localStorage
         localStorage.setItem("dailyCryptoData", JSON.stringify(withTrends));
         localStorage.setItem("dailyCryptoDate", todayKey);
 
@@ -158,13 +193,15 @@ export default function CryptoCardGrid() {
 
   return (
     <>
-      <h1 style={{
-        textAlign: "center",
-        margin: "10px 0 20px 0",
-        fontSize: "2rem",
-        fontWeight: "700",
-        color: "#0f172a"
-      }}>
+      <h1
+        style={{
+          textAlign: "center",
+          margin: "10px 0 20px 0",
+          fontSize: "2rem",
+          fontWeight: "700",
+          color: "#0f172a",
+        }}
+      >
         Cryptos Market
       </h1>
 
