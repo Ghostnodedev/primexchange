@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { decryptData } from "../utils/crypo";
+import { decryptData, encryptData } from "../utils/crypo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

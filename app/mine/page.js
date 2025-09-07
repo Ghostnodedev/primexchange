@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { FaPlus, FaUniversity } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { Button } from "react-bootstrap";
+import { decryptData, encryptData } from "../utils/crypo";
 
 const API_URL =
   "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account"; // POST URL
@@ -62,46 +63,80 @@ export default function BankManager() {
     }
   }, [selectedId]);
 
-
-
   const handleSelect = (id) => setSelectedId(String(id));
 
-const handleSell = async () => {
-  if (!amount) return toast.error("Enter amount first!");
-  const numericAmount = parseFloat(amount);
-  const numericTotal = parseFloat(totalAmount);
+const handleSell = () => {
+  // Get deposit amount from cookie
+  const encryptedAmount = Cookies.get("depositAmount");
+  let availableBalance = 0;
 
-  if (isNaN(numericAmount) || numericAmount <= 0)
-    return toast.error("Invalid amount.");
-  if (!numericTotal || numericTotal <= 0)
-    return toast.error("Please deposit funds before selling.");
-  if (numericAmount > numericTotal) return toast.error("Insufficient funds.");
-
-  try {
-    const res = await fetch("https://-main-ghostnodedevs-projects.vercel.app/account", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: numericAmount,
-      }),
-    });
-
-    if (!res.ok) throw new Error("Failed to sell amount");
-
-    const data = await res.json();
-    // Update local total amount after successful sell
-    const newTotal = numericTotal - numericAmount;
-    setTotalAmount(newTotal);
-    Cookies.set("depositAmount", newTotal, { expires: 7 });
-    setSold(true);
-    toast.success(`✅ Sold $${numericAmount} successfully!`);
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to sell amount");
+  if (encryptedAmount) {
+    try {
+      const decrypted = decryptData(encryptedAmount);
+      const parsed = parseFloat(decrypted);
+      if (!isNaN(parsed)) {
+        availableBalance = parsed;
+        setTotalAmount(parsed.toFixed(2));
+      }
+    } catch (err) {
+      console.error("Failed to decrypt amount:", err);
+    }
   }
+
+  // Validate input
+  if (!amount) {
+    toast.error("Enter amount first!");
+    return;
+  }
+
+  const sellAmount = parseFloat(amount);
+
+  if (isNaN(sellAmount) || sellAmount <= 0) {
+    toast.error("Invalid amount!");
+    return;
+  }
+
+  // Check balance
+  if (sellAmount > availableBalance) {
+    toast.error("Insufficient balance!");
+    return;
+  }
+
+  // New balance after sell
+  const newBalance = availableBalance - sellAmount;
+
+  // Save updated balance in cookie
+  const encryptedNewBalance = encryptData(newBalance.toString());
+  Cookies.set("SellAmount", encryptedNewBalance, {
+    expires: 1,
+    secure: true,
+    sameSite: "Strict",
+  });
+
+  // Update state
+  setTotalAmount(newBalance.toFixed(2));
+  setSold(true);
+
+  toast.success("Sell Successful!");
 };
 
+
   const handleSubmit = async (e) => {
+    const encryptedAmount = Cookies.get("SellAmount");
+  let availableBalance = 0;
+
+  if (encryptedAmount) {
+    try {
+      const decrypted = decryptData(encryptedAmount);
+      const parsed = parseFloat(decrypted);
+      if (!isNaN(parsed)) {
+        availableBalance = parsed;
+        setTotalAmount(parsed.toFixed(2));
+      }
+    } catch (err) {
+      console.error("Failed to decrypt amount:", err);
+    }
+  }
     e.preventDefault();
     const form = e.target;
     const bankName = form.bankName.value.trim();
@@ -124,7 +159,7 @@ const handleSell = async () => {
       accounttype: type,
       sellamount: 0,
       email: storedEmail || "unknown",
-      amount: sellamount
+      amount: availableBalance,
     };
 
     try {
@@ -204,32 +239,73 @@ const handleSell = async () => {
                         style={{ color: "#ffd700", marginBottom: 8 }}
                       />
                       <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankname}</h3>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
                         <strong>Type:</strong> {acc.accounttype}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.9)",
+                        }}
+                      >
                         <strong>Holder:</strong> {acc.holdername}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
                         <strong>IFSC:</strong> {acc.ifsc}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
                         <strong>Account:</strong> {acc.accountno}
                       </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                      <p
+                        style={{
+                          margin: "4px 0",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
                         <strong>Sell Amount:</strong> {acc.sellamount || 0}
                       </p>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
                       <input
                         type="radio"
                         name="selectedBank"
                         checked={isSelected}
                         onChange={() => handleSelect(acc.id)}
-                        style={{ width: 20, height: 20, accentColor: "#ffd700", cursor: "pointer" }}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          accentColor: "#ffd700",
+                          cursor: "pointer",
+                        }}
                         onClick={(e) => e.stopPropagation()}
                       />
-                      {isSelected && <span style={{ fontSize: 12, color: "#ffd700" }}>Default</span>}
+                      {isSelected && (
+                        <span style={{ fontSize: 12, color: "#ffd700" }}>
+                          Default
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -244,11 +320,21 @@ const handleSell = async () => {
             <h2 style={{ marginTop: 0 }}>Add Bank Account</h2>
             <div style={rowStyle}>
               <label style={labelStyle}>Bank Name</label>
-              <input name="bankName" style={inputFieldStyle} placeholder="e.g., HDFC Bank" required />
+              <input
+                name="bankName"
+                style={inputFieldStyle}
+                placeholder="e.g., HDFC Bank"
+                required
+              />
             </div>
             <div style={rowStyle}>
               <label style={labelStyle}>Account Type</label>
-              <select name="type" style={inputFieldStyle} defaultValue="Savings" required>
+              <select
+                name="type"
+                style={inputFieldStyle}
+                defaultValue="Savings"
+                required
+              >
                 <option value="Savings">Savings</option>
                 <option value="Current">Current</option>
                 <option value="Salary">Salary</option>
@@ -256,21 +342,40 @@ const handleSell = async () => {
             </div>
             <div style={rowStyle}>
               <label style={labelStyle}>Holder Name</label>
-              <input name="holderName" style={inputFieldStyle} placeholder="Account holder full name" required />
+              <input
+                name="holderName"
+                style={inputFieldStyle}
+                placeholder="Account holder full name"
+                required
+              />
             </div>
             <div style={rowStyle}>
               <label style={labelStyle}>IFSC Code</label>
-              <input name="ifsc" style={inputFieldStyle} placeholder="e.g., HDFC0001234" required />
+              <input
+                name="ifsc"
+                style={inputFieldStyle}
+                placeholder="e.g., HDFC0001234"
+                required
+              />
             </div>
             <div style={rowStyle}>
               <label style={labelStyle}>Account Number</label>
-              <input name="accountNumber" style={inputFieldStyle} placeholder="Enter account number" required />
+              <input
+                name="accountNumber"
+                style={inputFieldStyle}
+                placeholder="Enter account number"
+                required
+              />
             </div>
             <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
               <button type="submit" style={saveBtnStyle}>
                 Save Account
               </button>
-              <button type="button" onClick={() => setShowForm(false)} style={cancelBtnStyle}>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                style={cancelBtnStyle}
+              >
                 Cancel
               </button>
             </div>
@@ -281,16 +386,33 @@ const handleSell = async () => {
         {!showForm && (
           <>
             <div style={{ textAlign: "center", marginTop: 28 }}>
-              <button title="Add bank" onClick={() => setShowForm(true)} style={plusBtnStyle}>
+              <button
+                title="Add bank"
+                onClick={() => setShowForm(true)}
+                style={plusBtnStyle}
+              >
                 <FaPlus color="#000" />
               </button>
-              <div style={{ marginTop: 10, color: "rgba(255,255,255,0.8)" }}>Add another account</div>
+              <div style={{ marginTop: 10, color: "rgba(255,255,255,0.8)" }}>
+                Add another account
+              </div>
             </div>
 
             {/* Sell Section */}
             <div style={{ marginTop: 20, textAlign: "center" }}>
-              <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>Enter Amount to Sell</label>
-              <div style={{ display: "flex", justifyContent: "center", gap: 10, alignItems: "center" }}>
+              <label
+                style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
+              >
+                Enter Amount to Sell
+              </label>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 10,
+                  alignItems: "center",
+                }}
+              >
                 {!sold ? (
                   <>
                     <span style={{ color: "#fff", fontSize: 20 }}>$</span>
@@ -301,7 +423,13 @@ const handleSell = async () => {
                       onChange={(e) => setAmount(e.target.value)}
                       style={inputFieldStyle}
                     />
-                    <div style={{ minWidth: 100, display: "flex", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        minWidth: 100,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
                       <button
                         onClick={handleSell}
                         disabled={!amount}
@@ -322,7 +450,11 @@ const handleSell = async () => {
                     </div>
                   </>
                 ) : (
-                  <span style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}>✅ Sold</span>
+                  <span
+                    style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}
+                  >
+                    ✅ Sold
+                  </span>
                 )}
               </div>
             </div>
@@ -353,24 +485,40 @@ const titleStyle = {
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
 };
-const gridStyle = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 18, marginBottom: 18 };
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+  gap: 18,
+  marginBottom: 18,
+};
 const cardStyle = {
-  background: "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02))",
+  background:
+    "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02))",
   borderRadius: 14,
   padding: 18,
   boxShadow: "0 10px 30px rgba(2,6,23,0.6)",
   transition: "all 220ms ease",
 };
 const formContainerStyle = {
-  background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+  background:
+    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
   borderRadius: 12,
   padding: 20,
   maxWidth: 520,
   margin: "18px auto 0",
   boxShadow: "0 14px 40px rgba(2,6,23,0.6)",
 };
-const rowStyle = { marginBottom: 12, display: "flex", flexDirection: "column", gap: 6 };
-const labelStyle = { fontSize: 13, color: "rgba(255,255,255,0.85)", fontWeight: 600 };
+const rowStyle = {
+  marginBottom: 12,
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+};
+const labelStyle = {
+  fontSize: 13,
+  color: "rgba(255,255,255,0.85)",
+  fontWeight: 600,
+};
 const inputFieldStyle = {
   padding: "12px 14px",
   borderRadius: 8,
