@@ -16,8 +16,24 @@ export default function DepositPage() {
   const [address] = useState("TY6Ee4uRZogxhu2j3i3Jhp9wLkU8TX3a");
   const [amount, setAmount] = useState(null);
   const [createTime, setCreateTime] = useState("");
+  const [sellamount, setsellamount] = useState("0.00");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [storedEmail, setStoredEmail] = useState("");
   const router = useRouter();
 
+  const Api_Url =
+    "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/profile";
+
+  // ✅ Handle auth + email
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    setIsAuthenticated(!!token);
+
+    const email = localStorage.getItem("userEmail");
+    if (email) setStoredEmail(email);
+  }, []);
+
+  // ✅ Handle deposit amount from cookies
   useEffect(() => {
     const encryptedLastAmount = Cookies.get("lastDepositAmount");
     if (encryptedLastAmount) {
@@ -39,6 +55,23 @@ export default function DepositPage() {
     }
   }, []);
 
+  // ✅ Handle SellAmount cookie safely
+  useEffect(() => {
+    const encryptedAmount = Cookies.get("SellAmount");
+    if (encryptedAmount) {
+      try {
+        const decrypted = decryptData(encryptedAmount);
+        const parsed = parseFloat(decrypted);
+        if (!isNaN(parsed)) {
+          setsellamount(parsed.toFixed(2));
+        }
+      } catch (err) {
+        console.error("Failed to decrypt amount:", err);
+      }
+    }
+  }, []);
+
+  // ✅ Countdown timer
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prev) => (prev <= 0 ? 0 : prev - 1));
@@ -46,6 +79,7 @@ export default function DepositPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ Created time formatter
   useEffect(() => {
     const now = new Date();
     const pad = (n) => n.toString().padStart(2, "0");
@@ -55,55 +89,77 @@ export default function DepositPage() {
     setCreateTime(formatted);
   }, []);
 
+  // Format timer
   const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, "0");
+    const min = Math.floor(seconds / 60).toString().padStart(2, "0");
     const sec = (seconds % 60).toString().padStart(2, "0");
     return `${min}:${sec}`;
   };
 
+  // Copy helper
   const handleCopy = (value) => {
     navigator.clipboard.writeText(value);
     toast.success("Copied to clipboard!");
   };
 
+  // Cancel handler
   const handleCancel = () => {
     toast.error("Transaction cancelled.");
     router.push("/exchange");
   };
 
-  const handleSubmitTxid = () => {
+  // ✅ Submit TXID
+  const handleSubmitTxid = async () => {
     if (!inputId || inputId.length < 6) {
       toast.error("Please enter a valid TXID.");
       return;
     }
 
     try {
+      // calculate total first
       const encryptedAmount = Cookies.get("depositAmount");
       let total = 0;
-
       if (encryptedAmount) {
         const decrypted = decryptData(encryptedAmount);
         total = parseFloat(decrypted) || 0;
       }
-
       const updatedTotal = total + (amount || 0);
-      const encryptedUpdated = encryptData(updatedTotal.toString());
 
+      // save back to cookies
+      const encryptedUpdated = encryptData(updatedTotal.toString());
       Cookies.set("depositAmount", encryptedUpdated, {
         expires: 1,
         secure: true,
         sameSite: "Strict",
       });
 
-      localStorage.setItem("justDeposited", "true");
+      // call API
+      const response = await fetch(Api_Url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: localStorage.getItem("username"),
+          totalamount: updatedTotal,
+          depositamount: amount,
+          sellamount,
+          email: storedEmail,
+          status: "pending",
+        }),
+      });
 
-      toast.success("Deposit successful! Redirecting...");
-      setTimeout(() => {
-        router.push("/profile");
-      }, 1500);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Transaction submitted successfully!");
+      } else {
+        toast.error("Transaction submission failed.");
+      }
+
+      localStorage.setItem("justDeposited", "true");
+      setTimeout(() => router.push("/profile"), 1500);
     } catch (err) {
+      console.error("Error submitting transaction:", err);
       toast.error("Something went wrong while saving the deposit.");
     }
   };
@@ -122,7 +178,7 @@ export default function DepositPage() {
       >
         <h5 className="text-center mb-4">Scan The QR Code And Pay</h5>
 
-        {/* QR Code container with glow */}
+        {/* QR Code */}
         <div
           className="d-flex justify-content-center mb-3 p-3"
           style={{
@@ -142,7 +198,9 @@ export default function DepositPage() {
           />
         </div>
 
-        <p className="text-center text-white mb-4">⏳ {formatTime(timer)} Remaining</p>
+        <p className="text-center text-white mb-4">
+          ⏳ {formatTime(timer)} Remaining
+        </p>
 
         <p
           className="text-white text-center mb-4"
@@ -152,6 +210,7 @@ export default function DepositPage() {
           amount must match the deposit amount.
         </p>
 
+        {/* TXID input */}
         <InputGroup className="mb-3">
           <Form.Control
             placeholder="Please enter txid"
