@@ -3,16 +3,20 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { decryptData, encryptData } from "../utils/crypo";
+import { decryptData } from "../utils/crypo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [totalAmount, setTotalAmount] = useState("0.00");
+  const [depositAmount, setDepositAmount] = useState("0.00");
+  const [sellAmount, setSellAmount] = useState("0.00");
+  const [processing, setProcessing] = useState("0.00");
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [get , setget] = useState("0.00")
+
   const router = useRouter();
 
   useEffect(() => {
@@ -20,17 +24,19 @@ export default function ProfilePage() {
     if (token) {
       setIsAuthenticated(true);
 
-      const storedEmail = localStorage.getItem("username");
+      const storedEmail =
+        localStorage.getItem("userEmail")
       if (storedEmail) setEmail(storedEmail);
 
+      // fallback: decrypt last deposit stored in cookies
       const encryptedAmount = Cookies.get("depositAmount");
       if (encryptedAmount) {
         try {
           const decrypted = decryptData(encryptedAmount);
           const parsed = parseFloat(decrypted);
-          if (!isNaN(parsed)) setTotalAmount(parsed.toFixed(2));
+          if (!isNaN(parsed)) setDepositAmount(parsed.toFixed(2));
         } catch (err) {
-          console.error("Failed to decrypt amount:", err);
+          console.error("Failed to decrypt deposit:", err);
         }
       }
     } else {
@@ -39,19 +45,42 @@ export default function ProfilePage() {
     setLoading(false);
   }, []);
 
-  useEffect(()=>{
-      const encryptedAmount = Cookies.get("lastDepositAmount");
-      if (encryptedAmount) {
-        try {
-          const decrypted = decryptData(encryptedAmount);
-          const parsed = parseFloat(decrypted);
-          if (!isNaN(parsed)) setget(parsed.toFixed(2));
-        } catch (err) {
-          console.error("Failed to decrypt amount:", err);
+  // Fetch profile data from API
+  useEffect(() => {
+    if (!email) return;
+
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          `https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gprofile?email=${encodeURIComponent(
+            email
+          )}`
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch profile data");
+
+        const json = await res.json();
+        console.log("Profile API Data:", json);
+
+        const account = Array.isArray(json)
+          ? json[0]
+          : json.data
+          ? json.data[0]
+          : json;
+
+        if (account) {
+          setDepositAmount(account.depositamount || "0.00");
+          setTotalAmount(account.totalamount || "0.00");
+          setSellAmount(account.sellamount || "0.00");
+          setProcessing(account.status || "0.00");
         }
-      } else {
-    }
-  },[])
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, [email]);
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -82,12 +111,8 @@ export default function ProfilePage() {
             width: "100%",
           }}
         >
-          <h2 className="fw-bold mb-3" style={{ color: "#fff" }}>
-            ⚠️ Please login to see your profile
-          </h2>
-          <p className="mb-4" style={{ color: "#fff" }}>
-            Your banking profile and rewards are protected 🔒
-          </p>
+          <h2 className="fw-bold mb-3">⚠️ Please login to see your profile</h2>
+          <p className="mb-4">Your banking profile and rewards are protected 🔒</p>
           <Link href="/login" passHref>
             <button
               className="px-5 py-3 fw-bold"
@@ -125,22 +150,16 @@ export default function ProfilePage() {
           className="rounded-circle border border-4 shadow-lg"
           style={{ width: "140px", height: "140px", objectFit: "cover" }}
         />
-        <h4 className="mt-3" style={{ color: "#fff" }}>
-          {email || "someone@gmail.com"}
-        </h4> 
+        <h4 className="mt-3">{email || "someone@gmail.com"}</h4>
       </div>
 
-      {/* Navigation Bar */}
+      {/* Navigation */}
       <div
         className="d-flex justify-content-between align-items-center bg-dark rounded px-4 py-3 mb-5 w-100 mx-auto flex-wrap"
         style={{ maxWidth: "900px", gap: "12px" }}
       >
         <div className="d-flex align-items-center gap-4 flex-wrap">
-          <Link
-            href="/"
-            className="d-flex align-items-center gap-1 text-decoration-none"
-            style={{ color: "#fff" }}
-          >
+          <Link href="/" className="text-decoration-none" style={{ color: "#fff" }}>
             <i className="bi bi-house"></i> <span>Home</span>
           </Link>
           <Link href="/exchange" className="text-decoration-none" style={{ color: "#fff" }}>
@@ -150,7 +169,6 @@ export default function ProfilePage() {
             className="text-danger"
             onClick={handleLogout}
             style={{ cursor: "pointer" }}
-            title="Logout"
           >
             Logout
           </span>
@@ -180,9 +198,10 @@ export default function ProfilePage() {
         style={{ maxWidth: "900px" }}
       >
         {[
-          { title: "Total Amount", value: `$${totalAmount}`},
-          { title: "Available ($)", value: "$0.00" },
-          { title: "processing ($)", value: `$${get}` },
+          { title: `${processing}`, value: `${depositAmount}` },
+          { title: "Total Amount", value: `$${totalAmount}` },
+          { title: "Sell Amount", value: `$${sellAmount}` },
+
         ].map((item) => (
           <div
             key={item.title}
@@ -192,14 +211,11 @@ export default function ProfilePage() {
             <div className="text" style={{ color: "#ddd" }}>
               {item.title}
             </div>
-            <h3 className="mt-2" style={{ color: "#fff" }}>
-              {item.value}
-            </h3>
+            <h3 className="mt-2">{item.value}</h3>
           </div>
         ))}
       </div>
 
-      {/* Reward Section */}
       <div
         className="mx-auto rounded shadow-lg mt-5 px-4 py-3 w-100"
         style={{
@@ -266,7 +282,6 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {/* WhatsApp Floating Button */}
       <a
         href="https://wa.me/your-number"
         target="_blank"

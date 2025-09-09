@@ -24,7 +24,6 @@ export default function DepositPage() {
   const Api_Url =
     "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/profile";
 
-  // ✅ Handle auth + email
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsAuthenticated(!!token);
@@ -33,7 +32,6 @@ export default function DepositPage() {
     if (email) setStoredEmail(email);
   }, []);
 
-  // ✅ Handle deposit amount from cookies
   useEffect(() => {
     const encryptedLastAmount = Cookies.get("lastDepositAmount");
     if (encryptedLastAmount) {
@@ -55,7 +53,6 @@ export default function DepositPage() {
     }
   }, []);
 
-  // ✅ Handle SellAmount cookie safely
   useEffect(() => {
     const encryptedAmount = Cookies.get("SellAmount");
     if (encryptedAmount) {
