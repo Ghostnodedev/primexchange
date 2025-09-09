@@ -12,7 +12,7 @@ export default function ProfilePage() {
   const [totalAmount, setTotalAmount] = useState("0.00");
   const [depositAmount, setDepositAmount] = useState("0.00");
   const [sellAmount, setSellAmount] = useState("0.00");
-  const [processing, setProcessing] = useState("0.00");
+  const [processing, setProcessing] = useState('processing');
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -73,6 +73,9 @@ export default function ProfilePage() {
           setTotalAmount(account.totalamount || "0.00");
           setSellAmount(account.sellamount || "0.00");
           setProcessing(account.status || "0.00");
+          if(account.status === "0" || account.status === 0 || account.status === null || account.status === "0.00"){
+            setProcessing("Processing");
+          }
         }
       } catch (err) {
         console.error(err);
