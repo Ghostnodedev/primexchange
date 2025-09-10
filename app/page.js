@@ -24,7 +24,7 @@ export default function Home() {
 
   {/* Right Content (Images) */}
   <div className={styles.heroRight}>
-    <img src="/banner2.jpg" alt="Team work" className={styles.heroImageTop} />
+    <img src="/cryptot.jpg" alt="Team work" className={styles.heroImageTop} />
   </div>
 </div>
 

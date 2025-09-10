@@ -5,10 +5,11 @@ import { FaPlus, FaUniversity } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { Button } from "react-bootstrap";
 import { decryptData, encryptData } from "../utils/crypo";
-import jsPDF from "jspdf"; // ✅ Add jsPDF
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const API_URL =
-  "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account"; // POST URL
+  "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account";
 
 export default function BankManager() {
   const [accounts, setAccounts] = useState([]);
@@ -19,21 +20,19 @@ export default function BankManager() {
   const [totalAmount, setTotalAmount] = useState("0.00");
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [storedEmail, setStoredEmail] = useState(null);
-  const [lastInvoice, setLastInvoice] = useState(null); 
-  
+  const [lastInvoice, setLastInvoice] = useState(null);
+
   // Auth & email
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     setIsAuthenticated(!!token);
-
     const email = localStorage.getItem("userEmail");
     if (email) setStoredEmail(email);
   }, []);
 
-  // Fetch accounts from API
+  // Fetch accounts
   useEffect(() => {
     if (!storedEmail) return;
-
     const fetchAccounts = async () => {
       try {
         const res = await fetch(
@@ -41,7 +40,8 @@ export default function BankManager() {
             storedEmail
           )}`
         );
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok)
+          throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setAccounts(data.data || []);
         setShowForm((data.data || []).length === 0);
@@ -52,11 +52,10 @@ export default function BankManager() {
         toast.error("Failed to fetch accounts");
       }
     };
-
     fetchAccounts();
   }, [storedEmail]);
 
-  // Save selected bank to cookies
+  // Save selected bank
   useEffect(() => {
     if (selectedId !== null) {
       Cookies.set("selectedBank", String(selectedId), { expires: 7 });
@@ -67,8 +66,7 @@ export default function BankManager() {
 
   const handleSelect = (id) => setSelectedId(String(id));
 
-const handleSell = async () => {
-    // --- your same validations & flow ---
+  const handleSell = async () => {
     if (accounts.length === 0) {
       toast.error("Please add a bank account first!");
       return;
@@ -78,6 +76,7 @@ const handleSell = async () => {
       return;
     }
 
+    // balance from cookies
     const encryptedAmount = Cookies.get("depositAmount");
     let availableBalance = 0;
     if (encryptedAmount) {
@@ -141,8 +140,6 @@ const handleSell = async () => {
       if (!res.ok) throw new Error("Failed to update sell");
 
       toast.success("Sell Successful & Saved to DB!");
-
-      // ✅ Save invoice details for download
       setLastInvoice({
         account: selectedAcc,
         sellAmount,
@@ -155,49 +152,64 @@ const handleSell = async () => {
     }
   };
 
-
-    const handleDownloadInvoice = () => {
+  const handleDownloadInvoice = () => {
     if (!lastInvoice) return;
     const doc = new jsPDF();
+    doc.text("🧾 Primexchange", 14, 20);
+    doc.setFontSize(14);
+    doc.text("Transaction Invoice", 14, 30);
+    doc.setFontSize(11);
+    doc.text(`Date: ${lastInvoice.date}`, 14, 40);
 
-    doc.setFontSize(18);
-    doc.text("🧾 Primexchange", 20, 20);
-    doc.text("🧾 Transaction Invoice", 20, 20);
+    autoTable(doc, {
+      startY: 50,
+      head: [["Field", "Value"]],
+      body: [
+        ["Account Holder", lastInvoice.account.holdername],
+        ["Bank Name", lastInvoice.account.bankname],
+        ["Account Number", lastInvoice.account.accountno],
+        ["IFSC", lastInvoice.account.ifsc],
+        ["Sell Amount", `$${lastInvoice.sellAmount.toFixed(2)}`],
+        ["Remaining Balance", `$${lastInvoice.newBalance.toFixed(2)}`],
+      ],
+      theme: "grid",
+      styles: { halign: "left", cellPadding: 3, fontSize: 11 },
+      headStyles: {
+        fillColor: [255, 215, 0],
+        textColor: "#000",
+        fontStyle: "bold",
+      },
+      margin: { left: 14, right: 14 },
+    });
 
     doc.setFontSize(12);
-    doc.text(`Date: ${lastInvoice.date}`, 20, 40);
-    doc.text(`Account Holder: ${lastInvoice.account.holdername}`, 20, 55);
-    doc.text(`Bank: ${lastInvoice.account.bankname}`, 20, 70);
-    doc.text(`Account No: ${lastInvoice.account.accountno}`, 20, 85);
-    doc.text(`IFSC: ${lastInvoice.account.ifsc}`, 20, 100);
-
-    doc.text(`Sell Amount: $${lastInvoice.sellAmount}`, 20, 120);
-    doc.text(`Remaining Balance: $${lastInvoice.newBalance}`, 20, 135);
-
-    doc.text("✔ Transaction Completed Successfully", 20, 160);
-
-    doc.save(`invoice_${Date.now()}.pdf`);
+    doc.setTextColor(0, 128, 0);
+    doc.text(
+      "✔ Transaction Completed Successfully",
+      14,
+      doc.lastAutoTable.finalY + 15
+    );
+    doc.save(`Primexchange_Invoice_${Date.now()}.pdf`);
   };
 
-
-
   const handleSubmit = async (e) => {
-    const encryptedAmount = Cookies.get("SellAmount");
-  let availableBalance = 0;
-
-  if (encryptedAmount) {
-    try {
-      const decrypted = decryptData(encryptedAmount);
-      const parsed = parseFloat(decrypted);
-      if (!isNaN(parsed)) {
-        availableBalance = parsed;
-        setTotalAmount(parsed.toFixed(2));
-      }
-    } catch (err) {
-      console.error("Failed to decrypt amount:", err);
-    }
-  }
     e.preventDefault();
+
+    const encryptedAmount = Cookies.get("depositAmount");
+    let availableBalance = 0;
+    if (encryptedAmount) {
+      try {
+        const decrypted = decryptData(encryptedAmount);
+        const parsed = parseFloat(decrypted);
+        if (!isNaN(parsed)) {
+          availableBalance = parsed;
+          setTotalAmount(parsed.toFixed(2));
+        }
+      } catch (err) {
+        console.error("Failed to decrypt amount:", err);
+      }
+    }
+
     const form = e.target;
     const bankName = form.bankName.value.trim();
     const type = form.type.value;
@@ -214,7 +226,7 @@ const handleSell = async () => {
       id: Date.now().toString(),
       holdername: holderName,
       accountno: accountNumber,
-      ifsc: ifsc,
+      ifsc,
       bankname: bankName,
       accounttype: type,
       sellamount: 0,
@@ -229,7 +241,6 @@ const handleSell = async () => {
         body: JSON.stringify(newAccount),
       });
       if (!res.ok) throw new Error("Failed to save account");
-
       setAccounts((prev) => [...prev, newAccount]);
       setShowForm(false);
       form.reset();
@@ -262,13 +273,11 @@ const handleSell = async () => {
     <div style={pageStyle}>
       <div style={containerStyle}>
         <h1 style={titleStyle}>💳 Manage Bank Accounts</h1>
-
         {/* Accounts Grid */}
         {accounts.length > 0 && (
           <div style={gridStyle}>
             {accounts.map((acc) => {
-              const isSelected =
-                String(acc.id) === String(selectedId || acc.id);
+              const isSelected = String(acc.id) === String(selectedId || acc.id);
               return (
                 <div
                   key={acc.id}
@@ -299,44 +308,19 @@ const handleSell = async () => {
                         style={{ color: "#ffd700", marginBottom: 8 }}
                       />
                       <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankname}</h3>
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "rgba(255,255,255,0.9)",
-                        }}
-                      >
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
                         <strong>Type:</strong> {acc.accounttype}
                       </p>
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "rgba(255,255,255,0.9)",
-                        }}
-                      >
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
                         <strong>Holder:</strong> {acc.holdername}
                       </p>
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "rgba(255,255,255,0.85)",
-                        }}
-                      >
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
                         <strong>IFSC:</strong> {acc.ifsc}
                       </p>
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "rgba(255,255,255,0.85)",
-                        }}
-                      >
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
                         <strong>Account:</strong> {acc.accountno}
                       </p>
-                      <p
-                        style={{
-                          margin: "4px 0",
-                          color: "rgba(255,255,255,0.85)",
-                        }}
-                      >
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
                         <strong>Sell Amount:</strong> {acc.sellamount || 0}
                       </p>
                     </div>
@@ -510,11 +494,17 @@ const handleSell = async () => {
                     </div>
                   </>
                 ) : (
-                  <><span
-                      style={{ color: "#22c55e", fontWeight: 600, fontSize: 16 }}
+                  <>
+                    <span
+                      style={{
+                        color: "#22c55e",
+                        fontWeight: 600,
+                        fontSize: 16,
+                      }}
                     >
                       ✅ Sold
-                    </span><button
+                    </span>
+                    <button
                       onClick={handleDownloadInvoice}
                       style={{
                         background: "#ffd700",
@@ -526,8 +516,9 @@ const handleSell = async () => {
                         cursor: "pointer",
                       }}
                     >
-                        Save Invoice
-                      </button></>
+                      Save Invoice
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -539,6 +530,7 @@ const handleSell = async () => {
 }
 
 /* ---------------- styles ---------------- */
+/* ---------------- styles ---------------- */
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(135deg, #0f1724 0%, #2b2445 50%, #6b4b8a 100%)",
@@ -546,93 +538,96 @@ const pageStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: "40px 20px",
+  padding: "40px",
 };
-const containerStyle = { width: "100%", maxWidth: 1100 };
+
+const containerStyle = {
+  width: "100%",
+  maxWidth: "900px",
+  background: "rgba(255,255,255,0.05)",
+  padding: "30px",
+  borderRadius: "20px",
+  boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+};
+
 const titleStyle = {
   textAlign: "center",
-  fontSize: 34,
-  marginBottom: 22,
-  fontWeight: 700,
-  background: "linear-gradient(90deg,#fff,#ffd700)",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
+  fontSize: "2rem",
+  fontWeight: "bold",
+  marginBottom: "20px",
+  color: "#ffd700",
 };
+
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-  gap: 18,
-  marginBottom: 18,
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gap: "20px",
+  marginBottom: "30px",
 };
+
 const cardStyle = {
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02))",
-  borderRadius: 14,
-  padding: 18,
-  boxShadow: "0 10px 30px rgba(2,6,23,0.6)",
-  transition: "all 220ms ease",
+  background: "rgba(255,255,255,0.08)",
+  borderRadius: "16px",
+  padding: "20px",
+  transition: "0.3s",
+  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
 };
+
 const formContainerStyle = {
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
-  borderRadius: 12,
-  padding: 20,
-  maxWidth: 520,
-  margin: "18px auto 0",
-  boxShadow: "0 14px 40px rgba(2,6,23,0.6)",
+  background: "rgba(255,255,255,0.1)",
+  padding: "20px",
+  borderRadius: "16px",
+  marginTop: "20px",
 };
+
 const rowStyle = {
-  marginBottom: 12,
+  marginBottom: "14px",
   display: "flex",
   flexDirection: "column",
-  gap: 6,
 };
+
 const labelStyle = {
-  fontSize: 13,
-  color: "rgba(255,255,255,0.85)",
-  fontWeight: 600,
+  marginBottom: "6px",
+  fontWeight: "600",
 };
+
 const inputFieldStyle = {
-  padding: "12px 14px",
-  borderRadius: 8,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(0,0,0,0.25)",
-  color: "#fff",
+  padding: "10px 12px",
+  borderRadius: "8px",
+  border: "1px solid rgba(255,255,255,0.3)",
   outline: "none",
-  fontSize: 15,
+  fontSize: "14px",
   width: "100%",
-  maxWidth: 400,
-  boxSizing: "border-box",
-};
-const saveBtnStyle = {
-  background: "#ffd700",
   color: "#000",
+};
+
+const saveBtnStyle = {
+  background: "#22c55e",
+  color: "#fff",
   border: "none",
-  padding: "10px 16px",
-  borderRadius: 8,
-  fontWeight: 700,
+  padding: "10px 18px",
+  borderRadius: "8px",
+  fontWeight: "600",
   cursor: "pointer",
   flex: 1,
 };
+
 const cancelBtnStyle = {
-  background: "transparent",
+  background: "#f87171",
   color: "#fff",
-  border: "1px solid rgba(255,255,255,0.12)",
-  padding: "10px 14px",
-  borderRadius: 8,
+  border: "none",
+  padding: "10px 18px",
+  borderRadius: "8px",
+  fontWeight: "600",
   cursor: "pointer",
+  flex: 1,
 };
+
 const plusBtnStyle = {
   background: "#ffd700",
-  color: "#000",
   border: "none",
   borderRadius: "50%",
-  width: 64,
-  height: 64,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: 20,
-  boxShadow: "0 12px 30px rgba(0,0,0,0.45)",
+  padding: "14px",
   cursor: "pointer",
+  boxShadow: "0 6px 14px rgba(0,0,0,0.3)",
 };

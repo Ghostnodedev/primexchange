@@ -170,7 +170,7 @@ const handleSubmit = async (e) => {
               onSubmit={handleSubmit}
               style={{ maxWidth: "340px" }}
             >
-              {["username", "email", "phone", "password"].map((field, i) => (
+              {[ "email", "password"].map((field, i) => (
                 <div className="mb-3" key={i}>
                   <label className="form-label fw-semibold" htmlFor={field}>
                     {field.charAt(0).toUpperCase() + field.slice(1)}

@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ export default function RegisterPage() {
       password: e.target.password.value,
       confirmpassword: e.target.confirmpassword.value,
       email: e.target.email.value,
-      age: e.target.age.value,
+      // age: e.target.age.value,
       phone: e.target.phone.value,
     };
 
@@ -310,8 +310,9 @@ form {
 @media (max-width: 991px) {
   .container {
     flex-direction: column;
-    height: auto;
-    max-height: 100vh;
+    min-height: 100vh; /* allow full height */
+    height: auto;      /* remove strict height */
+    max-height: none;  /* remove clipping */
   }
 
   .left-panel {
@@ -321,15 +322,19 @@ form {
   .right-panel {
     flex: none;
     width: 100%;
-    max-height: 100vh;
+    min-height: 100vh; /* take full screen height */
     border-radius: 20px;
     padding: 2.5rem 2rem;
     box-shadow: 0 10px 30px rgba(106, 17, 203, 0.2);
+    overflow-y: auto;   /* allow scrolling if form is tall */
   }
 
   form {
     max-width: 100%;
+    margin-bottom: 2rem; /* space at bottom so button isn’t hidden */
   }
+}
+
 }
 
       `}</style>
@@ -398,17 +403,6 @@ form {
               placeholder="your.email@example.com"
               required
               autoComplete="email"
-            />
-
-            <label htmlFor="age">Age</label>
-            <input
-              type="number"
-              id="age"
-              name="age"
-              placeholder="Enter your age"
-              required
-              min={13}
-              max={120}
             />
 
             <label htmlFor="phone">Phone</label>

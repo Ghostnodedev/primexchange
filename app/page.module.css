@@ -324,8 +324,8 @@ a.secondary {
 }
 
 .heroImageTop {
-  width: 650px;
-  height: 550px;
+  width: 550px;
+  height: 500px;
   border-radius: 12px;
   box-shadow: 10px 15px 8px 20px rgba(2, 8, 31, 0.3);
   object-fit: cover;
@@ -376,7 +376,7 @@ a.secondary {
   }
 
   .heroImageTop {
-    width: 45%;
+    width: 40%;
   }
 }
 
@@ -395,7 +395,9 @@ a.secondary {
   }
 
   .heroImageTop {
-    width: 100%;
+    width: 90%;
+    height: 50%;
+    margin-right: 15px;
   }
 }
 

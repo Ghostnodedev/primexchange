@@ -1,3 +1,4 @@
+
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -5,6 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import TestimonialSlider from "../component/testimonial";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import FeaturesSection from "../component/feature";
 import {
   Container,
   Row,
@@ -20,7 +22,7 @@ import "./exchange.css";
 import { encryptData } from "../utils/crypo";
 import Navbar from "../component/header";
 import Footer from "../component/footer";
-import Slider from "react-slick";
+// import Slider from "react-slick";
 
 export default function ExchangePage() {
   const [seconds, setSeconds] = useState(60);
@@ -198,6 +200,7 @@ export default function ExchangePage() {
     { usd: 9999, inr: 97.5 },
   ];
 
+
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
       <Navbar />
@@ -282,7 +285,7 @@ export default function ExchangePage() {
             //   e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
             // }}
           >
-            🚀 Deposit Now
+             Deposit Now
           </Button>
         </Container>
 
@@ -387,6 +390,7 @@ export default function ExchangePage() {
           </Card>
         </Container>
 
+
         <div className="card-section">
           {prices.map((item, idx) => (
             <div key={idx} className="card">
@@ -395,8 +399,11 @@ export default function ExchangePage() {
             </div>
           ))}
 
+        <FeaturesSection />
+
           <style jsx>{`
             .card-section {
+              margin-top: -50px;
               display: flex;
               gap: 20px;
               justify-content: center;
@@ -449,6 +456,7 @@ export default function ExchangePage() {
             }
           `}</style>
         </div>
+
 
         <TestimonialSlider />
       </Container>

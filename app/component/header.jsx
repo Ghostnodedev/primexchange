@@ -82,12 +82,7 @@ const Navbar = () => {
       {/* Mobile Slide-in Menu */}
       <div className={`mobile-slide-menu ${isOpen ? 'open' : ''}`}>
         <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-          <Image
-            src="/Prime_Xchange__1_-removebg-preview.png"
-            alt="Logo"
-            width={120}
-            height={120}
-          />
+          <strong>PrimeXchange</strong>
           <button
             className="btn-close btn-close-white"
             onClick={toggleMenu}
