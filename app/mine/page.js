@@ -66,91 +66,105 @@ export default function BankManager() {
 
   const handleSelect = (id) => setSelectedId(String(id));
 
-  const handleSell = async () => {
-    if (accounts.length === 0) {
-      toast.error("Please add a bank account first!");
-      return;
-    }
-    if (!selectedId) {
-      toast.error("Select a bank account to sell from!");
-      return;
-    }
+const handleSell = async () => {
+  if (accounts.length === 0) {
+    toast.error("Please add a bank account first!");
+    return;
+  }
+  if (!selectedId) {
+    toast.error("Select a bank account to sell from!");
+    return;
+  }
 
-    // balance from cookies
-    const encryptedAmount = Cookies.get("depositAmount");
-    let availableBalance = 0;
-    if (encryptedAmount) {
-      try {
-        const decrypted = decryptData(encryptedAmount);
-        const parsed = parseFloat(decrypted);
-        if (!isNaN(parsed)) {
-          availableBalance = parsed;
-          setTotalAmount(parsed.toFixed(2));
-        }
-      } catch (err) {
-        console.error("Failed to decrypt amount:", err);
-      }
-    }
-
-    if (!amount) {
-      toast.error("Enter amount first!");
-      return;
-    }
-    const sellAmount = parseFloat(amount);
-    if (isNaN(sellAmount) || sellAmount <= 0) {
-      toast.error("Invalid amount!");
-      return;
-    }
-    if (sellAmount > availableBalance) {
-      toast.error("Insufficient balance!");
-      return;
-    }
-
-    const newBalance = availableBalance - sellAmount;
-    const encryptedNewBalance = encryptData(newBalance.toString());
-    Cookies.set("depositAmount", encryptedNewBalance, {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
-    setTotalAmount(newBalance.toFixed(2));
-    setSold(true);
-
-    const selectedAcc = accounts.find(
-      (acc) => String(acc.id) === String(selectedId)
-    );
-    if (!selectedAcc) {
-      toast.error("No valid account found!");
-      return;
-    }
-
-    const payload = {
-      ...selectedAcc,
-      sellamount: sellAmount,
-      amount: newBalance,
-      email: storedEmail || "unknown",
-    };
-
+  // balance from cookies
+  const encryptedAmount = Cookies.get("depositAmount");
+  let availableBalance = 0;
+  if (encryptedAmount) {
     try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error("Failed to update sell");
-
-      toast.success("Sell Successful & Saved to DB!");
-      setLastInvoice({
-        account: selectedAcc,
-        sellAmount,
-        newBalance,
-        date: new Date().toLocaleString(),
-      });
+      const decrypted = decryptData(encryptedAmount);
+      const parsed = parseFloat(decrypted);
+      if (!isNaN(parsed)) {
+        availableBalance = parsed;
+        setTotalAmount(parsed.toFixed(2));
+      }
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to update DB");
+      console.error("Failed to decrypt amount:", err);
     }
+  }
+
+  if (!amount) {
+    toast.error("Enter amount first!");
+    return;
+  }
+  const sellAmount = parseFloat(amount);
+  if (isNaN(sellAmount) || sellAmount <= 0) {
+    toast.error("Invalid amount!");
+    return;
+  }
+  if (sellAmount > availableBalance) {
+    toast.error("Insufficient balance!");
+    return;
+  }
+
+  const newBalance = availableBalance - sellAmount;
+  const encryptedNewBalance = encryptData(newBalance.toString());
+  Cookies.set("depositAmount", encryptedNewBalance, {
+    expires: 1,
+    secure: true,
+    sameSite: "Strict",
+  });
+  setTotalAmount(newBalance.toFixed(2));
+  setSold(true);
+
+  const selectedAcc = accounts.find(
+    (acc) => String(acc.id) === String(selectedId)
+  );
+  if (!selectedAcc) {
+    toast.error("No valid account found!");
+    return;
+  }
+
+  // 🔑 stable ID = accountno + email (avoids duplicates in UI)
+  const stableId = `${selectedAcc.accountno}-${storedEmail}`;
+
+  const updatedAcc = {
+    ...selectedAcc,
+    id: stableId,
+    sellamount: sellAmount,
+    amount: newBalance,
+    email: storedEmail || "unknown",
   };
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedAcc),
+    });
+    if (!res.ok) throw new Error("Failed to update sell");
+
+    // update state but filter duplicates (only 1 per accountno)
+    setAccounts((prev) => {
+      const merged = [...prev.filter((a) => a.accountno !== selectedAcc.accountno), updatedAcc];
+      const unique = merged.reduce((map, acc) => {
+        map[acc.accountno] = acc; // latest wins
+        return map;
+      }, {});
+      return Object.values(unique);
+    });
+
+    toast.success("Sell Successful & Saved to DB!");
+    setLastInvoice({
+      account: updatedAcc,
+      sellAmount,
+      newBalance,
+      date: new Date().toLocaleString(),
+    });
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update DB");
+  }
+};
 
   const handleDownloadInvoice = () => {
     if (!lastInvoice) return;
@@ -538,21 +552,21 @@ const pageStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: "40px",
+  padding: "20px", // reduced for mobile
 };
 
 const containerStyle = {
   width: "100%",
   maxWidth: "900px",
   background: "rgba(255,255,255,0.05)",
-  padding: "30px",
+  padding: "20px",
   borderRadius: "20px",
   boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
 };
 
 const titleStyle = {
   textAlign: "center",
-  fontSize: "2rem",
+  fontSize: "1.6rem", // smaller for mobile
   fontWeight: "bold",
   marginBottom: "20px",
   color: "#ffd700",
@@ -560,18 +574,25 @@ const titleStyle = {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-  gap: "20px",
+  gridTemplateColumns: "1fr", // default stack
+  gap: "16px",
   marginBottom: "30px",
 };
+
+// Responsive breakpoint
+if (typeof window !== "undefined" && window.innerWidth > 600) {
+  gridStyle.gridTemplateColumns = "repeat(auto-fit, minmax(260px, 1fr))";
+}
 
 const cardStyle = {
   background: "rgba(255,255,255,0.08)",
   borderRadius: "16px",
-  padding: "20px",
+  padding: "12px",
   transition: "0.3s",
   boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+  wordWrap: "break-word", // prevents long numbers breaking layout
 };
+
 
 const formContainerStyle = {
   background: "rgba(255,255,255,0.1)",

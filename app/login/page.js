@@ -21,9 +21,9 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   const formdata = {
-    username: e.target.username.value,
+    // username: e.target.username.value,
     email: e.target.email.value,
-    phone: e.target.phone.value,
+    // phone: e.target.phone.value,
     password: e.target.password.value,
   };
 
