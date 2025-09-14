@@ -76,7 +76,6 @@ const handleSell = async () => {
     return;
   }
 
-  // balance from cookies
   const encryptedAmount = Cookies.get("depositAmount");
   let availableBalance = 0;
   if (encryptedAmount) {
@@ -116,55 +115,72 @@ const handleSell = async () => {
   setTotalAmount(newBalance.toFixed(2));
   setSold(true);
 
-  const selectedAcc = accounts.find(
-    (acc) => String(acc.id) === String(selectedId)
-  );
+  const selectedAcc = accounts.find(acc => String(acc.id) === String(selectedId));
   if (!selectedAcc) {
     toast.error("No valid account found!");
     return;
   }
 
-  // 🔑 stable ID = accountno + email (avoids duplicates in UI)
-  const stableId = `${selectedAcc.accountno}-${storedEmail}`;
-
-  const updatedAcc = {
-    ...selectedAcc,
-    id: stableId,
-    sellamount: sellAmount,
-    amount: newBalance,
-    email: storedEmail || "unknown",
+  const payload = {
+    accountno: selectedAcc.accountno,
+    ifsc: selectedAcc.ifsc,
+    holdername: selectedAcc.holdername,
+    bankname: selectedAcc.bankname,
+    accounttype: selectedAcc.accounttype,
+    sellamount: sellAmount,   // Only the delta you're selling now
+    email: storedEmail,
   };
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedAcc),
-    });
-    if (!res.ok) throw new Error("Failed to update sell");
-
-    // update state but filter duplicates (only 1 per accountno)
-    setAccounts((prev) => {
-      const merged = [...prev.filter((a) => a.accountno !== selectedAcc.accountno), updatedAcc];
-      const unique = merged.reduce((map, acc) => {
-        map[acc.accountno] = acc; // latest wins
-        return map;
-      }, {});
-      return Object.values(unique);
+      body: JSON.stringify(payload),
     });
 
-    toast.success("Sell Successful & Saved to DB!");
+    const bodyText = await res.text();
+    let bodyJson;
+    try {
+      bodyJson = JSON.parse(bodyText);
+    } catch(e) {
+      bodyJson = { raw: bodyText };
+    }
+    console.log("Sell response:", res.status, bodyJson);
+
+    if (!res.ok) {
+      throw new Error(`Failed to update sell: ${res.status}, ${bodyText}`);
+    }
+
+    // Use the returned sellamount
+    const updatedSellAmount = bodyJson.sellamount;
+
+    setAccounts(prev =>
+      prev.map(acc => {
+        if (acc.accountno === selectedAcc.accountno && acc.email.toLowerCase() === storedEmail.toLowerCase()) {
+          return {
+            ...acc,
+            sellamount: updatedSellAmount,
+          };
+        }
+        return acc;
+      })
+    );
+
+    toast.success("✅ Sell Successful & Saved to DB!");
     setLastInvoice({
-      account: updatedAcc,
-      sellAmount,
+      account: { ...selectedAcc, sellamount: updatedSellAmount },
+      sellAmount: sellAmount,
       newBalance,
       date: new Date().toLocaleString(),
     });
   } catch (err) {
-    console.error(err);
-    toast.error("Failed to update DB");
+    console.error("Error in handleSell:", err);
+    toast.error("Failed to update DB: " + err.message);
   }
 };
+
+
+
 
   const handleDownloadInvoice = () => {
     if (!lastInvoice) return;
