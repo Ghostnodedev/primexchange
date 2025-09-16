@@ -6,7 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import Script from 'next/script';
 
 export const metadata = {
-  title: 'Next.js 13+ with Bootstrap',
+  title: 'Primexchange',
   description: 'A better looking and responsive page.',
 };
 
