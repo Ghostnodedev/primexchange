@@ -31,10 +31,11 @@ export default function ExchangePage() {
   const [amountInput, setAmountInput] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [showDepositModalPage, setShowDepositModalPage] = useState(false);
-  const [network, setNetwork] = useState("erc20"); // New network dropdown state
+  const [network, setNetwork] = useState("TRC20"); // New network dropdown state
   const router = useRouter();
   const [passwordDigits, setPasswordDigits] = useState([]);
   const depositModalRef = useRef(null);
+  const [redirecting, setRedirecting] = useState(false); // 👈 NEW
 
   // Check authentication token presence
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function ExchangePage() {
         2
       )} on ${network.toUpperCase()} saved! Redirecting to deposit page...`
     );
-
+  setRedirecting(true);
     router.push("/deposite");
   };
 
@@ -117,6 +118,15 @@ export default function ExchangePage() {
     toast.success("Please Add an Bank account to continue");
     router.push("/mine");
   };
+
+    if (redirecting) {
+    return (
+      <div className="vh-100 d-flex align-items-center justify-content-center bg-dark text-white">
+        <div className="spinner-border text-light" role="status" />
+        <span className="ms-3 fs-5">Redirecting...</span>
+      </div>
+    );
+  }
 
   if (isAuthenticated === null) return null;
 
@@ -413,6 +423,7 @@ export default function ExchangePage() {
 
             .card {
               flex: 1 1 250px;
+              height: 120px;
               max-width: 400px;
               background: #fff;
               border: 3px solid transparent;
@@ -449,9 +460,9 @@ export default function ExchangePage() {
                 align-items: center;
               }
               .card {
-                width: 100%;
-                max-width: 350px;
-                max-height: 150px;
+                width: 80%;
+                max-width: 250px;
+                max-height: 120px;
               }
             }
           `}</style>
@@ -635,7 +646,7 @@ export default function ExchangePage() {
       </Modal>
 
       {/* BIGGER FULL PAGE DEPOSIT MODAL */}
-      {showDepositModalPage && (
+    {showDepositModalPage && (
         <div
           onClick={handleDepositModalOutsideClick}
           style={{
@@ -671,7 +682,7 @@ export default function ExchangePage() {
                   value={network}
                   onChange={(e) => setNetwork(e.target.value)}
                 >
-                  <option value="trc20">TRC20</option>
+                  <option value="TRC20">TRC20</option>
                 </Form.Select>
               </Form.Group>
 
@@ -706,6 +717,7 @@ export default function ExchangePage() {
           </div>
         </div>
       )}
+
       <Footer />
     </div>
   );

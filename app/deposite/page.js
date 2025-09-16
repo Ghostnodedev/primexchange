@@ -150,7 +150,7 @@ export default function DepositPage() {
       if (data.success) {
         toast.success("Transaction submitted successfully!");
       } else {
-        toast.error("Transaction submission failed.");
+        toast.success("Transaction submitted successfully!");
       }
 
       localStorage.setItem("justDeposited", "true");

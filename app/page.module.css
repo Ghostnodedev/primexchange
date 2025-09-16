@@ -224,12 +224,11 @@ a.secondary {
 .heroContainer::after {
   content: "";
   position: absolute;
-  width: 800px;
   height: 800px;
   background: radial-gradient(circle, #010847 0%, transparent 100%);
   border-radius: 50%;
-  top: -200px;
-  right: -200px;
+  /* top: -200px; */
+  /* right: -200px; */
   opacity: 0.6;
   filter: blur(80px);
   z-index: 0;
@@ -321,10 +320,11 @@ a.secondary {
   gap: 1.5rem;
   align-items: center;
   justify-content: center;
+  max-width: 12000px;
 }
 
 .heroImageTop {
-  width: 550px;
+  width: 12000px;
   height: 500px;
   border-radius: 12px;
   box-shadow: 10px 15px 8px 20px rgba(2, 8, 31, 0.3);
@@ -543,4 +543,76 @@ a.secondary {
 .heroImageTop:hover {
   transform: translateZ(20px) scale(1.04) rotateY(4deg);
   box-shadow: 0 25px 70px rgba(0, 255, 255, 0.5);
+}
+
+/* ========== DESKTOP LAYOUT ========== */
+@media (min-width: 1025px) {
+  .heroContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "left right"
+      "btn  right";
+    align-items: center;
+    gap: 2rem;
+    padding: 4rem 8%;
+  }
+
+  .heroLeft {
+    grid-area: left;
+    align-self: start;
+  }
+
+  .heroRight {
+    grid-area: right;
+    align-self: center;
+    justify-self: end;
+  }
+
+  .btnWrapper {
+    grid-area: btn;
+    justify-self: start;
+    align-self: start;
+    margin: 0;
+  }
+
+  /* Smaller image on desktop */
+  .heroImageTop {
+    max-width: 450px;
+    height: auto;
+  }
+}
+
+/* ========== MOBILE/TABLET LAYOUT ========== */
+@media (max-width: 1024px) {
+  .heroContainer {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem 5%;
+  }
+
+  .heroLeft {
+    max-width: 100%;
+  }
+
+  .heroRight {
+    margin-top: 1rem;
+  }
+
+  .btnWrapper {
+    text-align: center;
+    margin-top: 1.5rem; /* adds gap between image and button */
+  }
+
+  .heroImageTop {
+    width: 90%;
+    height: auto;
+  }
+
+  .exchangeBtn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem; /* smaller button on mobile */
+  }
 }

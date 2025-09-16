@@ -663,7 +663,7 @@ const cancelBtnStyle = {
 const plusBtnStyle = {
   background: "#ffd700",
   border: "none",
-  borderRadius: "50%",
+  borderRadius: "30%",
   padding: "14px",
   cursor: "pointer",
   boxShadow: "0 6px 14px rgba(0,0,0,0.3)",

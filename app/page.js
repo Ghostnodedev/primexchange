@@ -9,25 +9,38 @@ export default function Home() {
   return (
     <>
       <Navbar />
-<div className={styles.heroContainer}>
-  {/* Left Content */}
-  <div className={styles.heroLeft}>
-    <h1 className={styles.heroHeading}>
-      <span className={styles.highlight}>Welcome to Crypto World</span>
-      <br />
-      <span className={styles.subheading}>Explore, trade, and stay ahead in the</span> <br />
-      <strong className={styles.strongText}>digital finance revolution</strong>
-    </h1>
-    <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p>
-    <button className={styles.exchangeBtn}>Exchange !</button>
-  </div>
+      <div className={styles.heroContainer}>
+        {/* Left Content */}
+        <div className={styles.heroLeft}>
+          <h1 className={styles.heroHeading}>
+            <span className={styles.highlight}>Welcome to Crypto World</span>
+            <br />
+            <span className={styles.subheading}>
+              Explore, trade, and stay ahead in the
+            </span>
+            <br />
+            <strong className={styles.strongText}>
+              digital finance revolution
+            </strong>
+          </h1>
+          <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p>
+          {/* button removed from here */}
+        </div>
 
-  {/* Right Content (Images) */}
-  <div className={styles.heroRight}>
-    <img src="/cryptot.jpg" alt="Team work" className={styles.heroImageTop} />
-  </div>
-</div>
+        {/* Right Content (Images) */}
+        <div className={styles.heroRight}>
+          <img
+            src="/cryptot.jpg"
+            alt="Team work"
+            className={styles.heroImageTop}
+          />
+        </div>
 
+        {/* Button wrapper (repositioned by CSS) */}
+        <div className={styles.btnWrapper}>
+          <button className={styles.exchangeBtn}>Exchange !</button>
+        </div>
+      </div>
 
       <StepSection />
       <Homefetch />
