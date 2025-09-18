@@ -167,10 +167,13 @@ const handleSell = async () => {
     );
 
     toast.success("✅ Sell Successful & Saved to DB!");
+    const USD_TO_INR_RATE = 88.16;
     setLastInvoice({
       account: { ...selectedAcc, sellamount: updatedSellAmount },
       sellAmount: sellAmount,
       newBalance,
+      sellAmountINR: sellAmount * USD_TO_INR_RATE,
+      newBalanceINR: newBalance * USD_TO_INR_RATE,
       date: new Date().toLocaleString(),
     });
   } catch (err) {
@@ -179,48 +182,82 @@ const handleSell = async () => {
   }
 };
 
+const handleDownloadInvoice = async () => {
+  if (!lastInvoice) return;
 
+  // 📄 Generate PDF
+  const doc = new jsPDF();
+  doc.text("🧾 Primexchange", 14, 20);
+  doc.setFontSize(14);
+  doc.text("Transaction Invoice", 14, 30);
+  doc.setFontSize(11);
+  doc.text(`Date: ${lastInvoice.date}`, 14, 40);
 
+  autoTable(doc, {
+    startY: 50,
+    head: [["Field", "Value"]],
+    body: [
+      ["Account Holder", lastInvoice.account.holdername],
+      ["Bank Name", lastInvoice.account.bankname],
+      ["Account Number", lastInvoice.account.accountno],
+      ["IFSC", lastInvoice.account.ifsc],
+      ["Sell Amount (USD)", `$${lastInvoice.sellAmount.toFixed(2)}`],
+      ["Sell Amount (INR)", `₹${lastInvoice.sellAmountINR.toFixed(2)}`],
+      ["Remaining Balance (USD)", `$${lastInvoice.newBalance.toFixed(2)}`],
+      ["Remaining Balance (INR)", `₹${lastInvoice.newBalanceINR.toFixed(2)}`],
+    ],
+    theme: "grid",
+    styles: { halign: "left", cellPadding: 3, fontSize: 11 },
+    headStyles: {
+      fillColor: [255, 215, 0],
+      textColor: "#000",
+      fontStyle: "bold",
+    },
+    margin: { left: 14, right: 14 },
+  });
 
-  const handleDownloadInvoice = () => {
-    if (!lastInvoice) return;
-    const doc = new jsPDF();
-    doc.text("🧾 Primexchange", 14, 20);
-    doc.setFontSize(14);
-    doc.text("Transaction Invoice", 14, 30);
-    doc.setFontSize(11);
-    doc.text(`Date: ${lastInvoice.date}`, 14, 40);
+  doc.setFontSize(12);
+  doc.setTextColor(0, 128, 0);
+  doc.text(
+    "✔ Transaction Completed Successfully",
+    14,
+    doc.lastAutoTable.finalY + 15
+  );
+  doc.save(`Primexchange_Invoice_${Date.now()}.pdf`);
 
-    autoTable(doc, {
-      startY: 50,
-      head: [["Field", "Value"]],
-      body: [
-        ["Account Holder", lastInvoice.account.holdername],
-        ["Bank Name", lastInvoice.account.bankname],
-        ["Account Number", lastInvoice.account.accountno],
-        ["IFSC", lastInvoice.account.ifsc],
-        ["Sell Amount", `$${lastInvoice.sellAmount.toFixed(2)}`],
-        ["Remaining Balance", `$${lastInvoice.newBalance.toFixed(2)}`],
-      ],
-      theme: "grid",
-      styles: { halign: "left", cellPadding: 3, fontSize: 11 },
-      headStyles: {
-        fillColor: [255, 215, 0],
-        textColor: "#000",
-        fontStyle: "bold",
-      },
-      margin: { left: 14, right: 14 },
+  // 📤 Send to backend API
+  const invoiceData = {
+    holdername: lastInvoice.account.holdername,
+    bankname: lastInvoice.account.bankname,
+    accountno: lastInvoice.account.accountno,
+    ifsc: lastInvoice.account.ifsc,
+    sellamountUSD: lastInvoice.sellAmount?.toFixed(2),
+    sellamountINR: lastInvoice.sellAmountINR?.toFixed(2),
+    newBalanceUSD: lastInvoice.newBalance?.toFixed(2),
+    newBalanceINR: lastInvoice.newBalanceINR?.toFixed(2),
+  };
+
+  try {
+    const response = await fetch("https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/invoice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(invoiceData),
     });
 
-    doc.setFontSize(12);
-    doc.setTextColor(0, 128, 0);
-    doc.text(
-      "✔ Transaction Completed Successfully",
-      14,
-      doc.lastAutoTable.finalY + 15
-    );
-    doc.save(`Primexchange_Invoice_${Date.now()}.pdf`);
-  };
+    const result = await response.json();
+    if (!response.ok) {
+      console.error("❌ Failed to send invoice to API:", result);
+      toast.error("❌ Failed to send invoice data to server");
+    } else {
+      console.log("✅ Invoice sent to API:", result);
+      toast.success("✅ Invoice data sent to backend");
+    }
+  } catch (err) {
+    console.error("❌ Error sending invoice:", err);
+    toast.error("❌ Error sending invoice");
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

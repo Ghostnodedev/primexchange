@@ -251,12 +251,18 @@ export default function ExchangePage() {
         ></div>
 
         <Container style={{ position: "relative", zIndex: 2 }}>
-          <div className="hero">
-            <h1 className="typingEffect">Your Exchange. Your Control.</h1>
-            <p className="subTextFade">
-              Premium USDT Xchange of India.
-            </p>
-          </div>
+<div className="hero">
+  <h1 className="typingEffect desktopOnly">Your Exchange. Your Control.</h1>
+  
+  {/* Mobile: two lines */}
+  <h1 className="typingEffect mobileOnly">Your Exchange.</h1>
+  <h1 className="typingEffect mobileOnly">Your Control.</h1>
+
+  <p className="subTextFade">
+    Premium USDT Xchange of India.
+  </p>
+</div>
+
 
           <p
             className="lead mt-3 mb-5"
