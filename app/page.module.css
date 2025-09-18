@@ -1,209 +1,4 @@
 /* =========================
-   Darker, More Visible Full CSS
-   (same structure & selectors)
-   ========================= */
-
-.page {
-  --gray-rgb: 220, 220, 220;                 /* lighter text color base for dark UI */
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.20);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.12);
-
-  --button-primary-hover: #6366f1;            /* luxury violet hover */
-  --button-secondary-hover: #2d2d2d;
-
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
-  align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  padding: 80px;
-  gap: 64px;
-  font-family: var(--font-geist-sans);
-
-  /* make whole page darker + clearer */
-  background: #0a0a0a;
-  color: #f8fafc;
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.18);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.10);
-
-    --button-primary-hover: #7c7ff6;
-    --button-secondary-hover: #1a1a1a;
-  }
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
-
-  /* subtle card feel so content is readable on dark bg */
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--gray-alpha-100);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
-}
-
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
-  color: #e5e7eb;
-}
-
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
-}
-
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-100);
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-weight: 600;
-  color: #e2e8f0;
-  border: 1px solid var(--gray-alpha-200);
-}
-
-/* CTAs */
-.ctas {
-  display: flex;
-  gap: 16px;
-}
-
-.ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: 1px solid transparent;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 600;
-  text-decoration: none;
-  color: #fff;
-}
-
-a.primary {
-  /* more visible primary */
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: #fff;
-  gap: 8px;
-  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.45);
-}
-
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 158px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35) inset, 0 6px 18px rgba(0, 0, 0, 0.25);
-}
-
-.footer {
-  grid-row-start: 3;
-  display: flex;
-  gap: 24px;
-  color: #94a3b8;
-}
-
-.footer a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #a3b2c7;
-  transition: color 0.2s ease, text-decoration-color 0.2s ease;
-}
-
-.footer img {
-  flex-shrink: 0;
-}
-
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: linear-gradient(135deg, #4f46e5, #4338ca);
-    border-color: transparent;
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(99, 102, 241, 0.55);
-  }
-
-  a.secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--button-secondary-hover);
-    color: #ffffff;
-    transform: translateY(-2px);
-  }
-
-  .footer a:hover {
-    color: #ffffff;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-}
-
-@media (max-width: 600px) {
-  .page {
-    padding: 32px;
-    padding-bottom: 80px;
-  }
-
-  .main {
-    align-items: center;
-    padding: 20px;
-    border-radius: 14px;
-  }
-
-  .main ol {
-    text-align: center;
-  }
-
-  .ctas {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .ctas a {
-    font-size: 14px;
-    height: 44px;
-    padding: 0 16px;
-    width: 100%;
-  }
-
-  a.secondary {
-    min-width: auto;
-  }
-
-  .footer {
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
-}
-
-/* =========================
    Hero
    ========================= */
 .heroContainer {
@@ -220,7 +15,6 @@ a.secondary {
   position: relative;
   overflow: hidden;
 }
-
 .heroContainer::after {
   content: "";
   position: absolute;
@@ -233,21 +27,17 @@ a.secondary {
   filter: blur(80px);
   z-index: 0;
 }
-
-
 /* Left Section */
 .heroLeft {
   flex: 1;
   max-width: 550px;
   z-index: 2;
 }
-
 .heroLeft h1 {
   font-size: 3rem;
   font-weight: 700;
   line-height: 1.2;
 }
-
 .highlight {
   background: linear-gradient(135deg, #070bcb, #89b3ee);
   -webkit-background-clip: text;
@@ -255,13 +45,11 @@ a.secondary {
   -webkit-text-fill-color: transparent;
   font-weight: 800;
 }
-
 .heroLeft p {
   margin-top: 1rem;
   font-size: 1.2rem;
   color: #ddd;
 }
-
 .exchangeBtn {
   opacity: 1; /* Always visible */
   animation: pulseGlow 3s ease-in-out infinite;
@@ -274,16 +62,13 @@ a.secondary {
   user-select: none;
   will-change: transform;
   transition: all 0.3s ease;
-
   background: linear-gradient(135deg, #00ffe7, #0077ff);
   color: #000;
-
   box-shadow:
     0 0 12px rgba(0, 255, 255, 0.5),
     0 0 20px rgba(0, 255, 255, 0.3),
     inset 0 0 8px rgba(0, 255, 255, 0.4);
 }
-
 .exchangeBtn:hover {
   transform: scale(1.05);
   box-shadow:
@@ -292,7 +77,6 @@ a.secondary {
     inset 0 0 12px rgba(0, 255, 255, 0.7);
   animation: none; /* Pause pulse on hover */
 }
-
 /* Gentle glowing pulse animation that does NOT affect opacity */
 @keyframes pulseGlow {
   0%, 100% {
@@ -310,8 +94,6 @@ a.secondary {
     transform: scale(1.03);
   }
 }
-
-
 /* Right Section */
 .heroRight {
   flex: 1;
@@ -322,7 +104,6 @@ a.secondary {
   justify-content: center;
   max-width: 12000px;
 }
-
 .heroImageTop {
   width: 12000px;
   height: 500px;
@@ -330,12 +111,9 @@ a.secondary {
   box-shadow: 10px 15px 8px 20px rgba(2, 8, 31, 0.3);
   object-fit: cover;
 }
-
 .heroImageTop {
   align-self: flex-end;
 }
-
-
 /* WhatsApp Floating Button */
 .whatsappBtn {
   position: fixed;
@@ -351,12 +129,10 @@ a.secondary {
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
 .whatsappBtn img {
   width: 32px;
   height: 32px;
 }
-
 /* Responsive */
 @media (max-width: 1024px) {
   .heroContainer {
@@ -364,50 +140,43 @@ a.secondary {
     text-align: center;
     padding: 3rem 5%;
   }
-
   .heroLeft {
     max-width: 100%;
   }
-
   .heroRight {
     flex-direction: row;
     gap: 1rem;
     margin-top: 2rem;
   }
-
   .heroImageTop {
     width: 40%;
   }
 }
-
 @media (max-width: 600px) {
   .heroLeft h1 {
     font-size: 2rem;
   }
-
   .exchangeBtn {
     padding: 0.6rem 1.5rem;
     font-size: 0.9rem;
   }
-
-  .heroRight {
-    flex-direction: column;
-  }
-
+}
+@media (max-width: 600px) {
   .heroImageTop {
-    width: 90%;
-    height: 50%;
-    margin-right: 15px;
+    width: 200%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .heroRight {
+    display: flex;
+    justify-content: center;
   }
 }
-
 /* Maintain your original colors on text */
-
 /* Container perspective for subtle 3D depth */
 .heroContainer {
   perspective: 1000px;
 }
-
 /* Left Content slide in with smooth 3D fade */
 .heroLeft {
   opacity: 0;
@@ -415,7 +184,6 @@ a.secondary {
   animation: slideIn3DFade 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 0.3s;
 }
-
 @keyframes slideIn3DFade {
   0% {
     opacity: 0;
@@ -426,7 +194,6 @@ a.secondary {
     transform: translateX(0) rotateY(0) translateZ(0);
   }
 }
-
 /* Heading fade + subtle scale + slight 3D rotation for elegance */
 .heroHeading {
   opacity: 0;
@@ -434,7 +201,6 @@ a.secondary {
   animation: fadeScaleRotate 1.2s ease-out forwards;
   animation-delay: 0.8s;
 }
-
 @keyframes fadeScaleRotate {
   0% {
     opacity: 0;
@@ -447,7 +213,6 @@ a.secondary {
     filter: brightness(1);
   }
 }
-
 /* Highlight pop-in 3D with subtle glow (no color change) */
 .highlight {
   animation: popIn3D 1.2s ease-out forwards;
@@ -460,7 +225,6 @@ a.secondary {
   display: inline-block;
   transform-style: preserve-3d;
 }
-
 @keyframes popIn3D {
   0% {
     transform: rotateX(80deg) rotateY(30deg) scale(0.85);
@@ -471,7 +235,6 @@ a.secondary {
     opacity: 1;
   }
 }
-
 /* Subheading & Strong Text fade + slide */
 .subheading,
 .strongText {
@@ -480,22 +243,18 @@ a.secondary {
   animation: fadeSlideUp 1s ease forwards;
   animation-fill-mode: forwards;
 }
-
 .subheading {
   animation-delay: 1.3s;
 }
-
 .strongText {
   animation-delay: 1.6s;
 }
-
 @keyframes fadeSlideUp {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 /* Paragraph fade with delay */
 .heroSubText {
   opacity: 0;
@@ -505,14 +264,11 @@ a.secondary {
   margin-top: 24px;
   /* keep your original color */
 }
-
 @keyframes fadeInSlow {
   to {
     opacity: 1;
   }
 }
-
-
 /* Right Content slide in with subtle 3D fade */
 .heroRight {
   opacity: 0;
@@ -520,7 +276,6 @@ a.secondary {
   animation: slideIn3DFadeRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 1.4s;
 }
-
 @keyframes slideIn3DFadeRight {
   0% {
     opacity: 0;
@@ -531,7 +286,6 @@ a.secondary {
     transform: translateX(0) rotateY(0) translateZ(0);
   }
 }
-
 /* Image subtle parallax hover */
 .heroImageTop {
   border-radius: 15px;
@@ -539,12 +293,10 @@ a.secondary {
   transition: transform 0.5s ease, box-shadow 0.5s ease;
   will-change: transform;
 }
-
 .heroImageTop:hover {
   transform: translateZ(20px) scale(1.04) rotateY(4deg);
   box-shadow: 0 25px 70px rgba(0, 255, 255, 0.5);
 }
-
 /* ========== DESKTOP LAYOUT ========== */
 @media (min-width: 1025px) {
   .heroContainer {
@@ -558,32 +310,28 @@ a.secondary {
     gap: 2rem;
     padding: 4rem 8%;
   }
-
   .heroLeft {
     grid-area: left;
     align-self: start;
   }
-
   .heroRight {
     grid-area: right;
     align-self: center;
     justify-self: end;
   }
-
   .btnWrapper {
     grid-area: btn;
     justify-self: start;
     align-self: start;
     margin: 0;
   }
-
   /* Smaller image on desktop */
   .heroImageTop {
-    max-width: 450px;
-    height: auto;
+    max-width: 850px;  /* increased from 450px */
+    width: 200%;       /* ensures image scales to container */
+    height: 500px;
   }
 }
-
 /* ========== MOBILE/TABLET LAYOUT ========== */
 @media (max-width: 1024px) {
   .heroContainer {
@@ -592,25 +340,20 @@ a.secondary {
     text-align: center;
     padding: 3rem 5%;
   }
-
   .heroLeft {
     max-width: 100%;
   }
-
   .heroRight {
     margin-top: 1rem;
   }
-
   .btnWrapper {
     text-align: center;
     margin-top: 1.5rem; /* adds gap between image and button */
   }
-
   .heroImageTop {
     width: 90%;
     height: auto;
   }
-
   .exchangeBtn {
     padding: 0.6rem 1.5rem;
     font-size: 0.9rem; /* smaller button on mobile */

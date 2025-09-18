@@ -51,14 +51,19 @@ const Navbar = () => {
       </Link>
 
       {/* Hamburger toggler */}
-      <button
-        className="navbar-toggler text-white border-white"
-        type="button"
-        onClick={toggleMenu}
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
+<button
+  className="navbar-toggler text-white border-white"
+  type="button"
+  onClick={toggleMenu}
+  aria-label="Toggle navigation"
+>
+  <span className="navbar-toggler-icon">
+    <div></div>
+  </span>
+</button>
+
+
+
 
       {/* Desktop Menu */}
       <div className="collapse navbar-collapse justify-content-end d-none d-md-flex">

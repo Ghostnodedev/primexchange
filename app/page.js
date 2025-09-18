@@ -13,18 +13,22 @@ export default function Home() {
         {/* Left Content */}
         <div className={styles.heroLeft}>
           <h1 className={styles.heroHeading}>
-            <span className={styles.highlight}>Welcome to Crypto World</span>
+            <span className={styles.highlight}>Your Gateway to Safe & Fast USDT Trading</span>
             <br />
             <span className={styles.subheading}>
-              Explore, trade, and stay ahead in the
+              Exchange Smart
             </span>
             <br />
             <strong className={styles.strongText}>
-              digital finance revolution
+              Grow Securely.
             </strong>
           </h1>
-          <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p>
+          {/* <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p> */}
           {/* button removed from here */}
+
+          <div className={styles.btnWrapper}>
+            <button className={styles.exchangeBtn}>Exchange !</button>
+          </div>
         </div>
 
         {/* Right Content (Images) */}
@@ -37,9 +41,9 @@ export default function Home() {
         </div>
 
         {/* Button wrapper (repositioned by CSS) */}
-        <div className={styles.btnWrapper}>
+        {/* <div className={styles.btnWrapper}>
           <button className={styles.exchangeBtn}>Exchange !</button>
-        </div>
+        </div> */}
       </div>
 
       <StepSection />

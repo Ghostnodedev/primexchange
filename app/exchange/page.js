@@ -224,7 +224,7 @@ export default function ExchangePage() {
           padding: "80px 20px",
           overflow: "hidden",
           backgroundImage:
-            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://t3.ftcdn.net/jpg/15/19/98/20/240_F_1519982014_SJOhZfUcZLRTFfzjvJ1UC7KR3qBqEd17.jpg')",
+            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://media.istockphoto.com/id/1463455851/photo/cryptocurrency-market-financial-data-and-candlesticks-internet-banking.jpg?s=612x612&w=0&k=20&c=wt4VtTDywhqk3QpUIkV6qw_8pODWFSmE9VAMrg_Pm_M=')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
@@ -252,9 +252,9 @@ export default function ExchangePage() {
 
         <Container style={{ position: "relative", zIndex: 2 }}>
           <div className="hero">
-            <h1 className="typingEffect">Buy & Sell USDT at the Best Rates</h1>
+            <h1 className="typingEffect">Your Exchange. Your Control.</h1>
             <p className="subTextFade">
-              Trusted by thousands. Instant transactions. Real-time rates.
+              Premium USDT Xchange of India.
             </p>
           </div>
 
