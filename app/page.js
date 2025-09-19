@@ -1,11 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
+"use client"
 import Navbar from "./component/header";
 import styles from "./page.module.css";
 import StepSection from "./component/section2";
 import Homefetch from "./component/fetchapi";
 import Footer from "./component/footer";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter()
+  const redirecting = ()=>{
+    router.push('/exchange')
+  }
   return (
     <>
       <Navbar />
@@ -27,7 +33,7 @@ export default function Home() {
           {/* button removed from here */}
 
           <div className={styles.btnWrapper}>
-            <button className={styles.exchangeBtn}>Exchange !</button>
+            <button onClick={redirecting} className={styles.exchangeBtn}>Exchange !</button>
           </div>
         </div>
 
@@ -51,7 +57,7 @@ export default function Home() {
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/+919004501899"
         target="_blank"
         rel="noopener noreferrer"
         className={styles.whatsappBtn}

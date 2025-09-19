@@ -224,7 +224,7 @@ export default function ExchangePage() {
           padding: "80px 20px",
           overflow: "hidden",
           backgroundImage:
-            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://media.istockphoto.com/id/1463455851/photo/cryptocurrency-market-financial-data-and-candlesticks-internet-banking.jpg?s=612x612&w=0&k=20&c=wt4VtTDywhqk3QpUIkV6qw_8pODWFSmE9VAMrg_Pm_M=')",
+            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://images.pexels.com/photos/11279903/pexels-photo-11279903.jpeg?auto=compress&cs=tinysrgb&w=600",
           backgroundSize: "cover",
           backgroundPosition: "center",
           boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
@@ -480,7 +480,7 @@ export default function ExchangePage() {
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/+919004501899"
         target="_blank"
         rel="noopener noreferrer"
         style={{

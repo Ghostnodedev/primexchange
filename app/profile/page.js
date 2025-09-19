@@ -267,7 +267,7 @@ export default function ProfilePage() {
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/your-number"
+        href="https://wa.me/+919004501899"
         target="_blank"
         rel="noopener noreferrer"
         className="position-fixed bottom-0 end-0 m-4"

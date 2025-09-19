@@ -7,6 +7,8 @@ import { Button } from "react-bootstrap";
 import { decryptData, encryptData } from "../utils/crypo";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useRouter } from "next/navigation";
+
 
 const API_URL =
   "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account";
@@ -21,6 +23,7 @@ export default function BankManager() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [storedEmail, setStoredEmail] = useState(null);
   const [lastInvoice, setLastInvoice] = useState(null);
+  const router = useRouter()
 
   // Auth & email
   useEffect(() => {
@@ -167,7 +170,7 @@ const handleSell = async () => {
     );
 
     toast.success("✅ Sell Successful & Saved to DB!");
-    const USD_TO_INR_RATE = 88.16;
+    const USD_TO_INR_RATE = 95;
     setLastInvoice({
       account: { ...selectedAcc, sellamount: updatedSellAmount },
       sellAmount: sellAmount,
@@ -258,7 +261,6 @@ const handleDownloadInvoice = async () => {
   }
 };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -336,9 +338,14 @@ const handleDownloadInvoice = async () => {
       </div>
     );
 
+    const history = ()=>{
+      router.push('/History')
+    }
+
   return (
     <div style={pageStyle}>
       <div style={containerStyle}>
+      <Button onClick={history} style={buttonStyle}>History</Button>
         <h1 style={titleStyle}>💳 Manage Bank Accounts</h1>
         {/* Accounts Grid */}
         {accounts.length > 0 && (
@@ -704,4 +711,21 @@ const plusBtnStyle = {
   padding: "14px",
   cursor: "pointer",
   boxShadow: "0 6px 14px rgba(0,0,0,0.3)",
+};
+
+const buttonStyle = {
+  position: 'fixed',
+  top: '20px',
+  right: '20px',
+  zIndex: 1000,
+  backgroundColor: '#0070f3',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  padding: '10px 16px',
+  fontSize: '16px',
+  fontWeight: '500',
+  cursor: 'pointer',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+  transition: 'background-color 0.3s ease',
 };
