@@ -64,6 +64,10 @@
   transition: all 0.3s ease;
   background: linear-gradient(135deg, #00ffe7, #0077ff);
   color: #000;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 70px;
+  width: 170px;
   box-shadow:
     0 0 12px rgba(0, 255, 255, 0.5),
     0 0 20px rgba(0, 255, 255, 0.3),
@@ -224,6 +228,7 @@
     0 0 10px rgba(0, 255, 255, 0.15);
   display: inline-block;
   transform-style: preserve-3d;
+  margin-bottom: 10px;
 }
 @keyframes popIn3D {
   0% {
@@ -242,12 +247,17 @@
   transform: translateY(20px);
   animation: fadeSlideUp 1s ease forwards;
   animation-fill-mode: forwards;
+  margin-top: 350px;
 }
 .subheading {
   animation-delay: 1.3s;
+  margin-top: 150px;
+
 }
 .strongText {
   animation-delay: 1.6s;
+  margin-top: 150px;
+
 }
 @keyframes fadeSlideUp {
   to {
@@ -256,14 +266,6 @@
   }
 }
 /* Paragraph fade with delay */
-.heroSubText {
-  opacity: 0;
-  animation: fadeInSlow 1.2s ease forwards;
-  animation-delay: 1.9s;
-  font-size: 1.15rem;
-  margin-top: 24px;
-  /* keep your original color */
-}
 @keyframes fadeInSlow {
   to {
     opacity: 1;

@@ -1,4 +1,3 @@
-
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
@@ -98,7 +97,7 @@ export default function ExchangePage() {
         2
       )} on ${network.toUpperCase()} saved! Redirecting to deposit page...`
     );
-  setRedirecting(true);
+    setRedirecting(true);
     router.push("/deposite");
   };
 
@@ -119,7 +118,7 @@ export default function ExchangePage() {
     router.push("/mine");
   };
 
-    if (redirecting) {
+  if (redirecting) {
     return (
       <div className="vh-100 d-flex align-items-center justify-content-center bg-dark text-white">
         <div className="spinner-border text-light" role="status" />
@@ -210,7 +209,6 @@ export default function ExchangePage() {
     { usd: 9999, inr: 97.5 },
   ];
 
-
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
       <Navbar />
@@ -252,16 +250,17 @@ export default function ExchangePage() {
 
         <Container style={{ position: "relative", zIndex: 2 }}>
 <div className="hero">
-  <h1 className="typingEffect desktopOnly">Your Exchange. Your Control.</h1>
-  
-  {/* Mobile: two lines */}
-  <h1 className="typingEffect mobileOnly">Your Exchange.</h1>
-  <h1 className="typingEffect mobileOnly">Your Control.</h1>
+  <h1 className="luxTitle desktopOnly">Your Exchange. Your Control.</h1>
 
-  <p className="subTextFade">
+  <h1 className="luxTitle mobileOnly">
+    Your Exchange.<br />Your Control.
+  </h1>
+
+  <p className="luxSubText">
     Premium USDT Xchange of India.
   </p>
 </div>
+
 
 
           <p
@@ -301,7 +300,7 @@ export default function ExchangePage() {
             //   e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
             // }}
           >
-             Deposit Now
+            Deposit Now
           </Button>
         </Container>
 
@@ -406,7 +405,6 @@ export default function ExchangePage() {
           </Card>
         </Container>
 
-
         <div className="card-section">
           {prices.map((item, idx) => (
             <div key={idx} className="card">
@@ -415,7 +413,7 @@ export default function ExchangePage() {
             </div>
           ))}
 
-        <FeaturesSection />
+          <FeaturesSection />
 
           <style jsx>{`
             .card-section {
@@ -473,7 +471,6 @@ export default function ExchangePage() {
             }
           `}</style>
         </div>
-
 
         <TestimonialSlider />
       </Container>
@@ -652,7 +649,7 @@ export default function ExchangePage() {
       </Modal>
 
       {/* BIGGER FULL PAGE DEPOSIT MODAL */}
-    {showDepositModalPage && (
+      {showDepositModalPage && (
         <div
           onClick={handleDepositModalOutsideClick}
           style={{

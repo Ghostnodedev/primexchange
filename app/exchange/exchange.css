@@ -146,30 +146,91 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 80px;
-}
-
-.typingEffect {
-  font-weight: bold;
-  font-size: 3rem;
-  font-family: monospace;
+  padding: 100px 20px;
+  color: #fff;
   overflow: hidden;
-  white-space: nowrap;
-  border-right: 3px solid rgba(255, 255, 255, 0.75);
-  width: 0;
-  animation: typing 3s steps(40, end) forwards, blink 0.7s step-end infinite;
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-  letter-spacing: 1.5px;
 }
 
+/* Super elegant title animation */
+.luxTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.3;
+  text-align: center;
+  background: linear-gradient(90deg, #ffffff, #e0c068, #ffffff);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  opacity: 0;
+  transform: scale(0.95) translateY(30px);
+  animation: fadeInGlow 2.4s ease-out forwards, shimmerText 5s infinite linear;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+}
+
+@media (max-width: 600px) {
+  .luxTitle {
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+  }
+}
+
+/* Luxurious subtext animation */
+.luxSubText {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-top: 30px;
+  color: #e0e0e0;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInSubText 2s ease-out forwards;
+  animation-delay: 2s;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.08);
+}
+
+/* Animate opacity + scale + position */
+@keyframes fadeInGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Delayed subtext entrance */
+@keyframes fadeInSubText {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Soft shimmer across gradient text */
+@keyframes shimmerText {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* Responsive visibility classes */
 .desktopOnly {
   display: block;
 }
-
 .mobileOnly {
   display: none;
 }
-
 @media (max-width: 600px) {
   .desktopOnly {
     display: none;
@@ -177,14 +238,9 @@
   .mobileOnly {
     display: block;
   }
-  .typingEffect {
-    font-size: 2rem;
-    border-right: 3px solid rgba(255, 255, 255, 0.75);
-  }
-  /* Add other mobile-specific styles */
 }
 
-/* Keyframes need to be global */
+
 @keyframes typing {
   from {
     width: 0;
@@ -196,11 +252,37 @@
 
 @keyframes blink {
   0%, 100% {
-    border-color: rgba(255, 255, 255, 0.75);
+    border-color: rgba(255, 255, 255, 0.7);
   }
   50% {
     border-color: transparent;
   }
 }
 
-/* Add other styles */
+.subTextFade {
+  margin-top: 30px;
+  font-size: 1.2rem;
+  color: #e0e0e0;
+  font-weight: 300;
+  letter-spacing: 1px;
+  animation: fadeInUp 1.8s ease-out forwards;
+  opacity: 0;
+  text-shadow: 0 0 4px rgba(255,255,255,0.15);
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Delayed typing effect for second mobile line */
+.typingEffectDelayed {
+  animation-delay: 3.2s, 3.2s; /* Delay both typing and blinking */
+}
+
