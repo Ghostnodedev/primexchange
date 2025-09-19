@@ -231,7 +231,7 @@ export default function DepositPage() {
             <small className="text">Deposit Amount</small>
             <div className="d-flex align-items-center justify-content-between">
               <span>{amount !== null ? amount : "Loading..."}</span>
-              <img src="/usdt-icon.png" alt="USDT" style={{ width: "20px" }} />
+              <img src="https://th.bing.com/th/id/ODL.f77bee50b666ec22175d8eef78c3bf56?w=298&h=298&c=10&rs=1&o=6&dpr=1.3&pid=AlgoBlockDebug" alt="USDT" style={{ width: "20px" }} />
             </div>
           </div>
 
