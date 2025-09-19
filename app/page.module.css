@@ -64,10 +64,10 @@
   transition: all 0.3s ease;
   background: linear-gradient(135deg, #00ffe7, #0077ff);
   color: #000;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 70px;
-  width: 170px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  /* height: 70px; */
+  /* width: 170px; */
   box-shadow:
     0 0 12px rgba(0, 255, 255, 0.5),
     0 0 20px rgba(0, 255, 255, 0.3),
@@ -247,16 +247,17 @@
   transform: translateY(20px);
   animation: fadeSlideUp 1s ease forwards;
   animation-fill-mode: forwards;
-  margin-top: 350px;
+    margin: 0;
+    font-size: 1.5rem;  
 }
 .subheading {
   animation-delay: 1.3s;
-  margin-top: 150px;
+  /* margin-top: 150px; */
 
 }
 .strongText {
   animation-delay: 1.6s;
-  margin-top: 150px;
+  /* margin-top: 150px; */
 
 }
 @keyframes fadeSlideUp {

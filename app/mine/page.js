@@ -190,7 +190,7 @@ const handleDownloadInvoice = async () => {
 
   // 📄 Generate PDF
   const doc = new jsPDF();
-  doc.text("🧾 Primexchange", 14, 20);
+  doc.text(" Primexchange", 14, 20);
   doc.setFontSize(14);
   doc.text("Transaction Invoice", 14, 30);
   doc.setFontSize(11);
