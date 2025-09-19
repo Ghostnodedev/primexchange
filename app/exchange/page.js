@@ -214,101 +214,96 @@ export default function ExchangePage() {
       <Navbar />
 
       {/* Banner */}
-      <div
-        className="banner-section d-flex align-items-center text-center text-white"
-        style={{
-          position: "relative",
-          minHeight: "550px",
-          padding: "80px 20px",
-          overflow: "hidden",
-          backgroundImage:
-            "linear-gradient(rgba(0 , 0 ,0, 0.5)), url('https://images.pexels.com/photos/11279903/pexels-photo-11279903.jpeg?auto=compress&cs=tinysrgb&w=600",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          boxShadow: "inset 0 0 60px rgba(1,1,1,0.5)",
+<Container
+  className="d-flex flex-wrap justify-content-center align-items-center banner-container"
+  style={{ position: "relative", zIndex: 2, gap: "30px" }}
+>
+  {/* Left: Text + Button */}
+  <div className="banner-text" style={{ flex: "1 1 320px", maxWidth: "600px", textAlign: "right" }}>
+    <h1 className="luxTitle" style={{ fontSize: "3rem", fontWeight: "900", margin: 0 }}>
+      Your Exchange. <br /> Your Control.
+    </h1>
 
-          // borderRadius: "12px",
-        }}
-      >
-        {/* Shiny gloss effect */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: "-150%",
-            width: "50%",
-            height: "100%",
-            background:
-              "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
-            transform: "skewX(-25deg)",
-            animation: "shine 10s infinite",
-            pointerEvents: "none",
-            zIndex: 1,
-            borderRadius: "12px",
-          }}
-        ></div>
+    <p
+      className="luxSubText"
+      style={{
+        fontSize: "1.4rem",
+        color: "#d1d5db",
+        fontWeight: "500",
+        marginBottom: "30px",
+      }}
+    >
+      Premium USDT Xchange of India.
+    </p>
 
-        <Container style={{ position: "relative", zIndex: 2 }}>
-<div className="hero">
-  <h1 className="luxTitle desktopOnly">Your Exchange. Your Control.</h1>
+    <Button
+      size="lg"
+      className="deposit-button"
+      style={{
+        background: "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
+        border: "none",
+        borderRadius: "30px",
+        padding: "14px 42px",
+        fontWeight: "700",
+        color: "#fff",
+        boxShadow: "5px 5px 8px 2px rgba(0, 0, 0, 0.4)",
+        transition: "all 0.3s ease",
+        letterSpacing: "0.5px",
+        fontSize: "1.1rem",
+        cursor: "pointer",
+        alignSelf: "flex-end",
+      }}
+      onClick={handleShowPasswordModal}
+      onMouseOver={(e) => {
+        e.currentTarget.style.background =
+          "linear-gradient(135deg, #9eaac5ff 0%, #031955ff 100%)";
+        e.currentTarget.style.boxShadow = "0 12px 28px rgba(59, 130, 246, 0.5)";
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.background =
+          "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)";
+        e.currentTarget.style.boxShadow = "5px 5px 8px 2px rgba(0, 0, 0, 0.4)";
+      }}
+    >
+      Deposit Now
+    </Button>
+  </div>
 
-  <h1 className="luxTitle mobileOnly">
-    Your Exchange.<br />Your Control.
-  </h1>
+  {/* Right: Image */}
+  <div
+    className="banner-image"
+    style={{
+      flex: "1 1 450px",
+      maxWidth: "650px",
+      minWidth: "320px",
+      borderRadius: "20px",
+      overflow: "hidden",
+      boxShadow: "0 30px 60px rgba(0, 0, 0, 0.6)",
+      perspective: "1500px",
+      cursor: "pointer",
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    }}
+  >
+    <img
+      src="https://images.pexels.com/photos/11279903/pexels-photo-11279903.jpeg?auto=compress&cs=tinysrgb&w=600"
+      alt="Banner"
+      style={{
+        width: "100%",
+        height: "auto",
+        display: "block",
+        objectFit: "cover",
+        borderRadius: "20px",
+        transformStyle: "preserve-3d",
+        transition: "transform 0.4s ease",
+      }}
+      className="banner-image-img"
+    />
+  </div>
+</Container>
 
-  <p className="luxSubText">
-    Premium USDT Xchange of India.
-  </p>
-</div>
 
 
-          <Button
-            size="lg"
-            style={{
-              background:
-                "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
-              border: "none",
-              borderRadius: "30px",
-              padding: "14px 42px",
-              fontWeight: "700",
-              color: "#fff",
-              boxShadow: "5px 5px 8px 2px rgba(0, 0, 0, 0.4)",
-              transition: "all 0.3s ease",
-              letterSpacing: "0.5px",
-              fontSize: "1.1rem",
-            }}
-            onClick={handleShowPasswordModal}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background =
-                "linear-gradient(135deg, #9eaac5ff 0%, #031955ff 100%)";
-              e.currentTarget.style.boxShadow =
-                "0 12px 28px rgba(59, 130, 246, 0.5)";
-            }}
-            // onMouseOut={(e) => {
-            //   e.currentTarget.style.background =
-            //     "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)";
-            //   e.currentTarget.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
-            // }}
-          >
-            Deposit Now
-          </Button>
-        </Container>
-
-        <style jsx>{`
-          @keyframes shine {
-            0% {
-              left: -150%;
-            }
-            50% {
-              left: 150%;
-            }
-            100% {
-              left: -150%;
-            }
-          }
-        `}</style>
-      </div>
-
+    
       {/* Exchange Info */}
       <Container className="py-5">
         <Container className="py-5">

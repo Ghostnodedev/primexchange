@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import React, { useEffect, useState, useRef } from "react";
-
+import Cookies from "js-cookie";
 function generateRandomTrend(length = 7) {
   let values = [Math.random() * 100];
   for (let i = 1; i < length; i++) {
@@ -147,49 +147,49 @@ export default function CryptoCardGrid() {
   const [cryptoData, setCryptoData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getTodayKey = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+const getTodayKey = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+};
+
+useEffect(() => {
+  const fetchAndShuffle = async () => {
+    setLoading(true);
+
+    const todayKey = getTodayKey();
+    const savedData = Cookies.get("dailyCryptoData");
+    const savedDate = Cookies.get("dailyCryptoDate");
+
+    if (savedData && savedDate === todayKey) {
+      setCryptoData(JSON.parse(savedData));
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd");
+      const data = await res.json();
+
+      const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 16);
+
+      const withTrends = shuffled.map((crypto) => ({
+        ...crypto,
+        trend: generateRandomTrend(7),
+      }));
+
+      Cookies.set("dailyCryptoData", JSON.stringify(withTrends), { expires: 1, sameSite: "Strict" });
+      Cookies.set("dailyCryptoDate", todayKey, { expires: 1, sameSite: "Strict" });
+
+      setCryptoData(withTrends);
+    } catch (err) {
+      console.error("Error fetching crypto data", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const fetchAndShuffle = async () => {
-      setLoading(true);
-
-      const todayKey = getTodayKey();
-      const savedData = localStorage.getItem("dailyCryptoData");
-      const savedDate = localStorage.getItem("dailyCryptoDate");
-
-      if (savedData && savedDate === todayKey) {
-        setCryptoData(JSON.parse(savedData));
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd");
-        const data = await res.json();
-
-        const shuffled = [...data].sort(() => Math.random() - 0.5).slice(0, 16);
-
-        const withTrends = shuffled.map((crypto) => ({
-          ...crypto,
-          trend: generateRandomTrend(7),
-        }));
-
-        localStorage.setItem("dailyCryptoData", JSON.stringify(withTrends));
-        localStorage.setItem("dailyCryptoDate", todayKey);
-
-        setCryptoData(withTrends);
-      } catch (err) {
-        console.error("Error fetching crypto data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAndShuffle();
-  }, []);
+  fetchAndShuffle();
+}, []);
 
   return (
     <>
