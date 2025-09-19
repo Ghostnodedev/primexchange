@@ -19,6 +19,8 @@ export default function DepositPage() {
   const [sellamount, setsellamount] = useState("0.00");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [storedEmail, setStoredEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const Api_Url =
@@ -111,6 +113,8 @@ export default function DepositPage() {
       toast.error("Please enter a valid TXID.");
       return;
     }
+
+      setIsSubmitting(true); 
 
     try {
       // calculate total first
@@ -214,9 +218,9 @@ export default function DepositPage() {
             value={inputId}
             onChange={(e) => setInputId(e.target.value)}
           />
-          <Button variant="success" onClick={handleSubmitTxid}>
-            Submit
-          </Button>
+<Button variant="success" onClick={handleSubmitTxid} disabled={isSubmitting}>
+  {isSubmitting ? "Submitting..." : "Submit"}
+</Button>
         </InputGroup>
 
         <div
