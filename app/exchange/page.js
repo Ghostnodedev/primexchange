@@ -262,16 +262,6 @@ export default function ExchangePage() {
 </div>
 
 
-
-          <p
-            className="lead mt-3 mb-5"
-            style={{
-              textShadow: "1px 1px 4px rgba(0,0,0,0.5)",
-              fontSize: "1.35rem",
-            }}
-          >
-            Secure, Fast, and Transparent — Trusted by thousands.
-          </p>
           <Button
             size="lg"
             style={{
@@ -341,8 +331,8 @@ export default function ExchangePage() {
                 <Button
                   size="lg"
                   style={{
-                    backgroundColor: "#EF4444",
-                    borderColor: "#7b0404ff",
+                    backgroundColor: "#031238ff",
+                    borderColor: "#0a0329ff",
                     borderRadius: "30px",
                     padding: "12px 36px",
                     fontWeight: "600",
@@ -352,10 +342,7 @@ export default function ExchangePage() {
                   }}
                   onClick={handlesell}
                   onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#B91C1C")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#EF4444")
+                    (e.currentTarget.style.backgroundColor = "#097c2fff")
                   }
                 >
                   Sell Now
@@ -405,72 +392,85 @@ export default function ExchangePage() {
           </Card>
         </Container>
 
-        <div className="card-section">
-          {prices.map((item, idx) => (
-            <div key={idx} className="card">
-              <h3>${item.usd}</h3>
-              <p>₹{item.inr}</p>
-            </div>
-          ))}
+<div className="card-section">
+  {prices.map((item, idx) => (
+    <div key={idx} className="card">
+      <div className="icon">
+        {idx === 0 && '📥'}
+        {idx === 1 && '💰'}
+        {idx === 2 && '🏦'}
+      </div>
+      <h3>${item.usd}</h3>
+      <p>₹{item.inr}</p>
+    </div>
+  ))}
 
-          <FeaturesSection />
+  <FeaturesSection />
 
-          <style jsx>{`
-            .card-section {
-              margin-top: -50px;
-              display: flex;
-              gap: 20px;
-              justify-content: center;
-              align-items: stretch;
-              flex-wrap: wrap;
-            }
+  <style jsx>{`
+    .card-section {
+      margin-top: -50px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
 
-            .card {
-              flex: 1 1 250px;
-              height: 120px;
-              max-width: 400px;
-              background: #fff;
-              border: 3px solid transparent;
-              border-radius: 30px;
-              padding: 30px;
-              text-align: center;
-              box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
-              transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
+    .card {
+      flex: 1 1 250px;
+      height: 180px;
+      max-width: 400px;
+      background: #fff;
+      border: 3px solid transparent;
+      border-radius: 30px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
 
-            .card:hover {
-              transform: translateY(-6px);
-              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-            }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    }
 
-            .card h3 {
-              margin: 0;
-              font-size: 1.4rem;
-              font-weight: 700;
-              color: #111827;
-            }
+    .icon {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      color: #8b5cf6;
+    }
 
-            .card p {
-              margin-top: 8px;
-              font-size: 1rem;
-              color: #8b5cf6;
-              font-weight: 500;
-            }
+    .card h3 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+    }
 
-            /* Responsive */
-            @media (max-width: 768px) {
-              .card-section {
-                flex-direction: column;
-                align-items: center;
-              }
-              .card {
-                width: 80%;
-                max-width: 250px;
-                max-height: 120px;
-              }
-            }
-          `}</style>
-        </div>
+    .card p {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #8b5cf6;
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card-section {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card {
+        width: 80%;
+        max-width: 250px;
+        max-height: 180px;
+      }
+    }
+  `}</style>
+</div>
+
 
         <TestimonialSlider />
       </Container>
