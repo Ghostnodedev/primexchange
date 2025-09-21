@@ -204,9 +204,9 @@ export default function ExchangePage() {
 
   // Example rates and testimonials data
   let prices = [
-    { usd: 2999, inr: 95.5 },
-    { usd: 4999, inr: 96.5 },
-    { usd: 9999, inr: 97.5 },
+    { usd: 2999, inr: 99 },
+    { usd: 4999, inr: 99.5 },
+    { usd: 9999, inr: 100 },
   ];
 
   return (
