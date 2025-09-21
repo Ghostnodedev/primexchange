@@ -271,37 +271,33 @@ export default function ExchangePage() {
   </div>
 
   {/* Right: Image */}
-  <div
-    className="banner-image"
+<div
+  className="banner-image"
+  style={{
+    flex: "1 1 450px",
+    maxWidth: "650px",
+    minWidth: "320px",
+    borderRadius: "20px",
+    overflow: "hidden", // ensures child image respects border radius
+    perspective: "1500px",
+    cursor: "pointer",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    marginLeft: "200px",
+  }}
+>
+  <img
+    src="https://www.bing.com/th/id/OIP.SNsMP0VtLM8IF03T-n3sagHaEK?w=245&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
+    alt="Banner"
     style={{
-      flex: "1 1 450px",
-      maxWidth: "650px",
-      minWidth: "320px",
-      borderRadius: "20px",
-      overflow: "hidden",
-      boxShadow: "0 30px 60px rgba(0, 0, 0, 0.6)",
-      perspective: "1500px",
-      cursor: "pointer",
-      transition: "transform 0.3s ease, box-shadow 0.3s ease",
-      marginLeft:"200px"
+      width: "100%",   // make it fill parent
+      height: "auto",
+      display: "block",
+      objectFit: "cover",
     }}
-  >
-    <img
-      src="https://images.pexels.com/photos/11279903/pexels-photo-11279903.jpeg?auto=compress&cs=tinysrgb&w=600"
-      alt="Banner"
-      style={{
-        width: "90%",
-        height: "auto",
-        display: "block",
-        objectFit: "cover",
-        borderRadius: "20px",
-        paddingLeft: 40,
-        transformStyle: "preserve-3d",
-        transition: "transform 0.4s ease",
-      }}
-      className="banner-image-img"
-    />
-  </div>
+    className="banner-image-img"
+  />
+</div>
+
 </Container>
 
 

@@ -42,18 +42,20 @@
 }
 
 .sell-button {
-  background-color: #ef4444;
+  background-color: #031238ff;
+  border: 2px solid #0a0329ff;
   border-radius: 30px;
   padding: 12px 36px;
   font-weight: 600;
   color: white;
-  border: none;
   box-shadow: 0 6px 12px rgba(51, 2, 2, 0.6);
+  transition: 0.3s ease;
 }
 
 .sell-button:hover {
-  background-color: #b91c1c;
+  background-color: #097c2fff;
 }
+
 
 /* Testimonials card transition */
 .testimonial-card {
