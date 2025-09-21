@@ -358,5 +358,6 @@
   }
   .luxSubText {
     font-size: 1.1rem !important;
+    margin-left :100px;
   }
 }

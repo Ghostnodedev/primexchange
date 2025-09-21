@@ -231,6 +231,7 @@ export default function ExchangePage() {
         color: "#d1d5db",
         fontWeight: "500",
         marginBottom: "30px",
+        marginRight:"100px",
       }}
     >
       Premium USDT Xchange of India.
@@ -282,17 +283,19 @@ export default function ExchangePage() {
       perspective: "1500px",
       cursor: "pointer",
       transition: "transform 0.3s ease, box-shadow 0.3s ease",
+      marginLeft:"200px"
     }}
   >
     <img
       src="https://images.pexels.com/photos/11279903/pexels-photo-11279903.jpeg?auto=compress&cs=tinysrgb&w=600"
       alt="Banner"
       style={{
-        width: "100%",
+        width: "90%",
         height: "auto",
         display: "block",
         objectFit: "cover",
         borderRadius: "20px",
+        paddingLeft: 40,
         transformStyle: "preserve-3d",
         transition: "transform 0.4s ease",
       }}
