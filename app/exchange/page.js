@@ -4,8 +4,10 @@
 import { useEffect, useState, useRef } from "react";
 import TestimonialSlider from "../component/testimonial";
 import { useRouter } from "next/navigation";
+import { FaMoneyBillWave, FaUniversity, FaUserPlus } from "react-icons/fa";
 import Cookies from "js-cookie";
 import FeaturesSection from "../component/feature";
+import Page from "../component/slide";
 import {
   Container,
   Row,
@@ -35,6 +37,15 @@ export default function ExchangePage() {
   const [passwordDigits, setPasswordDigits] = useState([]);
   const depositModalRef = useRef(null);
   const [redirecting, setRedirecting] = useState(false); // 👈 NEW
+  const [hovered, setHovered] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Check authentication token presence
   useEffect(() => {
@@ -201,273 +212,237 @@ export default function ExchangePage() {
       </div>
     );
   }
-
-  // Example rates and testimonials data
-  let prices = [
-    { usd: 2999, inr: 99 },
-    { usd: 4999, inr: 99.5 },
-    { usd: 9999, inr: 100 },
-  ];
+  
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
+      <Page/>
       <Navbar />
 
       {/* Banner */}
 <Container
   className="d-flex flex-wrap justify-content-center align-items-center banner-container"
-  style={{ position: "relative", zIndex: 2, gap: "30px" }}
+  style={{ position: "relative", zIndex: 2 }}
 >
-  {/* Left: Text + Button */}
-  <div className="banner-text" style={{ flex: "1 1 320px", maxWidth: "600px", textAlign: "right" }}>
-    <h1 className="luxTitle" style={{ fontSize: "3rem", fontWeight: "900", margin: 0 }}>
+  {/* Banner Text */}
+  <div className="banner-text">
+    <h1 className="luxTitle">
       Your Exchange. <br /> Your Control.
     </h1>
-
-    <p
-      className="luxSubText"
-      style={{
-        fontSize: "1.4rem",
-        color: "#d1d5db",
-        fontWeight: "500",
-        marginBottom: "30px",
-        marginRight:"100px",
-      }}
-    >
+    <p className="luxSubText">
       Premium USDT Xchange of India.
     </p>
 
     <Button
       size="lg"
       className="deposit-button"
-      style={{
-        background: "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)",
-        border: "none",
-        borderRadius: "30px",
-        padding: "14px 42px",
-        fontWeight: "700",
-        color: "#fff",
-        boxShadow: "5px 5px 8px 2px rgba(0, 0, 0, 0.4)",
-        transition: "all 0.3s ease",
-        letterSpacing: "0.5px",
-        fontSize: "1.1rem",
-        cursor: "pointer",
-        alignSelf: "flex-end",
-      }}
       onClick={handleShowPasswordModal}
-      onMouseOver={(e) => {
-        e.currentTarget.style.background =
-          "linear-gradient(135deg, #9eaac5ff 0%, #031955ff 100%)";
-        e.currentTarget.style.boxShadow = "0 12px 28px rgba(59, 130, 246, 0.5)";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.background =
-          "linear-gradient(130deg, #3b17d7ff 0%, #07285eff 100%)";
-        e.currentTarget.style.boxShadow = "5px 5px 8px 2px rgba(0, 0, 0, 0.4)";
-      }}
     >
       Deposit Now
     </Button>
   </div>
 
-  {/* Right: Image */}
-<div
-  className="banner-image"
-  style={{
-    flex: "1 1 450px",
-    maxWidth: "650px",
-    minWidth: "320px",
-    borderRadius: "20px",
-    overflow: "hidden", // ensures child image respects border radius
-    perspective: "1500px",
-    cursor: "pointer",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    marginLeft: "200px",
-  }}
->
-  <img
-    src="https://www.bing.com/th/id/OIP.SNsMP0VtLM8IF03T-n3sagHaEK?w=245&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
-    alt="Banner"
-    style={{
-      width: "100%",   // make it fill parent
-      height: "auto",
-      display: "block",
-      objectFit: "cover",
-    }}
-    className="banner-image-img"
-  />
-</div>
-
+  {/* Banner Image */}
+  <div className="banner-image">
+    <img
+      src="https://www.bing.com/th/id/OIP.SNsMP0VtLM8IF03T-n3sagHaEK?w=245&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
+      alt="Banner"
+      className="banner-image-img"
+    />
+  </div>
 </Container>
+
 
 
 
     
       {/* Exchange Info */}
-      <Container className="py-5">
-        <Container className="py-5">
-          <Card className="shadow-lg mb-5 px-4 py-5 rounded-4">
-            <Row className="align-items-center">
-              {/* Left Section */}
-              <Col md={6}>
-                <h2 className="fw-bold fs-2 text-primary">
-                  Current Exchange Rate
-                </h2>
-                <p className="text-muted">Auto-refresh in {seconds}s</p>
-              </Col>
-
-              {/* Sell Button */}
-              <Col
-                md={3}
-                className="text-center mt-4 mt-md-0"
-                style={{ display: "flex", justifyContent: "center" }}
-              >
-                <Button
-                  size="lg"
-                  style={{
-                    backgroundColor: "#031238ff",
-                    borderColor: "#0a0329ff",
-                    borderRadius: "30px",
-                    padding: "12px 36px",
-                    fontWeight: "600",
-                    color: "white",
-                    boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
-                    marginLeft: "20px", // 👈 pushes right only a bit
-                  }}
-                  onClick={handlesell}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#097c2fff")
-                  }
-                >
-                  Sell Now
-                </Button>
-              </Col>
-
-              {/* Price & Badge */}
-              <Col md={3} className="text-center text-md-end mt-4 mt-md-0">
-                <div
-                  style={{
-                    fontSize: "2.5rem",
-                    fontWeight: "700",
-                    color: "#1e2a78",
-                  }}
-                >
-                  ₹95 {/* Desktop view: inline badge */}
-                  <span className="d-none d-md-inline">
-                    <Badge
-                      bg="warning"
-                      text="dark"
-                      style={{
-                        fontSize: "1.2rem", // bigger on desktop
-                        padding: "8px 20px",
-                      }}
-                    >
-                      BASE
-                    </Badge>
-                  </span>
-                </div>
-
-                {/* Mobile view: badge beneath */}
-                <div className="d-block d-md-none mt-2">
-                  <Badge
-                    bg="warning"
-                    text="dark"
-                    style={{
-                      fontSize: "1.3rem", // bigger on mobile too
-                      padding: "10px 24px",
-                    }}
-                  >
-                    BASE
-                  </Badge>
-                </div>
-                <small className="text-muted d-block mt-1">1 USDT = ₹95</small>
-              </Col>
-            </Row>
-          </Card>
-        </Container>
-
-<div className="card-section">
-  {prices.map((item, idx) => (
-    <div key={idx} className="card">
-      <div className="icon">
-        {idx === 0 && '📥'}
-        {idx === 1 && '💰'}
-        {idx === 2 && '🏦'}
-      </div>
-      <h3>${item.usd}</h3>
-      <p>₹{item.inr}</p>
+<Container className="py-5 d-flex justify-content-center">
+  <Card
+    className="shadow-lg rounded-4 p-5 text-center"
+    style={{
+      maxWidth: "650px",
+      background: "linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%)",
+      border: "1px solid #e2e8f0",
+    }}
+  >
+    {/* Header */}
+    <div className="d-flex justify-content-between align-items-center mb-4">
+      <h5 className="fw-bold text-primary m-0">💱 Current Exchange Rate</h5>
+      <span className="text-muted small fw-semibold">
+        ⏳ Auto-refresh in {seconds}s
+      </span>
     </div>
-  ))}
 
-  <FeaturesSection />
+    {/* Main Rate */}
+    <h1 className="fw-bolder display-2 text-dark mb-2">
+      99
+      <Badge
+        bg="warning"
+        text="dark"
+        className="ms-2 fs-5 px-3 py-2 rounded-pill shadow-sm"
+      >
+        BASE
+      </Badge>
+    </h1>
+    <p className="text-secondary fs-5 mb-5">1 USDT = ₹99</p>
 
-  <style jsx>{`
-    .card-section {
-      margin-top: -50px;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: stretch;
-      flex-wrap: wrap;
+    {/* Tier Pricing */}
+    <div className="table-responsive mb-4">
+      <table className="table table-hover align-middle text-start mb-0">
+        <thead className="table-light">
+          <tr>
+            <th scope="col" className="fw-semibold">Exchanges ($)</th>
+            <th scope="col" className="fw-semibold">Prices (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="fw-medium">=1000 and &lt; 2000</td>
+            <td className="text-danger fw-bold">₹99 + 0.50</td>
+          </tr>
+          <tr>
+            <td className="fw-medium">&gt;=3000 and &lt; 5000</td>
+            <td className="text-danger fw-bold">₹99 + 1</td>
+          </tr>
+          <tr>
+            <td className="fw-medium">&gt;=10000</td>
+            <td className="text-danger fw-bold">₹99 + 2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    {/* Extra Info */}
+    <a
+      href="#"
+      className="text-primary fw-semibold small text-decoration-none"
+    >
+      ℹ️ What is the tiered price policy?
+    </a>
+  </Card>
+</Container>
+
+<div className="d-flex justify-content-center mt-1 mb-4">
+  <Button
+    size="lg"
+    style={{
+      backgroundColor: "#031238ff",
+      borderColor: "#0a0329ff",
+      borderRadius: "30px",
+      padding: "12px 36px",
+      fontWeight: "600",
+      color: "white",
+      boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
+      marginTop: "-35px", // 👈 lifts the button slightly upwards
+    }}
+    onClick={handlesell}
+    onMouseOver={(e) =>
+      (e.currentTarget.style.backgroundColor = "#097c2fff")
     }
-
-    .card {
-      flex: 1 1 250px;
-      height: 180px;
-      max-width: 400px;
-      background: #fff;
-      border: 3px solid transparent;
-      border-radius: 30px;
-      padding: 30px;
-      text-align: center;
-      box-shadow: 1px 1px 6px 5px rgba(2, 11, 27, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
+    onMouseOut={(e) =>
+      (e.currentTarget.style.backgroundColor = "#031238ff")
     }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-    }
-
-    .icon {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-      color: #8b5cf6;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .card p {
-      margin-top: 8px;
-      font-size: 1rem;
-      color: #8b5cf6;
-      font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .card-section {
-        flex-direction: column;
-        align-items: center;
-      }
-      .card {
-        width: 80%;
-        max-width: 250px;
-        max-height: 180px;
-      }
-    }
-  `}</style>
+  >
+    Sell Now
+  </Button>
 </div>
 
+<Container fluid className="px-0">
+      <div
+        style={{
+          background: "#ffffff",
+          borderTopLeftRadius: "24px",
+          borderTopRightRadius: "24px",
+          boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
+          padding: "30px 0",
+          position: "relative",
+          zIndex: 10,
+          width: "100%",
+        }}
+      >
+        <Container className="d-flex justify-content-center">
+          <div
+            className="d-flex justify-content-center align-items-center flex-nowrap w-100"
+            style={{
+              maxWidth: "700px", // max width container
+              gap: isMobile ? "10px" : "450px", // 🔥 big gap desktop, small gap mobile
+              margin: "0 auto",
+            }}
+          >
+            {/* Deposit */}
+            <Button
+              variant="light"
+              className="d-flex flex-column align-items-center border-0 bg-transparent"
+              style={{
+                transition: "all 0.3s ease",
+                transform: hovered === "deposit" ? "translateY(-3px)" : "none",
+                minWidth: "80px",
+              }}
+              onMouseEnter={() => setHovered("deposit")}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => alert("Deposit clicked")}
+            >
+              <FaMoneyBillWave
+                size={36}
+                className={`mb-2 ${
+                  hovered === "deposit" ? "text-purple" : "text-dark"
+                }`}
+              />
+              <span className="fw-semibold text-purple">Deposit</span>
+            </Button>
 
-        <TestimonialSlider />
-      </Container>
+            {/* Withdraw */}
+            <Button
+              variant="light"
+              className="d-flex flex-column align-items-center border-0 bg-transparent"
+              style={{
+                transition: "all 0.3s ease",
+                transform: hovered === "withdraw" ? "translateY(-3px)" : "none",
+                minWidth: "80px",
+              }}
+              onMouseEnter={() => setHovered("withdraw")}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => alert("Withdraw clicked")}
+            >
+              <FaUniversity
+                size={36}
+                className={`mb-2 ${
+                  hovered === "withdraw" ? "text-purple" : "text-dark"
+                }`}
+              />
+              <span className="fw-semibold text-purple">Withdraw</span>
+            </Button>
+
+            {/* Invite */}
+            <Button
+              variant="light"
+              className="d-flex flex-column align-items-center border-0 bg-transparent"
+              style={{
+                transition: "all 0.3s ease",
+                transform: hovered === "invite" ? "translateY(-3px)" : "none",
+                minWidth: "80px",
+              }}
+              onMouseEnter={() => setHovered("invite")}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => alert("Invite clicked")}
+            >
+              <FaUserPlus
+                size={36}
+                className={`mb-2 ${
+                  hovered === "invite" ? "text-purple" : "text-dark"
+                }`}
+              />
+              <span className="fw-semibold text-purple">Invite</span>
+            </Button>
+          </div>
+        </Container>
+      </div>
+    </Container>
+
+<FeaturesSection/>
+
+<TestimonialSlider/>
 
       {/* WhatsApp Floating Button */}
       <a

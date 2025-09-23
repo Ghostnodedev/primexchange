@@ -151,6 +151,9 @@
   padding: 100px 20px;
   color: #fff;
   overflow: hidden;
+  background: radial-gradient(circle at top left, #011121 0%, transparent 60%),
+              radial-gradient(circle at bottom right, #6600ff 0%, transparent 70%),
+              linear-gradient(135deg, #1a0033, #330066, #660099);
 }
 
 /* Super elegant title animation */
@@ -294,7 +297,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: linear-gradient(135deg, blueviolet 0%, rebeccapurple 100%);
+background: radial-gradient(circle at top left, #011121 0%, transparent 60%),
+              radial-gradient(circle at bottom right, #6600ff 0%, transparent 70%),
+              linear-gradient(135deg, #1a0033, #330066, #660099);
 
 }
 
@@ -324,42 +329,77 @@
 }
 
 /* Responsive for mobile */
+/* Mobile banner adjustments */
 @media (max-width: 992px) {
   .banner-container {
-    flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px;
+    gap: 20px; /* smaller gap between text and image */
   }
+
   .banner-text {
     order: 1;
-    max-width: 100% !important;
     text-align: center !important;
-    align-items: center !important;
+    margin: 0 auto;
+    max-width: 90%; /* keep text within screen */
+    gap: 8px; /* reduce gap between title and subtext */
   }
+
+  .luxTitle {
+    font-size: 2.2rem !important;
+    line-height: 1.2;
+    letter-spacing: 1px;
+  }
+
+  .luxSubText {
+    font-size: 1rem !important;
+    margin-top: 6px !important; /* less gap with title */
+    margin-left: 0 !important;
+    text-align: center;
+  }
+
   .banner-image {
     order: 2;
-    max-width: 100% !important;
-    margin: 20px auto !important; /* Center horizontally */
+    width: 100% !important;
+    max-width: 300px; /* prevent overflow */
+    height: auto;
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
     flex: unset !important;
   }
+
   .deposit-button {
     order: 3 !important;
     align-self: center !important;
-    margin-top: 10px;
+    margin-top: 15px !important;
   }
 }
 
-/* Smaller screen font sizes */
+/* Very small devices (phones) */
 @media (max-width: 576px) {
-  .banner-section {
-    min-height: 450px !important;
-    padding: 30px 15px !important;
-  }
   .luxTitle {
-    font-size: 2.2rem !important;
+    font-size: 1.8rem !important;
   }
+
   .luxSubText {
-    font-size: 1.1rem !important;
-    margin-left :100px;
+    font-size: 0.95rem !important;
+  }
+
+  .banner-container {
+    padding: 30px 15px;
+  }
+
+  .banner-image {
+    max-width: 250px;
+  }
+}
+
+
+@media (max-width: 400px) {
+  .button-group-wrapper {
+    gap: 20px !important;
   }
 }
