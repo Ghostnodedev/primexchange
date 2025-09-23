@@ -21,13 +21,11 @@ export default function Home() {
           <h1 className={styles.heroHeading}>
             <span className={styles.highlight}>Your Gateway to Safe & Fast USDT Trading</span>
             <br />
-            <span className={styles.subheading}>
-              Exchange Smart
-            </span>
-            <br />
-            <strong className={styles.strongText}>
-              Grow Securely.
-            </strong>
+<div className={styles.heroText}>
+  <span className={styles.subheading}>Exchange Smart</span>
+  <strong className={styles.strongText}>Grow Securely.</strong>
+</div>
+
           </h1>
           {/* <p className={styles.heroSubText}>Trust the chain. Grow your gain.</p> */}
           {/* button removed from here */}

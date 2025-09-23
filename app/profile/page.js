@@ -5,6 +5,9 @@ import Cookies from "js-cookie";
 import { decryptData, encryptData } from "../utils/crypo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FaShareAlt } from "react-icons/fa";
+import { Modal, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function ProfilePage() {
   const [email, setEmail] = useState("");
@@ -12,6 +15,7 @@ export default function ProfilePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [get, setGet] = useState("0.00");
+  const [popup, setPopup] = useState({ show: false, title: "", message: "" });
 
   const router = useRouter();
 
@@ -20,7 +24,7 @@ export default function ProfilePage() {
     if (token) {
       setIsAuthenticated(true);
 
-      const storedEmail = localStorage.getItem("username");
+      const storedEmail = localStorage.getItem("userEmail");
       if (storedEmail) setEmail(storedEmail);
 
       const encryptedAmount = Cookies.get("depositAmount");
@@ -108,18 +112,25 @@ export default function ProfilePage() {
     );
   }
 
+  const showPopup = (title, message) => {
+    setPopup({ show: true, title, message });
+  };
+
+  const handleClose = () => setPopup({ ...popup, show: false });
+
   return (
     <div
       className="min-vh-100 d-flex flex-column align-items-center px-3 py-4"
       style={{
-        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
+        background:
+          "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
         paddingBottom: "60px",
       }}
     >
       {/* Profile Info */}
       <div className="text-white text-center mb-5">
         <img
-          src="https://randomuser.me/api/portraits/men/75.jpg"
+          src="https://www.bing.com/th/id/OIP.k7xrxWjgYxYyfOE01hGdIgHaFE?w=245&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
           alt="Profile"
           className="rounded-circle border border-4 shadow-lg"
           style={{ width: "140px", height: "140px", objectFit: "cover" }}
@@ -142,7 +153,11 @@ export default function ProfilePage() {
           >
             <i className="bi bi-house"></i> <span>Home</span>
           </Link>
-          <Link href="/exchange" className="text-decoration-none" style={{ color: "#fff" }}>
+          <Link
+            href="/exchange"
+            className="text-decoration-none"
+            style={{ color: "#fff" }}
+          >
             <span>Exchange</span>
           </Link>
           <span
@@ -264,6 +279,81 @@ export default function ProfilePage() {
           </Link>
         ))}
       </div>
+
+      <>
+        <div
+          className="btn lavish-btn shadow-lg d-flex align-items-center justify-content-center"
+          style={{
+            minWidth: "650px",
+            maxWidth: "90%",
+            padding: "16px 36px",
+            fontWeight: "600",
+            fontSize: "1.2rem",
+            borderRadius: "18px",
+            cursor: "pointer",
+            background: "linear-gradient(45deg, #7b2ff7, #f107a3)",
+            color: "white",
+            border: "none",
+            boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
+            transition:
+              "transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease",
+            marginTop: "50px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.boxShadow =
+              "0 10px 30px rgba(241, 7, 163, 0.9)";
+            e.currentTarget.style.background =
+              "linear-gradient(135deg, #f107a3, #7b2ff7)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
+              "0 6px 22px rgba(241, 7, 163, 0.7)";
+            e.currentTarget.style.background =
+              "linear-gradient(45deg, #7b2ff7, #f107a3)";
+          }}
+          onClick={() =>
+            showPopup(
+              "Coming Soon!",
+              "🚀 Exciting features are on the way! Stay tuned."
+            )
+          }
+        >
+          <FaShareAlt style={{ marginRight: "12px", fontSize: "1.4rem" }} />
+          Invite
+        </div>
+
+        {/* Bootstrap Modal */}
+        <Modal
+          show={popup.show}
+          onHide={handleClose}
+          centered
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{popup.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center" style={{ fontSize: "1.1rem" }}>
+            {popup.message}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              onClick={handleClose}
+              style={{
+                background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
+                border: "none",
+                fontWeight: "600",
+                padding: "8px 24px",
+                boxShadow: "0 6px 20px rgba(241, 7, 163, 0.6)",
+              }}
+            >
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
 
       {/* WhatsApp Floating Button */}
       <a

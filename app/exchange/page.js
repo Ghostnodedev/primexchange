@@ -2,6 +2,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Swal from "sweetalert2";
+import { FaShareAlt } from "react-icons/fa";
 import TestimonialSlider from "../component/testimonial";
 import { useRouter } from "next/navigation";
 import { FaMoneyBillWave, FaUniversity, FaUserPlus } from "react-icons/fa";
@@ -212,6 +214,17 @@ export default function ExchangePage() {
       </div>
     );
   }
+
+  const invite =()=>{
+    Swal.fire({
+    title: "Coming Soon",
+    icon: "info", 
+    confirmButtonText: "OK",
+    background: "#7b2ff7",
+    color: "#fff",
+    confirmButtonColor: "#f107a3",
+  });
+  }
   
 
   return (
@@ -219,41 +232,33 @@ export default function ExchangePage() {
       <Page/>
       <Navbar />
 
-      {/* Banner */}
-<Container
-  className="d-flex flex-wrap justify-content-center align-items-center banner-container"
-  style={{ position: "relative", zIndex: 2 }}
->
-  {/* Banner Text */}
-  <div className="banner-text">
-    <h1 className="luxTitle">
+<Container className="banner-container">
+  {/* Left Side Text */}
+  <div className="banner-left">
+    <h1 className="banner-title">
       Your Exchange. <br /> Your Control.
     </h1>
-    <p className="luxSubText">
+    <p className="banner-subtitle">
       Premium USDT Xchange of India.
     </p>
-
     <Button
       size="lg"
-      className="deposit-button"
+      className="banner-deposit-btn"
       onClick={handleShowPasswordModal}
     >
       Deposit Now
     </Button>
   </div>
 
-  {/* Banner Image */}
-  <div className="banner-image">
+  {/* Right Side Image */}
+  <div className="banner-right">
     <img
-      src="https://www.bing.com/th/id/OIP.SNsMP0VtLM8IF03T-n3sagHaEK?w=245&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
+      src="/6240209949623964668.jpg"
       alt="Banner"
-      className="banner-image-img"
+      className="banner-image"
     />
   </div>
 </Container>
-
-
-
 
     
       {/* Exchange Info */}
@@ -381,7 +386,7 @@ export default function ExchangePage() {
               }}
               onMouseEnter={() => setHovered("deposit")}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => alert("Deposit clicked")}
+              onClick={handleShowPasswordModal}
             >
               <FaMoneyBillWave
                 size={36}
@@ -403,7 +408,7 @@ export default function ExchangePage() {
               }}
               onMouseEnter={() => setHovered("withdraw")}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => alert("Withdraw clicked")}
+              onClick={handlesell}
             >
               <FaUniversity
                 size={36}
@@ -425,7 +430,7 @@ export default function ExchangePage() {
               }}
               onMouseEnter={() => setHovered("invite")}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => alert("Invite clicked")}
+              onClick={invite}
             >
               <FaUserPlus
                 size={36}
