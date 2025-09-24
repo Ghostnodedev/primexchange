@@ -71,7 +71,7 @@ export default function HistoryPage() {
                                     .map((acc, index) => {
                                         const id = `${prefix}${generate10DigitNumber()}`;
                                         const usd = parseFloat(acc.sellamount || 0);
-                                        const inr = usd * 92; // conversion rate (1 USD = ₹92)
+                                        const inr = usd * 99; // conversion rate (1 USD = ₹92)
 
                                         return (
                                             <tr key={acc.id || index}>

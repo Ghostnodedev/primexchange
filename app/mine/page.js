@@ -170,7 +170,7 @@ const handleSell = async () => {
     );
 
     toast.success("✅ Sell Successful & Saved to DB!");
-    const USD_TO_INR_RATE = 95;
+    const USD_TO_INR_RATE = 99;
     setLastInvoice({
       account: { ...selectedAcc, sellamount: updatedSellAmount },
       sellAmount: sellAmount,
