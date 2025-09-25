@@ -15,12 +15,12 @@ export default function ProfilePage() {
   const [totalAmount, setTotalAmount] = useState("0.00");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [get, setGet] = useState("0.00");
   const [popup, setPopup] = useState({ show: false, title: "", message: "" });
   const [profileData, setProfileData] = useState(null);
 
   const router = useRouter();
 
+  // Initial Authentication and cookie reading
   useEffect(() => {
     const token = localStorage.getItem("authToken") || Cookies.get("authToken");
     if (token) {
@@ -45,50 +45,62 @@ export default function ProfilePage() {
     setLoading(false);
   }, []);
 
+  // Fetch profile data and merge with cookie value for totalAmount
   useEffect(() => {
-    const encryptedAmount = Cookies.get("lastDepositAmount");
-    if (encryptedAmount) {
+    const token = localStorage.getItem("authToken");
+    const storedEmail = localStorage.getItem("userEmail");
+
+    if (!token || !storedEmail) {
+      setLoading(false);
+      return;
+    }
+
+    let totalAmountLoadedFromCookie = false;
+    const depositAmountFromCookie = Cookies.get("depositAmount");
+
+    if (depositAmountFromCookie) {
       try {
-        const decrypted = decryptData(encryptedAmount);
+        const decrypted = decryptData(depositAmountFromCookie);
         const parsed = parseFloat(decrypted);
-        if (!isNaN(parsed)) setGet(parsed.toFixed(2));
-      } catch (err) {
-        console.error("Failed to decrypt amount:", err);
+        if (!isNaN(parsed)) {
+          setTotalAmount(parsed.toFixed(2));
+          totalAmountLoadedFromCookie = true;
+        }
+      } catch (error) {
+        console.error("Failed to decrypt cookie amount:", error);
       }
     }
-  }, []);
 
-useEffect(() => {
-  const token = localStorage.getItem("authToken");
-  const storedEmail = localStorage.getItem("userEmail");
-
-  if (token && storedEmail) {
     fetch(`https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gprofile?email=${storedEmail}`)
       .then((response) => response.json())
       .then((data) => {
         if (data && data.data && data.data.length > 0) {
           const profile = data.data[0];
-          setProfileData(profile); // Set profile
+          setProfileData(profile);
+          setEmail(profile.email);
+          setIsAuthenticated(true);
 
-          if (profile.totalamount) {
-            try {
-              const encryptedTotal = encryptData(profile.totalamount.toString());
-              Cookies.set("depositAmount", encryptedTotal, {
-                secure: true,
-                sameSite: "Strict",
-              });
-            } catch (error) {
-              console.error("Failed to encrypt totalAmount:", error);
-            }
+          // If totalAmount not loaded from cookie, use API data
+          if (!totalAmountLoadedFromCookie && profile.totalamount) {
+            const encrypted = encryptData(profile.totalamount.toString());
+            Cookies.set("depositAmount", encrypted, {
+              secure: true,
+              sameSite: "Strict",
+              expires: 1,
+            });
+            setTotalAmount(Number(profile.totalamount).toFixed(2));
           }
         }
+        setLoading(false);
       })
-      .catch((error) => console.error("Error fetching profile data:", error));
-  }
-}, []);
+      .catch((error) => {
+        console.error("Error fetching profile data:", error);
+        setLoading(false);
+      });
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("email");
+    localStorage.removeItem("userEmail");
     Cookies.remove("depositAmount");
     localStorage.removeItem("authToken");
     Cookies.remove("authToken");
@@ -177,7 +189,7 @@ useEffect(() => {
         style={{ maxWidth: "900px", gap: "12px" }}
       >
         <div className="d-flex align-items-center gap-4 flex-wrap">
-                    <Link
+          <Link
             href="/"
             className="d-flex align-items-center gap-1 text-decoration-none"
             style={{ color: "#fff" }}
@@ -219,33 +231,43 @@ useEffect(() => {
         </div>
       </div>
 
-
-{/* Amount Boxes */}
-<div
-  className="d-flex justify-content-center gap-4 flex-wrap w-100 mx-auto"
-  style={{ maxWidth: "900px" }}
->
-  {[
-    { title: "Total Amount", value: profileData?.totalamount ? `$${profileData.totalamount}` : "$0.00" },
-    { title: "Processing", value: profileData?.depositamount ? `$${profileData.depositamount}` : "$0.00" },
-    { title: "Available", value: profileData?.available ? `$${profileData.available.toFixed(2)}` : "$0.00" },
-  ].map((item) => (
-    <div
-      key={item.title}
-      className="bg-dark p-4 rounded shadow-lg text-center flex-grow-1"
-      style={{ minWidth: "220px", maxWidth: "280px", color: "#fff" }}
-    >
-      <div className="text" style={{ color: "#ddd" }}>
-        {item.title}
+      {/* Amount Boxes */}
+      <div
+        className="d-flex justify-content-center gap-4 flex-wrap w-100 mx-auto"
+        style={{ maxWidth: "900px" }}
+      >
+        {[
+          {
+            title: "Total Amount",
+            value: `$${totalAmount}`, // Showing totalAmount state here updated by cookie or API
+          },
+          {
+            title: "Processing",
+            value: profileData?.depositamount
+              ? `$${profileData.depositamount}`
+              : "$0.00",
+          },
+          {
+            title: "Available",
+            value: profileData?.available
+              ? `$${profileData.available.toFixed(2)}`
+              : "$0.00",
+          },
+        ].map((item) => (
+          <div
+            key={item.title}
+            className="bg-dark p-4 rounded shadow-lg text-center flex-grow-1"
+            style={{ minWidth: "220px", maxWidth: "280px", color: "#fff" }}
+          >
+            <div className="text" style={{ color: "#ddd" }}>
+              {item.title}
+            </div>
+            <h3 className="mt-2" style={{ color: "#fff" }}>
+              {item.value}
+            </h3>
+          </div>
+        ))}
       </div>
-      <h3 className="mt-2" style={{ color: "#fff" }}>
-        {item.value}
-      </h3>
-    </div>
-  ))}
-</div>
-
-
 
       {/* Profile Details Section */}
       <div
@@ -260,14 +282,25 @@ useEffect(() => {
         <h4 className="mb-3">Profile Details</h4>
         {profileData ? (
           <ul style={{ listStyle: "none", padding: 0 }}>
-            <li><strong>Name:</strong> {profileData.name || "N/A"}</li>
-            <li><strong>Email:</strong> {profileData.email || "N/A"}</li>
-            <li><strong>Phone:</strong> {profileData.phone || "N/A"}</li>
-            <li><strong>total:</strong> {profileData.totalamount || "N/A"}</li>
-            <li><strong>Phone:</strong> {profileData.depositamount || "N/A"}</li>
-
-            <li><strong>Account Status:</strong> {profileData.status || "N/A"}</li>
-            {/* Add more fields as needed based on your API response */}
+            <li>
+              <strong>Name:</strong> {profileData.name || "N/A"}
+            </li>
+            <li>
+              <strong>Email:</strong> {profileData.email || "N/A"}
+            </li>
+            <li>
+              <strong>Phone:</strong> {profileData.phone || "N/A"}
+            </li>
+            <li>
+              <strong>Total Amount:</strong> {profileData.totalamount || "N/A"}
+            </li>
+            <li>
+              <strong>Deposit Amount:</strong> {profileData.depositamount || "N/A"}
+            </li>
+            <li>
+              <strong>Account Status:</strong> {profileData.status || "N/A"}
+            </li>
+            {/* Add more fields as needed */}
           </ul>
         ) : (
           <p>Loading profile details...</p>
@@ -405,9 +438,6 @@ useEffect(() => {
               style={{
                 background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
                 border: "none",
-                fontWeight: "600",
-                padding: "8px 24px",
-                boxShadow: "0 6px 20px rgba(241, 7, 163, 0.6)",
               }}
             >
               Close
@@ -415,23 +445,6 @@ useEffect(() => {
           </Modal.Footer>
         </Modal>
       </>
-
-      {/* WhatsApp Floating Button */}
-      <a
-        href="https://wa.me/+919004501899"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="position-fixed bottom-0 end-0 m-4"
-        style={{ zIndex: 1000 }}
-      >
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-          alt="WhatsApp"
-          style={{ width: "60px", height: "60px" }}
-        />
-      </a>
     </div>
   );
 }
-
- 

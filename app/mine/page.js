@@ -111,7 +111,6 @@ const handleSell = async () => {
   const newBalance = availableBalance - sellAmount;
   const encryptedNewBalance = encryptData(newBalance.toString());
   Cookies.set("depositAmount", encryptedNewBalance, {
-    expires: 1,
     secure: true,
     sameSite: "Strict",
   });
