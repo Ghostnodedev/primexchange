@@ -2,7 +2,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { decryptData, encryptData } from "../utils/crypo";
+import { decryptData } from "../utils/crypo";
+import { encryptData } from "../utils/crypo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaShareAlt } from "react-icons/fa";
@@ -16,6 +17,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [get, setGet] = useState("0.00");
   const [popup, setPopup] = useState({ show: false, title: "", message: "" });
+  const [profileData, setProfileData] = useState(null);
 
   const router = useRouter();
 
@@ -55,6 +57,35 @@ export default function ProfilePage() {
       }
     }
   }, []);
+
+useEffect(() => {
+  const token = localStorage.getItem("authToken");
+  const storedEmail = localStorage.getItem("userEmail");
+
+  if (token && storedEmail) {
+    fetch(`https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gprofile?email=${storedEmail}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.data && data.data.length > 0) {
+          const profile = data.data[0];
+          setProfileData(profile); // Set profile
+
+          if (profile.totalamount) {
+            try {
+              const encryptedTotal = encryptData(profile.totalamount.toString());
+              Cookies.set("depositAmount", encryptedTotal, {
+                secure: true,
+                sameSite: "Strict",
+              });
+            } catch (error) {
+              console.error("Failed to encrypt totalAmount:", error);
+            }
+          }
+        }
+      })
+      .catch((error) => console.error("Error fetching profile data:", error));
+  }
+}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -136,7 +167,7 @@ export default function ProfilePage() {
           style={{ width: "140px", height: "140px", objectFit: "cover" }}
         />
         <h4 className="mt-3" style={{ color: "#fff" }}>
-          {email || "someone@gmail.com"}
+          {profileData?.email || email || "someone@gmail.com"}
         </h4>
       </div>
 
@@ -146,7 +177,7 @@ export default function ProfilePage() {
         style={{ maxWidth: "900px", gap: "12px" }}
       >
         <div className="d-flex align-items-center gap-4 flex-wrap">
-          <Link
+                    <Link
             href="/"
             className="d-flex align-items-center gap-1 text-decoration-none"
             style={{ color: "#fff" }}
@@ -188,29 +219,59 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Amount Boxes */}
+
+{/* Amount Boxes */}
+<div
+  className="d-flex justify-content-center gap-4 flex-wrap w-100 mx-auto"
+  style={{ maxWidth: "900px" }}
+>
+  {[
+    { title: "Total Amount", value: profileData?.totalamount ? `$${profileData.totalamount}` : "$0.00" },
+    { title: "Processing", value: profileData?.depositamount ? `$${profileData.depositamount}` : "$0.00" },
+    { title: "Available", value: profileData?.available ? `$${profileData.available.toFixed(2)}` : "$0.00" },
+  ].map((item) => (
+    <div
+      key={item.title}
+      className="bg-dark p-4 rounded shadow-lg text-center flex-grow-1"
+      style={{ minWidth: "220px", maxWidth: "280px", color: "#fff" }}
+    >
+      <div className="text" style={{ color: "#ddd" }}>
+        {item.title}
+      </div>
+      <h3 className="mt-2" style={{ color: "#fff" }}>
+        {item.value}
+      </h3>
+    </div>
+  ))}
+</div>
+
+
+
+      {/* Profile Details Section */}
       <div
-        className="d-flex justify-content-center gap-4 flex-wrap w-100 mx-auto"
-        style={{ maxWidth: "900px" }}
+        className="mx-auto rounded shadow-lg mt-5 px-4 py-3 w-100"
+        style={{
+          background: "#3a0ca3",
+          maxWidth: "600px",
+          boxShadow: "0 0 25px rgba(58, 12, 163, 0.7)",
+          color: "#fff",
+        }}
       >
-        {[
-          { title: "Total Amount", value: `$${totalAmount}` },
-          { title: "Available ($)", value: "$0.00" },
-          { title: "Processing ($)", value: `$${get}` },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="bg-dark p-4 rounded shadow-lg text-center flex-grow-1"
-            style={{ minWidth: "220px", maxWidth: "280px", color: "#fff" }}
-          >
-            <div className="text" style={{ color: "#ddd" }}>
-              {item.title}
-            </div>
-            <h3 className="mt-2" style={{ color: "#fff" }}>
-              {item.value}
-            </h3>
-          </div>
-        ))}
+        <h4 className="mb-3">Profile Details</h4>
+        {profileData ? (
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            <li><strong>Name:</strong> {profileData.name || "N/A"}</li>
+            <li><strong>Email:</strong> {profileData.email || "N/A"}</li>
+            <li><strong>Phone:</strong> {profileData.phone || "N/A"}</li>
+            <li><strong>total:</strong> {profileData.totalamount || "N/A"}</li>
+            <li><strong>Phone:</strong> {profileData.depositamount || "N/A"}</li>
+
+            <li><strong>Account Status:</strong> {profileData.status || "N/A"}</li>
+            {/* Add more fields as needed based on your API response */}
+          </ul>
+        ) : (
+          <p>Loading profile details...</p>
+        )}
       </div>
 
       {/* Reward Section */}
@@ -372,3 +433,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+ 

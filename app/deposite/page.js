@@ -126,13 +126,6 @@ export default function DepositPage() {
       }
       const updatedTotal = total + (amount || 0);
 
-      // save back to cookies
-      const encryptedUpdated = encryptData(updatedTotal.toString());
-      Cookies.set("depositAmount", encryptedUpdated, {
-        expires: 1,
-        secure: true,
-        sameSite: "Strict",
-      });
 
       // call API
       const response = await fetch(Api_Url, {
