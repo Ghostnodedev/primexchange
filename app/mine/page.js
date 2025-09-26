@@ -134,6 +134,7 @@ const handleSell = async () => {
   };
 
   try {
+    // Update the account (POST — upsert logic)
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -144,7 +145,7 @@ const handleSell = async () => {
     let bodyJson;
     try {
       bodyJson = JSON.parse(bodyText);
-    } catch(e) {
+    } catch (e) {
       bodyJson = { raw: bodyText };
     }
     console.log("Sell response:", res.status, bodyJson);
@@ -153,7 +154,7 @@ const handleSell = async () => {
       throw new Error(`Failed to update sell: ${res.status}, ${bodyText}`);
     }
 
-    // Use the returned sellamount
+    // Use the returned updated sellamount
     const updatedSellAmount = bodyJson.sellamount;
 
     setAccounts(prev =>
@@ -169,6 +170,7 @@ const handleSell = async () => {
     );
 
     toast.success("✅ Sell Successful & Saved to DB!");
+
     const USD_TO_INR_RATE = 99;
     setLastInvoice({
       account: { ...selectedAcc, sellamount: updatedSellAmount },
@@ -178,11 +180,38 @@ const handleSell = async () => {
       newBalanceINR: newBalance * USD_TO_INR_RATE,
       date: new Date().toLocaleString(),
     });
+
+    // 🔁 Call the PUT /profile API to update sellAmount and balances
+    const profilePayload = {
+      email: storedEmail,
+      username: "User", // optional, or fetch from elsewhere
+      totalamount: newBalance, // Assuming this is same as newBalance
+      depositamount: newBalance,
+      sellamount: updatedSellAmount,
+    };
+
+    const profileRes = await fetch("https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(profilePayload),
+    });
+
+    if (!profileRes.ok) {
+      const errorText = await profileRes.text();
+      console.error("Failed to update profile:", errorText);
+      toast.error("⚠️ Sell updated, but profile sync failed!");
+    } else {
+      toast.success("✅ Profile updated successfully!");
+    }
+
   } catch (err) {
     console.error("Error in handleSell:", err);
     toast.error("Failed to update DB: " + err.message);
   }
 };
+
 
 const handleDownloadInvoice = async () => {
   if (!lastInvoice) return;
