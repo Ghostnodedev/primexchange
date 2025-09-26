@@ -16,8 +16,44 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState({ show: false, title: "", message: "" });
   const [profileData, setProfileData] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(0);
 
   const router = useRouter();
+
+ useEffect(() => {
+    setWindowWidth(window.innerWidth); // initialize on mount
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isSmallScreen = windowWidth < 600;
+
+    
+  const buttonStyle = {
+    minWidth: isSmallScreen ? "100%" : "300px", // smaller min width or full width on small screens
+    maxWidth: "90%",
+    padding: isSmallScreen ? "14px 20px" : "16px 36px",
+    fontWeight: "600",
+    fontSize: isSmallScreen ? "1rem" : "1.2rem",
+    borderRadius: "18px",
+    cursor: "pointer",
+    background: "linear-gradient(45deg, #7b2ff7, #f107a3)",
+    color: "white",
+    border: "none",
+    boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
+    marginTop: "50px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  const iconStyle = {
+    marginRight: "12px",
+    fontSize: isSmallScreen ? "1.2rem" : "1.4rem",
+  };
 
   // Initial Authentication and email reading from localStorage
   useEffect(() => {
@@ -50,6 +86,7 @@ export default function ProfilePage() {
       .then((data) => {
         if (data && data.data && data.data.length > 0) {
           const profile = data.data[0];
+          console.log(profile)
           setProfileData(profile);
           setEmail(profile.email);
           setIsAuthenticated(true);
@@ -364,57 +401,44 @@ export default function ProfilePage() {
 
       {/* Invite Button & Modal */}
       <>
-        <div
-          className="btn lavish-btn shadow-lg d-flex align-items-center justify-content-center"
-          style={{
-            minWidth: "650px",
-            maxWidth: "90%",
-            padding: "16px 36px",
-            fontWeight: "600",
-            fontSize: "1.2rem",
-            borderRadius: "18px",
-            cursor: "pointer",
-            background: "linear-gradient(45deg, #7b2ff7, #f107a3)",
-            color: "white",
-            border: "none",
-            boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
-            marginTop: "50px",
-          }}
-          onClick={() =>
-            showPopup("Coming Soon!", "🚀 Exciting features are on the way!")
-          }
-        >
-          <FaShareAlt style={{ marginRight: "12px", fontSize: "1.4rem" }} />
-          Invite
-        </div>
+      <div
+        className="btn lavish-btn shadow-lg"
+        style={buttonStyle}
+        onClick={() =>
+          showPopup("Coming Soon!", "🚀 Exciting features are on the way!")
+        }
+      >
+        <FaShareAlt style={iconStyle} />
+        Invite
+      </div>
 
-        {/* Bootstrap Modal */}
-        <Modal
-          show={popup.show}
-          onHide={handleClose}
-          centered
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>{popup.title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="text-center" style={{ fontSize: "1.1rem" }}>
-            {popup.message}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              onClick={handleClose}
-              style={{
-                background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
-                border: "none",
-              }}
-            >
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
+      {/* Bootstrap Modal */}
+      <Modal
+        show={popup.show}
+        onHide={handleClose}
+        centered
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{popup.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center" style={{ fontSize: "1.1rem" }}>
+          {popup.message}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            onClick={handleClose}
+            style={{
+              background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
+              border: "none",
+            }}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
     </div>
   );
 }
