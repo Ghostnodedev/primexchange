@@ -1,9 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
+import { decryptData, encryptData } from "../utils/crypo";
 import Cookies from "js-cookie";
-import { decryptData } from "../utils/crypo";
-import { encryptData } from "../utils/crypo";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaShareAlt } from "react-icons/fa";
@@ -20,32 +19,21 @@ export default function ProfilePage() {
 
   const router = useRouter();
 
-  // Initial Authentication and cookie reading
+  // Initial Authentication and email reading from localStorage
   useEffect(() => {
-    const token = localStorage.getItem("authToken") || Cookies.get("authToken");
-    if (token) {
+    const token = localStorage.getItem("authToken");
+    const storedEmail = localStorage.getItem("userEmail");
+
+    if (token && storedEmail) {
       setIsAuthenticated(true);
-
-      const storedEmail = localStorage.getItem("userEmail");
-      if (storedEmail) setEmail(storedEmail);
-
-      const encryptedAmount = Cookies.get("depositAmount");
-      if (encryptedAmount) {
-        try {
-          const decrypted = decryptData(encryptedAmount);
-          const parsed = parseFloat(decrypted);
-          if (!isNaN(parsed)) setTotalAmount(parsed.toFixed(2));
-        } catch (err) {
-          console.error("Failed to decrypt amount:", err);
-        }
-      }
+      setEmail(storedEmail);
     } else {
       setIsAuthenticated(false);
     }
     setLoading(false);
   }, []);
 
-  // Fetch profile data and merge with cookie value for totalAmount
+  // Fetch profile data using email only from localStorage
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     const storedEmail = localStorage.getItem("userEmail");
@@ -55,23 +43,9 @@ export default function ProfilePage() {
       return;
     }
 
-    let totalAmountLoadedFromCookie = false;
-    const depositAmountFromCookie = Cookies.get("depositAmount");
-
-    if (depositAmountFromCookie) {
-      try {
-        const decrypted = decryptData(depositAmountFromCookie);
-        const parsed = parseFloat(decrypted);
-        if (!isNaN(parsed)) {
-          setTotalAmount(parsed.toFixed(2));
-          totalAmountLoadedFromCookie = true;
-        }
-      } catch (error) {
-        console.error("Failed to decrypt cookie amount:", error);
-      }
-    }
-
-    fetch(`https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gprofile?email=${storedEmail}`)
+    fetch(
+      `https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gprofile?email=${storedEmail}`
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data && data.data && data.data.length > 0) {
@@ -80,15 +54,36 @@ export default function ProfilePage() {
           setEmail(profile.email);
           setIsAuthenticated(true);
 
-          // If totalAmount not loaded from cookie, use API data
-          if (!totalAmountLoadedFromCookie && profile.totalamount) {
-            const encrypted = encryptData(profile.totalamount.toString());
-            Cookies.set("depositAmount", encrypted, {
-              secure: true,
-              sameSite: "Strict",
-              expires: 1,
-            });
-            setTotalAmount(Number(profile.totalamount).toFixed(2));
+          // ✅ Use user-specific 'amountData' cookie as source of totalAmount
+          const cookieKey = `amountData_${profile.email}`;
+          const encryptedAmountData = Cookies.get(cookieKey);
+          let amountFromCookie = null;
+
+          if (encryptedAmountData) {
+            try {
+              const decrypted = decryptData(encryptedAmountData);
+              const parsed = parseFloat(decrypted);
+              if (!isNaN(parsed)) {
+                amountFromCookie = parsed.toFixed(2);
+                setTotalAmount(amountFromCookie);
+              }
+            } catch (err) {
+              console.error("Error decrypting amountData cookie:", err);
+            }
+          }
+
+          if (!amountFromCookie && profile.totalamount) {
+            const fixedAmount = Number(profile.totalamount).toFixed(2);
+            setTotalAmount(fixedAmount);
+
+            // Optional: store in user-specific totalAmount cookie
+            const encrypted = encryptData(JSON.stringify(fixedAmount));
+            if (encrypted) {
+              Cookies.set(cookieKey, encrypted, {
+                secure: true,
+                sameSite: "Strict",
+              });
+            }
           }
         }
         setLoading(false);
@@ -100,10 +95,13 @@ export default function ProfilePage() {
   }, []);
 
   const handleLogout = () => {
+    // Clear user-specific cookie on logout
+    if (email) {
+      const cookieKey = `amountData_${email}`;
+      Cookies.remove(cookieKey);
+    }
     localStorage.removeItem("userEmail");
-    Cookies.remove("depositAmount");
     localStorage.removeItem("authToken");
-    Cookies.remove("authToken");
     router.push("/login");
   };
 
@@ -239,7 +237,7 @@ export default function ProfilePage() {
         {[
           {
             title: "Total Amount",
-            value: `$${totalAmount}`, // Showing totalAmount state here updated by cookie or API
+            value: `$${totalAmount}`, // ✅ Using updated totalAmount from cookie or API
           },
           {
             title: "Processing",
@@ -295,12 +293,12 @@ export default function ProfilePage() {
               <strong>Total Amount:</strong> {profileData.totalamount || "N/A"}
             </li>
             <li>
-              <strong>Deposit Amount:</strong> {profileData.depositamount || "N/A"}
+              <strong>Deposit Amount:</strong>{" "}
+              {profileData.depositamount || "N/A"}
             </li>
             <li>
               <strong>Account Status:</strong> {profileData.status || "N/A"}
             </li>
-            {/* Add more fields as needed */}
           </ul>
         ) : (
           <p>Loading profile details...</p>
@@ -357,16 +355,6 @@ export default function ProfilePage() {
                 boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
                 transition: "transform 0.2s ease, box-shadow 0.2s ease",
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.07)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 36px rgba(241, 7, 163, 0.95)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow =
-                  "0 6px 22px rgba(241, 7, 163, 0.7)";
-              }}
             >
               {label}
             </button>
@@ -374,6 +362,7 @@ export default function ProfilePage() {
         ))}
       </div>
 
+      {/* Invite Button & Modal */}
       <>
         <div
           className="btn lavish-btn shadow-lg d-flex align-items-center justify-content-center"
@@ -389,29 +378,10 @@ export default function ProfilePage() {
             color: "white",
             border: "none",
             boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
-            transition:
-              "transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease",
             marginTop: "50px",
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-            e.currentTarget.style.boxShadow =
-              "0 10px 30px rgba(241, 7, 163, 0.9)";
-            e.currentTarget.style.background =
-              "linear-gradient(135deg, #f107a3, #7b2ff7)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-            e.currentTarget.style.boxShadow =
-              "0 6px 22px rgba(241, 7, 163, 0.7)";
-            e.currentTarget.style.background =
-              "linear-gradient(45deg, #7b2ff7, #f107a3)";
-          }}
           onClick={() =>
-            showPopup(
-              "Coming Soon!",
-              "🚀 Exciting features are on the way! Stay tuned."
-            )
+            showPopup("Coming Soon!", "🚀 Exciting features are on the way!")
           }
         >
           <FaShareAlt style={{ marginRight: "12px", fontSize: "1.4rem" }} />

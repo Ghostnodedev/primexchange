@@ -76,7 +76,7 @@ export default function ExchangePage() {
       toast.error("Password must be exactly 6 digits.");
       return;
     }
-    localStorage.setItem("securePassword", password);
+
     toast.success("Password saved!");
     handleClosePasswordModal();
     setShowDepositModalPage(true);

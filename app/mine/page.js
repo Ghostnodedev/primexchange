@@ -1,73 +1,72 @@
-"use client";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { FaPlus, FaUniversity } from "react-icons/fa";
-import toast from "react-hot-toast";
-import { Button } from "react-bootstrap";
-import { decryptData, encryptData } from "../utils/crypo";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { useRouter } from "next/navigation";
+  "use client";
+  import { useEffect, useState } from "react";
+  import Cookies from "js-cookie";
+  import { FaPlus, FaUniversity } from "react-icons/fa";
+  import toast from "react-hot-toast";
+  import { Button } from "react-bootstrap";
+  import { decryptData, encryptData } from "../utils/crypo";
+  import jsPDF from "jspdf";
+  import autoTable from "jspdf-autotable";
+  import { useRouter } from "next/navigation";
 
+  const API_URL =
+    "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account";
 
-const API_URL =
-  "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/account";
+  export default function BankManager() {
+    const [accounts, setAccounts] = useState([]);
+    const [showForm, setShowForm] = useState(true);
+    const [selectedId, setSelectedId] = useState(null);
+    const [amount, setAmount] = useState("");
+    const [sold, setSold] = useState(false);
+    const [totalAmount, setTotalAmount] = useState("0.00");
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const [storedEmail, setStoredEmail] = useState(null);
+    const [lastInvoice, setLastInvoice] = useState(null);
+    const router = useRouter()
 
-export default function BankManager() {
-  const [accounts, setAccounts] = useState([]);
-  const [showForm, setShowForm] = useState(true);
-  const [selectedId, setSelectedId] = useState(null);
-  const [amount, setAmount] = useState("");
-  const [sold, setSold] = useState(false);
-  const [totalAmount, setTotalAmount] = useState("0.00");
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const [storedEmail, setStoredEmail] = useState(null);
-  const [lastInvoice, setLastInvoice] = useState(null);
-  const router = useRouter()
+    // Auth & email
+    useEffect(() => {
+      const token = localStorage.getItem("authToken");
+      setIsAuthenticated(!!token);
+      const email = localStorage.getItem("userEmail");
+      if (email) setStoredEmail(email);
+    }, []);
 
-  // Auth & email
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    setIsAuthenticated(!!token);
-    const email = localStorage.getItem("userEmail");
-    if (email) setStoredEmail(email);
-  }, []);
+    // Fetch accounts
+    useEffect(() => {
+      if (!storedEmail) return;
+      const fetchAccounts = async () => {
+        try {
+          const res = await fetch(
+            `https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gacc?email=${encodeURIComponent(
+              storedEmail
+            )}`
+          );
+          if (!res.ok)
+            throw new Error(`HTTP error! status: ${res.status}`);
+          const data = await res.json();
+          setAccounts(data.data || []);
+          setShowForm((data.data || []).length === 0);
+          if ((data.data || []).length > 0)
+            setSelectedId(String(data.data[0].id));
+        } catch (err) {
+          console.error("Error fetching accounts:", err);
+          toast.error("Failed to fetch accounts");
+        }
+      };
+      fetchAccounts();
+    }, [storedEmail]);
 
-  // Fetch accounts
-  useEffect(() => {
-    if (!storedEmail) return;
-    const fetchAccounts = async () => {
-      try {
-        const res = await fetch(
-          `https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/gacc?email=${encodeURIComponent(
-            storedEmail
-          )}`
-        );
-        if (!res.ok)
-          throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        setAccounts(data.data || []);
-        setShowForm((data.data || []).length === 0);
-        if ((data.data || []).length > 0)
-          setSelectedId(String(data.data[0].id));
-      } catch (err) {
-        console.error("Error fetching accounts:", err);
-        toast.error("Failed to fetch accounts");
+    // Save selected bank
+    useEffect(() => {
+      if (selectedId !== null) {
+        Cookies.set("selectedBank", String(selectedId), { expires: 7 });
+      } else {
+        Cookies.remove("selectedBank");
       }
-    };
-    fetchAccounts();
-  }, [storedEmail]);
+    }, [selectedId]);
 
-  // Save selected bank
-  useEffect(() => {
-    if (selectedId !== null) {
-      Cookies.set("selectedBank", String(selectedId), { expires: 7 });
-    } else {
-      Cookies.remove("selectedBank");
-    }
-  }, [selectedId]);
-
-  const handleSelect = (id) => setSelectedId(String(id));
+    const handleSelect = (id) => setSelectedId(String(id));
 
 const handleSell = async () => {
   if (accounts.length === 0) {
@@ -79,7 +78,15 @@ const handleSell = async () => {
     return;
   }
 
-  const encryptedAmount = Cookies.get("depositAmount");
+  if (!storedEmail) {
+    toast.error("User email not found!");
+    return;
+  }
+
+  const cookieKey = `amountData_${storedEmail}`;
+
+  // Get encrypted balance from user-specific cookie
+  const encryptedAmount = Cookies.get(cookieKey);
   let availableBalance = 0;
   if (encryptedAmount) {
     try {
@@ -90,7 +97,7 @@ const handleSell = async () => {
         setTotalAmount(parsed.toFixed(2));
       }
     } catch (err) {
-      console.error("Failed to decrypt amount:", err);
+      console.error("Failed to decrypt totalAmount:", err);
     }
   }
 
@@ -98,26 +105,33 @@ const handleSell = async () => {
     toast.error("Enter amount first!");
     return;
   }
+
   const sellAmount = parseFloat(amount);
   if (isNaN(sellAmount) || sellAmount <= 0) {
     toast.error("Invalid amount!");
     return;
   }
+
   if (sellAmount > availableBalance) {
     toast.error("Insufficient balance!");
     return;
   }
 
+  // Calculate new balance and store it in user-specific cookie
   const newBalance = availableBalance - sellAmount;
   const encryptedNewBalance = encryptData(newBalance.toString());
-  Cookies.set("depositAmount", encryptedNewBalance, {
+
+  Cookies.set(cookieKey, encryptedNewBalance, {
     secure: true,
     sameSite: "Strict",
   });
+
   setTotalAmount(newBalance.toFixed(2));
   setSold(true);
 
-  const selectedAcc = accounts.find(acc => String(acc.id) === String(selectedId));
+  const selectedAcc = accounts.find(
+    (acc) => String(acc.id) === String(selectedId)
+  );
   if (!selectedAcc) {
     toast.error("No valid account found!");
     return;
@@ -129,7 +143,7 @@ const handleSell = async () => {
     holdername: selectedAcc.holdername,
     bankname: selectedAcc.bankname,
     accounttype: selectedAcc.accounttype,
-    sellamount: sellAmount,   // Only the delta you're selling now
+    sellamount: sellAmount,
     email: storedEmail,
   };
 
@@ -140,28 +154,21 @@ const handleSell = async () => {
       body: JSON.stringify(payload),
     });
 
-    const bodyText = await res.text();
-    let bodyJson;
-    try {
-      bodyJson = JSON.parse(bodyText);
-    } catch(e) {
-      bodyJson = { raw: bodyText };
-    }
-    console.log("Sell response:", res.status, bodyJson);
+    const body = await res.json();
 
     if (!res.ok) {
-      throw new Error(`Failed to update sell: ${res.status}, ${bodyText}`);
+      throw new Error("Failed to update sell: " + JSON.stringify(body));
     }
 
-    // Use the returned sellamount
-    const updatedSellAmount = bodyJson.sellamount;
-
-    setAccounts(prev =>
-      prev.map(acc => {
-        if (acc.accountno === selectedAcc.accountno && acc.email.toLowerCase() === storedEmail.toLowerCase()) {
+    setAccounts((prev) =>
+      prev.map((acc) => {
+        if (
+          acc.accountno === selectedAcc.accountno &&
+          acc.email.toLowerCase() === storedEmail.toLowerCase()
+        ) {
           return {
             ...acc,
-            sellamount: updatedSellAmount,
+            sellamount: body.sellamount,
           };
         }
         return acc;
@@ -169,9 +176,10 @@ const handleSell = async () => {
     );
 
     toast.success("✅ Sell Successful & Saved to DB!");
+
     const USD_TO_INR_RATE = 99;
     setLastInvoice({
-      account: { ...selectedAcc, sellamount: updatedSellAmount },
+      account: { ...selectedAcc, sellamount: body.sellamount },
       sellAmount: sellAmount,
       newBalance,
       sellAmountINR: sellAmount * USD_TO_INR_RATE,
@@ -179,428 +187,429 @@ const handleSell = async () => {
       date: new Date().toLocaleString(),
     });
   } catch (err) {
-    console.error("Error in handleSell:", err);
     toast.error("Failed to update DB: " + err.message);
   }
 };
 
-const handleDownloadInvoice = async () => {
-  if (!lastInvoice) return;
 
-  // 📄 Generate PDF
-  const doc = new jsPDF();
-  doc.text(" Primexchange", 14, 20);
-  doc.setFontSize(14);
-  doc.text("Transaction Invoice", 14, 30);
-  doc.setFontSize(11);
-  doc.text(`Date: ${lastInvoice.date}`, 14, 40);
 
-  autoTable(doc, {
-    startY: 50,
-    head: [["Field", "Value"]],
-    body: [
-      ["Account Holder", lastInvoice.account.holdername],
-      ["Bank Name", lastInvoice.account.bankname],
-      ["Account Number", lastInvoice.account.accountno],
-      ["IFSC", lastInvoice.account.ifsc],
-      ["Sell Amount (USD)", `$${lastInvoice.sellAmount.toFixed(2)}`],
-      ["Sell Amount (INR)", `₹${lastInvoice.sellAmountINR.toFixed(2)}`],
-      ["Remaining Balance (USD)", `$${lastInvoice.newBalance.toFixed(2)}`],
-      ["Remaining Balance (INR)", `₹${lastInvoice.newBalanceINR.toFixed(2)}`],
-    ],
-    theme: "grid",
-    styles: { halign: "left", cellPadding: 3, fontSize: 11 },
-    headStyles: {
-      fillColor: [255, 215, 0],
-      textColor: "#000",
-      fontStyle: "bold",
-    },
-    margin: { left: 14, right: 14 },
-  });
+  const handleDownloadInvoice = async () => {
+    if (!lastInvoice) return;
 
-  doc.setFontSize(12);
-  doc.setTextColor(0, 128, 0);
-  doc.text(
-    "✔ Transaction Completed Successfully",
-    14,
-    doc.lastAutoTable.finalY + 15
-  );
-  doc.save(`Primexchange_Invoice_${Date.now()}.pdf`);
+    // 📄 Generate PDF
+    const doc = new jsPDF();
+    doc.text(" Primexchange", 14, 20);
+    doc.setFontSize(14);
+    doc.text("Transaction Invoice", 14, 30);
+    doc.setFontSize(11);
+    doc.text(`Date: ${lastInvoice.date}`, 14, 40);
 
-  // 📤 Send to backend API
-  const invoiceData = {
-    holdername: lastInvoice.account.holdername,
-    bankname: lastInvoice.account.bankname,
-    accountno: lastInvoice.account.accountno,
-    ifsc: lastInvoice.account.ifsc,
-    sellamountUSD: lastInvoice.sellAmount?.toFixed(2),
-    sellamountINR: lastInvoice.sellAmountINR?.toFixed(2),
-    newBalanceUSD: lastInvoice.newBalance?.toFixed(2),
-    newBalanceINR: lastInvoice.newBalanceINR?.toFixed(2),
-  };
-
-  try {
-    const response = await fetch("https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/invoice", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(invoiceData),
+    autoTable(doc, {
+      startY: 50,
+      head: [["Field", "Value"]],
+      body: [
+        ["Account Holder", lastInvoice.account.holdername],
+        ["Bank Name", lastInvoice.account.bankname],
+        ["Account Number", lastInvoice.account.accountno],
+        ["IFSC", lastInvoice.account.ifsc],
+        ["Sell Amount (USD)", `$${lastInvoice.sellAmount.toFixed(2)}`],
+        ["Sell Amount (INR)", `₹${lastInvoice.sellAmountINR.toFixed(2)}`],
+        ["Remaining Balance (USD)", `$${lastInvoice.newBalance.toFixed(2)}`],
+        ["Remaining Balance (INR)", `₹${lastInvoice.newBalanceINR.toFixed(2)}`],
+      ],
+      theme: "grid",
+      styles: { halign: "left", cellPadding: 3, fontSize: 11 },
+      headStyles: {
+        fillColor: [255, 215, 0],
+        textColor: "#000",
+        fontStyle: "bold",
+      },
+      margin: { left: 14, right: 14 },
     });
 
-    const result = await response.json();
-    if (!response.ok) {
-      console.error("❌ Failed to send invoice to API:", result);
-      toast.error("❌ Failed to send invoice data to server");
-    } else {
-      console.log("✅ Invoice sent to API:", result);
-      toast.success("✅ Invoice data sent to backend");
-    }
-  } catch (err) {
-    console.error("❌ Error sending invoice:", err);
-    toast.error("❌ Error sending invoice");
-  }
-};
+    doc.setFontSize(12);
+    doc.setTextColor(0, 128, 0);
+    doc.text(
+      "✔ Transaction Completed Successfully",
+      14,
+      doc.lastAutoTable.finalY + 15
+    );
+    doc.save(`Primexchange_Invoice_${Date.now()}.pdf`);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const encryptedAmount = Cookies.get("depositAmount");
-    let availableBalance = 0;
-    if (encryptedAmount) {
-      try {
-        const decrypted = decryptData(encryptedAmount);
-        const parsed = parseFloat(decrypted);
-        if (!isNaN(parsed)) {
-          availableBalance = parsed;
-          setTotalAmount(parsed.toFixed(2));
-        }
-      } catch (err) {
-        console.error("Failed to decrypt amount:", err);
-      }
-    }
-
-    const form = e.target;
-    const bankName = form.bankName.value.trim();
-    const type = form.type.value;
-    const holderName = form.holderName.value.trim();
-    const ifsc = form.ifsc.value.trim();
-    const accountNumber = form.accountNumber.value.trim();
-
-    if (!bankName || !type || !holderName || !ifsc || !accountNumber) {
-      toast.error("Please fill all fields");
-      return;
-    }
-
-    const newAccount = {
-      id: Date.now().toString(),
-      holdername: holderName,
-      accountno: accountNumber,
-      ifsc,
-      bankname: bankName,
-      accounttype: type,
-      sellamount: 0,
-      email: storedEmail || "unknown",
-      amount: availableBalance,
+    // 📤 Send to backend API
+    const invoiceData = {
+      holdername: lastInvoice.account.holdername,
+      bankname: lastInvoice.account.bankname,
+      accountno: lastInvoice.account.accountno,
+      ifsc: lastInvoice.account.ifsc,
+      sellamountUSD: lastInvoice.sellAmount?.toFixed(2),
+      sellamountINR: lastInvoice.sellAmountINR?.toFixed(2),
+      newBalanceUSD: lastInvoice.newBalance?.toFixed(2),
+      newBalanceINR: lastInvoice.newBalanceINR?.toFixed(2),
     };
 
     try {
-      const res = await fetch(API_URL, {
+      const response = await fetch("https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newAccount),
+        body: JSON.stringify(invoiceData),
       });
-      if (!res.ok) throw new Error("Failed to save account");
-      setAccounts((prev) => [...prev, newAccount]);
-      setShowForm(false);
-      form.reset();
-      toast.success("✅ Bank account saved!");
+
+      const result = await response.json();
+      if (!response.ok) {
+        console.error("❌ Failed to send invoice to API:", result);
+        toast.error("❌ Failed to send invoice data to server");
+      } else {
+        console.log("✅ Invoice sent to API:", result);
+        toast.success("✅ Invoice data sent to backend");
+      }
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to save account");
+      console.error("❌ Error sending invoice:", err);
+      toast.error("❌ Error sending invoice");
     }
   };
 
-  if (isAuthenticated === null) return null;
-  if (!isAuthenticated)
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+
+      const encryptedAmount = Cookies.get("depositAmount");
+      let availableBalance = 0;
+      if (encryptedAmount) {
+        try {
+          const decrypted = decryptData(encryptedAmount);
+          const parsed = parseFloat(decrypted);
+          if (!isNaN(parsed)) {
+            availableBalance = parsed;
+            setTotalAmount(parsed.toFixed(2));
+          }
+        } catch (err) {
+          console.error("Failed to decrypt amount:", err);
+        }
+      }
+
+      const form = e.target;
+      const bankName = form.bankName.value.trim();
+      const type = form.type.value;
+      const holderName = form.holderName.value.trim();
+      const ifsc = form.ifsc.value.trim();
+      const accountNumber = form.accountNumber.value.trim();
+
+      if (!bankName || !type || !holderName || !ifsc || !accountNumber) {
+        toast.error("Please fill all fields");
+        return;
+      }
+
+      const newAccount = {
+        id: Date.now().toString(),
+        holdername: holderName,
+        accountno: accountNumber,
+        ifsc,
+        bankname: bankName,
+        accounttype: type,
+        sellamount: 0,
+        email: storedEmail || "unknown",
+        amount: availableBalance,
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newAccount),
+        });
+        if (!res.ok) throw new Error("Failed to save account");
+        setAccounts((prev) => [...prev, newAccount]);
+        setShowForm(false);
+        form.reset();
+        toast.success("✅ Bank account saved!");
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to save account");
+      }
+    };
+
+    if (isAuthenticated === null) return null;
+    if (!isAuthenticated)
+      return (
+        <div
+          className="vh-100 d-flex flex-column align-items-center justify-content-center text-center"
+          style={{
+            background: "linear-gradient(135deg, #000428 0%, #004e92 100%)",
+            color: "white",
+            padding: "2rem",
+          }}
+        >
+          <h2>Access Restricted</h2>
+          <Button variant="success" size="lg" href="/login">
+            🔑 Go to Login
+          </Button>
+        </div>
+      );
+
+      const history = ()=>{
+        router.push('/History')
+      }
+
     return (
-      <div
-        className="vh-100 d-flex flex-column align-items-center justify-content-center text-center"
-        style={{
-          background: "linear-gradient(135deg, #000428 0%, #004e92 100%)",
-          color: "white",
-          padding: "2rem",
-        }}
-      >
-        <h2>Access Restricted</h2>
-        <Button variant="success" size="lg" href="/login">
-          🔑 Go to Login
-        </Button>
-      </div>
-    );
-
-    const history = ()=>{
-      router.push('/History')
-    }
-
-  return (
-    <div style={pageStyle}>
-      <div style={containerStyle}>
-      <Button onClick={history} style={buttonStyle}>History</Button>
-        <h1 style={titleStyle}>💳 Manage Bank Accounts</h1>
-        {/* Accounts Grid */}
-        {accounts.length > 0 && (
-          <div style={gridStyle}>
-            {accounts.map((acc) => {
-              const isSelected = String(acc.id) === String(selectedId || acc.id);
-              return (
-                <div
-                  key={acc.id}
-                  style={{
-                    ...cardStyle,
-                    border: isSelected
-                      ? "2px solid #ffd700"
-                      : "1px solid rgba(255,255,255,0.08)",
-                    boxShadow: isSelected
-                      ? "0 14px 40px rgba(255,215,0,0.08)"
-                      : cardStyle.boxShadow,
-                    transform: isSelected ? "translateY(-4px)" : "none",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleSelect(acc.id)}
-                >
+      <div style={pageStyle}>
+        <div style={containerStyle}>
+        <Button onClick={history} style={buttonStyle}>History</Button>
+          <h1 style={titleStyle}>💳 Manage Bank Accounts</h1>
+          {/* Accounts Grid */}
+          {accounts.length > 0 && (
+            <div style={gridStyle}>
+              {accounts.map((acc) => {
+                const isSelected = String(acc.id) === String(selectedId || acc.id);
+                return (
                   <div
+                    key={acc.id}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      gap: "12px",
+                      ...cardStyle,
+                      border: isSelected
+                        ? "2px solid #ffd700"
+                        : "1px solid rgba(255,255,255,0.08)",
+                      boxShadow: isSelected
+                        ? "0 14px 40px rgba(255,215,0,0.08)"
+                        : cardStyle.boxShadow,
+                      transform: isSelected ? "translateY(-4px)" : "none",
+                      cursor: "pointer",
                     }}
+                    onClick={() => handleSelect(acc.id)}
                   >
-                    <div>
-                      <FaUniversity
-                        size={28}
-                        style={{ color: "#ffd700", marginBottom: 8 }}
-                      />
-                      <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankname}</h3>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
-                        <strong>Type:</strong> {acc.accounttype}
-                      </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
-                        <strong>Holder:</strong> {acc.holdername}
-                      </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
-                        <strong>IFSC:</strong> {acc.ifsc}
-                      </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
-                        <strong>Account:</strong> {acc.accountno}
-                      </p>
-                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
-                        <strong>Sell Amount:</strong> {acc.sellamount || 0}
-                      </p>
-                    </div>
                     <div
                       style={{
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 12,
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: "12px",
                       }}
                     >
-                      <input
-                        type="radio"
-                        name="selectedBank"
-                        checked={isSelected}
-                        onChange={() => handleSelect(acc.id)}
+                      <div>
+                        <FaUniversity
+                          size={28}
+                          style={{ color: "#ffd700", marginBottom: 8 }}
+                        />
+                        <h3 style={{ margin: "0 0 6px 0" }}>{acc.bankname}</h3>
+                        <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                          <strong>Type:</strong> {acc.accounttype}
+                        </p>
+                        <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.9)" }}>
+                          <strong>Holder:</strong> {acc.holdername}
+                        </p>
+                        <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                          <strong>IFSC:</strong> {acc.ifsc}
+                        </p>
+                        <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                          <strong>Account:</strong> {acc.accountno}
+                        </p>
+                        <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.85)" }}>
+                          <strong>Sell Amount:</strong> {acc.sellamount || 0}
+                        </p>
+                      </div>
+                      <div
                         style={{
-                          width: 20,
-                          height: 20,
-                          accentColor: "#ffd700",
-                          cursor: "pointer",
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      {isSelected && (
-                        <span style={{ fontSize: 12, color: "#ffd700" }}>
-                          Default
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Add Account Form */}
-        {showForm && (
-          <form onSubmit={handleSubmit} style={formContainerStyle}>
-            <h2 style={{ marginTop: 0 }}>Add Bank Account</h2>
-            <div style={rowStyle}>
-              <label style={labelStyle}>Bank Name</label>
-              <input
-                name="bankName"
-                style={inputFieldStyle}
-                placeholder="e.g., HDFC Bank"
-                required
-              />
-            </div>
-            <div style={rowStyle}>
-              <label style={labelStyle}>Account Type</label>
-              <select
-                name="type"
-                style={inputFieldStyle}
-                defaultValue="Savings"
-                required
-              >
-                <option value="Savings">Savings</option>
-                <option value="Current">Current</option>
-                <option value="Salary">Salary</option>
-              </select>
-            </div>
-            <div style={rowStyle}>
-              <label style={labelStyle}>Holder Name</label>
-              <input
-                name="holderName"
-                style={inputFieldStyle}
-                placeholder="Account holder full name"
-                required
-              />
-            </div>
-            <div style={rowStyle}>
-              <label style={labelStyle}>IFSC Code</label>
-              <input
-                name="ifsc"
-                style={inputFieldStyle}
-                placeholder="e.g., HDFC0001234"
-                required
-              />
-            </div>
-            <div style={rowStyle}>
-              <label style={labelStyle}>Account Number</label>
-              <input
-                name="accountNumber"
-                style={inputFieldStyle}
-                placeholder="Enter account number"
-                required
-              />
-            </div>
-            <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
-              <button type="submit" style={saveBtnStyle}>
-                Save Account
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                style={cancelBtnStyle}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* Add More + Sell Section */}
-        {!showForm && (
-          <>
-            <div style={{ textAlign: "center", marginTop: 28 }}>
-              <button
-                title="Add bank"
-                onClick={() => setShowForm(true)}
-                style={plusBtnStyle}
-              >
-                <FaPlus color="#000" />
-              </button>
-              <div style={{ marginTop: 10, color: "rgba(255,255,255,0.8)" }}>
-                Add another account
-              </div>
-            </div>
-
-            {/* Sell Section */}
-            <div style={{ marginTop: 20, textAlign: "center" }}>
-              <label
-                style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-              >
-                Enter Amount to Sell
-              </label>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 10,
-                  alignItems: "center",
-                }}
-              >
-                {!sold ? (
-                  <>
-                    <span style={{ color: "#fff", fontSize: 20 }}>$</span>
-                    <input
-                      type="number"
-                      placeholder="Amount"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      style={inputFieldStyle}
-                    />
-                    <div
-                      style={{
-                        minWidth: 100,
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <button
-                        onClick={handleSell}
-                        disabled={!amount}
-                        style={{
-                          background: !amount ? "#555" : "#22c55e",
-                          color: "#fff",
-                          border: "none",
-                          padding: "10px 16px",
-                          borderRadius: 8,
-                          fontWeight: 600,
-                          cursor: !amount ? "not-allowed" : "pointer",
-                          width: "100%",
-                          opacity: !amount ? 0.6 : 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 12,
                         }}
                       >
-                        Sell
-                      </button>
+                        <input
+                          type="radio"
+                          name="selectedBank"
+                          checked={isSelected}
+                          onChange={() => handleSelect(acc.id)}
+                          style={{
+                            width: 20,
+                            height: 20,
+                            accentColor: "#ffd700",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        {isSelected && (
+                          <span style={{ fontSize: 12, color: "#ffd700" }}>
+                            Default
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <span
-                      style={{
-                        color: "#22c55e",
-                        fontWeight: 600,
-                        fontSize: 16,
-                      }}
-                    >
-                      ✅ Sold
-                    </span>
-                    <button
-                      onClick={handleDownloadInvoice}
-                      style={{
-                        background: "#ffd700",
-                        color: "#000",
-                        border: "none",
-                        padding: "10px 14px",
-                        borderRadius: 8,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Save Invoice
-                    </button>
-                  </>
-                )}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          </>
-        )}
+          )}
+
+          {/* Add Account Form */}
+          {showForm && (
+            <form onSubmit={handleSubmit} style={formContainerStyle}>
+              <h2 style={{ marginTop: 0 }}>Add Bank Account</h2>
+              <div style={rowStyle}>
+                <label style={labelStyle}>Bank Name</label>
+                <input
+                  name="bankName"
+                  style={inputFieldStyle}
+                  placeholder="e.g., HDFC Bank"
+                  required
+                />
+              </div>
+              <div style={rowStyle}>
+                <label style={labelStyle}>Account Type</label>
+                <select
+                  name="type"
+                  style={inputFieldStyle}
+                  defaultValue="Savings"
+                  required
+                >
+                  <option value="Savings">Savings</option>
+                  <option value="Current">Current</option>
+                  <option value="Salary">Salary</option>
+                </select>
+              </div>
+              <div style={rowStyle}>
+                <label style={labelStyle}>Holder Name</label>
+                <input
+                  name="holderName"
+                  style={inputFieldStyle}
+                  placeholder="Account holder full name"
+                  required
+                />
+              </div>
+              <div style={rowStyle}>
+                <label style={labelStyle}>IFSC Code</label>
+                <input
+                  name="ifsc"
+                  style={inputFieldStyle}
+                  placeholder="e.g., HDFC0001234"
+                  required
+                />
+              </div>
+              <div style={rowStyle}>
+                <label style={labelStyle}>Account Number</label>
+                <input
+                  name="accountNumber"
+                  style={inputFieldStyle}
+                  placeholder="Enter account number"
+                  required
+                />
+              </div>
+              <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
+                <button type="submit" style={saveBtnStyle}>
+                  Save Account
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  style={cancelBtnStyle}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Add More + Sell Section */}
+          {!showForm && (
+            <>
+              <div style={{ textAlign: "center", marginTop: 28 }}>
+                <button
+                  title="Add bank"
+                  onClick={() => setShowForm(true)}
+                  style={plusBtnStyle}
+                >
+                  <FaPlus color="#000" />
+                </button>
+                <div style={{ marginTop: 10, color: "rgba(255,255,255,0.8)" }}>
+                  Add another account
+                </div>
+              </div>
+
+              {/* Sell Section */}
+              <div style={{ marginTop: 20, textAlign: "center" }}>
+                <label
+                  style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
+                >
+                  Enter Amount to Sell
+                </label>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 10,
+                    alignItems: "center",
+                  }}
+                >
+                  {!sold ? (
+                    <>
+                      <span style={{ color: "#fff", fontSize: 20 }}>$</span>
+                      <input
+                        type="number"
+                        placeholder="Amount"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        style={inputFieldStyle}
+                      />
+                      <div
+                        style={{
+                          minWidth: 100,
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <button
+                          onClick={handleSell}
+                          disabled={!amount}
+                          style={{
+                            background: !amount ? "#555" : "#22c55e",
+                            color: "#fff",
+                            border: "none",
+                            padding: "10px 16px",
+                            borderRadius: 8,
+                            fontWeight: 600,
+                            cursor: !amount ? "not-allowed" : "pointer",
+                            width: "100%",
+                            opacity: !amount ? 0.6 : 1,
+                          }}
+                        >
+                          Sell
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <span
+                        style={{
+                          color: "#22c55e",
+                          fontWeight: 600,
+                          fontSize: 16,
+                        }}
+                      >
+                        ✅ Sold
+                      </span>
+                      <button
+                        onClick={handleDownloadInvoice}
+                        style={{
+                          background: "#ffd700",
+                          color: "#000",
+                          border: "none",
+                          padding: "10px 14px",
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Save Invoice
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
 /* ---------------- styles ---------------- */
 /* ---------------- styles ---------------- */

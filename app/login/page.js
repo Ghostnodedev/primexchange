@@ -45,7 +45,6 @@ const handleSubmit = async (e) => {
       // ✅ Store token and email in localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userEmail", user.email); // store email dynamically
-      localStorage.setItem("username", formdata.username);
 
       setMessage("Login successful! Redirecting...");
       setTimeout(() => router.push("/profile"), 1500);

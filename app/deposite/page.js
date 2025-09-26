@@ -150,7 +150,6 @@ export default function DepositPage() {
         toast.success("Transaction submitted successfully!");
       }
 
-      localStorage.setItem("justDeposited", "true");
       setTimeout(() => router.push("/profile"), 1500);
     } catch (err) {
       console.error("Error submitting transaction:", err);
