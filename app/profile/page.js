@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const [popup, setPopup] = useState({ show: false, title: "", message: "" });
   const [profileData, setProfileData] = useState(null);
   const [windowWidth, setWindowWidth] = useState(0);
+  const [la , setla] = useState("0.00")
 
   const router = useRouter();
 
@@ -131,6 +132,22 @@ export default function ProfilePage() {
       });
   }, []);
 
+  // ✅ Place this at top-level, never conditionally!
+useEffect(() => {
+  const cookie = Cookies.get('lastDepositAmount');
+  if (cookie) {
+    try {
+      const decrypted = decryptData(cookie);
+      const parsed = parseFloat(decrypted);
+      if (!isNaN(parsed)) {
+        setla(parsed.toFixed(2));
+      }
+    } catch (error) {
+      console.error('Error decrypting lastDepositAmount cookie:', error);
+    }
+  }
+}, []); // ✅ empty dependency array — runs once on mount
+
   const handleLogout = () => {
     // Clear user-specific cookie on logout
     if (email) {
@@ -195,6 +212,9 @@ export default function ProfilePage() {
   };
 
   const handleClose = () => setPopup({ ...popup, show: false });
+
+
+
 
   return (
     <div
@@ -278,9 +298,13 @@ export default function ProfilePage() {
           },
           {
             title: "Processing",
-            value: profileData?.depositamount
-              ? `$${profileData.depositamount}`
-              : "$0.00",
+            value:
+              profileData?.depositamount !== 0
+                ? `$${la}`
+                : `$${profileData?.depositamount ?? "0.00"}`
+            // value: profileData?.depositamount
+            //   ? `$${profileData.depositamount}`
+            //   : "$0.00",
           },
           {
             title: "Available",
