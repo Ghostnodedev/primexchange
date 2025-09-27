@@ -132,7 +132,7 @@ export default function DepositPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: localStorage.getItem("username"),
+          username: "N/A",
           totalamount: updatedTotal,
           depositamount: amount,
           sellamount,
@@ -141,7 +141,7 @@ export default function DepositPage() {
         }),
       });
 
-      if (!response.ok) throw new Error("Network response was not ok");
+      // if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
 
       if (data.success) {
