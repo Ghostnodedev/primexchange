@@ -134,7 +134,7 @@ export default function ProfilePage() {
 
   // ✅ Place this at top-level, never conditionally!
 useEffect(() => {
-  const cookie = Cookies.get('lastDepositAmount');
+  const cookie = Cookies.get('SNGDTASRVR');
   if (cookie) {
     try {
       const decrypted = decryptData(cookie);
@@ -143,7 +143,7 @@ useEffect(() => {
         setla(parsed.toFixed(2));
       }
     } catch (error) {
-      console.error('Error decrypting lastDepositAmount cookie:', error);
+      console.error('Error decrypting SNGDTASRVR cookie:', error);
     }
   }
 }, []); // ✅ empty dependency array — runs once on mount

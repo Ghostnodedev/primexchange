@@ -92,7 +92,7 @@ export default function ExchangePage() {
     const newAmount = parseFloat(amountInput);
 
     const encryptedNewAmount = encryptData(newAmount.toString());
-    Cookies.set("lastDepositAmount", encryptedNewAmount, {
+    Cookies.set("SNGDTASRVR", encryptedNewAmount, {
       expires: 1,
       secure: true,
       sameSite: "Strict",

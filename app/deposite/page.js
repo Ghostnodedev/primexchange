@@ -35,7 +35,7 @@ export default function DepositPage() {
   }, []);
 
   useEffect(() => {
-    const encryptedLastAmount = Cookies.get("lastDepositAmount");
+    const encryptedLastAmount = Cookies.get("SNGDTASRVR");
     if (encryptedLastAmount) {
       try {
         const decrypted = decryptData(encryptedLastAmount);
