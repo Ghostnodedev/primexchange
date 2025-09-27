@@ -57,14 +57,6 @@
       fetchAccounts();
     }, [storedEmail]);
 
-    // Save selected bank
-    useEffect(() => {
-      if (selectedId !== null) {
-        Cookies.set("selectedBank", String(selectedId), { expires: 7 });
-      } else {
-        Cookies.remove("selectedBank");
-      }
-    }, [selectedId]);
 
     const handleSelect = (id) => setSelectedId(String(id));
 
