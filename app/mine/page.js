@@ -408,7 +408,7 @@ const handleSell = async () => {
                       >
                         <input
                           type="radio"
-                          name="selectedBank"
+                          // name="selectedBank"
                           checked={isSelected}
                           onChange={() => handleSelect(acc.id)}
                           style={{

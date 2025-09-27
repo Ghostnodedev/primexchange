@@ -177,9 +177,6 @@ useEffect(() => {
         trend: generateRandomTrend(7),
       }));
 
-      Cookies.set("dailyCryptoData", JSON.stringify(withTrends), { expires: 1, sameSite: "Strict" });
-      Cookies.set("dailyCryptoDate", todayKey, { expires: 1, sameSite: "Strict" });
-
       setCryptoData(withTrends);
     } catch (err) {
       console.error("Error fetching crypto data", err);
