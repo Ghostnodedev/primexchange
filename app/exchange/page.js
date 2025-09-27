@@ -98,11 +98,6 @@ export default function ExchangePage() {
       sameSite: "Strict",
     });
 
-    Cookies.set("selectedNetwork", network, {
-      expires: 1,
-      secure: true,
-      sameSite: "Strict",
-    });
 
     setShowDepositModalPage(false);
     toast.success(
