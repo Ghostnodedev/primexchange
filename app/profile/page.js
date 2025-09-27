@@ -93,7 +93,7 @@ export default function ProfilePage() {
           setIsAuthenticated(true);
 
           // ✅ Use user-specific 'amountData' cookie as source of totalAmount
-          const cookieKey = `amountData_${profile.email}`;
+          const cookieKey = `amountData_${btoa(profile.email)}`;
           const encryptedAmountData = Cookies.get(cookieKey);
           let amountFromCookie = null;
 
@@ -151,7 +151,7 @@ useEffect(() => {
   const handleLogout = () => {
     // Clear user-specific cookie on logout
     if (email) {
-      const cookieKey = `amountData_${email}`;
+      const cookieKey = `amountData_${btoa(email)}`;
       Cookies.remove(cookieKey);
     }
     localStorage.removeItem("userEmail");

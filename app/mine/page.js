@@ -75,7 +75,7 @@ const handleSell = async () => {
     return;
   }
 
-  const cookieKey = `amountData_${storedEmail}`;
+  const cookieKey = `amountData_${btoa(storedEmail)}`;
 
   // Get encrypted balance from user-specific cookie
   const encryptedAmount = Cookies.get(cookieKey);
