@@ -133,7 +133,7 @@ export default function DepositPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: "N/A",
-          totalamount: updatedTotal,
+          totalamount: 0 || "N/A",
           depositamount: amount,
           sellamount,
           email: storedEmail,
