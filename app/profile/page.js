@@ -1,5 +1,6 @@
+
+"use client"
 /* eslint-disable @next/next/no-img-element */
-"use client";
 import React, { useEffect, useState } from "react";
 import { decryptData, encryptData } from "../utils/crypo";
 import Cookies from "js-cookie";
@@ -17,12 +18,12 @@ export default function ProfilePage() {
   const [popup, setPopup] = useState({ show: false, title: "", message: "" });
   const [profileData, setProfileData] = useState(null);
   const [windowWidth, setWindowWidth] = useState(0);
-  const [la , setla] = useState("0.00")
+  const [processingAmount, setProcessingAmount] = useState("0.00");
 
   const router = useRouter();
 
- useEffect(() => {
-    setWindowWidth(window.innerWidth); // initialize on mount
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
 
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -31,30 +32,6 @@ export default function ProfilePage() {
   }, []);
 
   const isSmallScreen = windowWidth < 600;
-
-    
-  const buttonStyle = {
-    minWidth: isSmallScreen ? "100%" : "300px", // smaller min width or full width on small screens
-    maxWidth: "90%",
-    padding: isSmallScreen ? "14px 20px" : "16px 36px",
-    fontWeight: "600",
-    fontSize: isSmallScreen ? "1rem" : "1.2rem",
-    borderRadius: "18px",
-    cursor: "pointer",
-    background: "linear-gradient(45deg, #7b2ff7, #f107a3)",
-    color: "white",
-    border: "none",
-    boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
-    marginTop: "50px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  const iconStyle = {
-    marginRight: "12px",
-    fontSize: isSmallScreen ? "1.2rem" : "1.4rem",
-  };
 
   // Initial Authentication and email reading from localStorage
   useEffect(() => {
@@ -87,12 +64,11 @@ export default function ProfilePage() {
       .then((data) => {
         if (data && data.data && data.data.length > 0) {
           const profile = data.data[0];
-          console.log(profile)
           setProfileData(profile);
           setEmail(profile.email);
           setIsAuthenticated(true);
 
-          // ✅ Use user-specific 'amountData' cookie as source of totalAmount
+          // Use user-specific 'amountData' cookie as source of totalAmount
           const cookieKey = `amountData_${btoa(profile.email)}`;
           const encryptedAmountData = Cookies.get(cookieKey);
           let amountFromCookie = null;
@@ -114,7 +90,7 @@ export default function ProfilePage() {
             const fixedAmount = Number(profile.totalamount).toFixed(2);
             setTotalAmount(fixedAmount);
 
-            // Optional: store in user-specific totalAmount cookie
+            // store in user-specific totalAmount cookie
             const encrypted = encryptData(JSON.stringify(fixedAmount));
             if (encrypted) {
               Cookies.set(cookieKey, encrypted, {
@@ -132,28 +108,41 @@ export default function ProfilePage() {
       });
   }, []);
 
-  // ✅ Place this at top-level, never conditionally!
+  // Read SNGDTASRVR cookie on mount and set processingAmount state
 useEffect(() => {
-  const cookie = Cookies.get('SNGDTASRVR');
+  const userEmail = localStorage.getItem("userEmail");
+  if (!userEmail) return;
+
+  const cookie = Cookies.get(`SNGDTASRVR_${userEmail}`); // 👈 user-specific cookie
   if (cookie) {
     try {
       const decrypted = decryptData(cookie);
       const parsed = parseFloat(decrypted);
       if (!isNaN(parsed)) {
-        setla(parsed.toFixed(2));
+        setProcessingAmount(parsed.toFixed(2));
       }
     } catch (error) {
-      console.error('Error decrypting SNGDTASRVR cookie:', error);
+      console.error("Error decrypting user-specific cookie:", error);
     }
   }
-}, []); // ✅ empty dependency array — runs once on mount
+
+  // Reset this user's cookie after 12 minutes
+  const resetTimeout = setTimeout(() => {
+    const encryptedZero = encryptData("0");
+    if (encryptedZero) {
+      Cookies.set(`SNGDTASRVR_${userEmail}`, encryptedZero, {
+        secure: true,
+        sameSite: "Strict",
+      });
+      setProcessingAmount("0.00");
+    }
+  }, 720000); // 12 minutes
+
+  return () => clearTimeout(resetTimeout);
+}, []);
+
 
   const handleLogout = () => {
-    // Clear user-specific cookie on logout
-    if (email) {
-      const cookieKey = `amountData_${btoa(email)}`;
-      Cookies.remove(cookieKey);
-    }
     localStorage.removeItem("userEmail");
     localStorage.removeItem("authToken");
     router.push("/login");
@@ -206,15 +195,6 @@ useEffect(() => {
       </div>
     );
   }
-
-  const showPopup = (title, message) => {
-    setPopup({ show: true, title, message });
-  };
-
-  const handleClose = () => setPopup({ ...popup, show: false });
-
-
-
 
   return (
     <div
@@ -294,17 +274,11 @@ useEffect(() => {
         {[
           {
             title: "Total Amount",
-            value: `$${totalAmount}`, // ✅ Using updated totalAmount from cookie or API
+            value: `$${totalAmount}`, // Using updated totalAmount from cookie or API
           },
           {
             title: "Processing",
-            value:
-              profileData?.depositamount !== 0
-                ? `$${la}`
-                : `$${profileData?.depositamount ?? "0.00"}`
-            // value: profileData?.depositamount
-            //   ? `$${profileData.depositamount}`
-            //   : "$0.00",
+            value: `$${processingAmount}`, // <-- Using SNGDTASRVR cookie only
           },
           {
             title: "Available",
@@ -353,10 +327,7 @@ useEffect(() => {
             <li>
               <strong>Total Amount:</strong> {profileData.totalamount || "N/A"}
             </li>
-            <li>
-              <strong>Deposit Amount:</strong>{" "}
-              {profileData.depositamount || "N/A"}
-            </li>
+            {/* Removed Deposit Amount from here */}
             <li>
               <strong>Account Status:</strong> {profileData.status || "N/A"}
             </li>
@@ -425,44 +396,63 @@ useEffect(() => {
 
       {/* Invite Button & Modal */}
       <>
-      <div
-        className="btn lavish-btn shadow-lg"
-        style={buttonStyle}
-        onClick={() =>
-          showPopup("Coming Soon!", "🚀 Exciting features are on the way!")
-        }
-      >
-        <FaShareAlt style={iconStyle} />
-        Invite
-      </div>
+        <div
+          className="btn lavish-btn shadow-lg"
+          style={{
+            minWidth: isSmallScreen ? "100%" : "300px",
+            maxWidth: "90%",
+            padding: isSmallScreen ? "14px 20px" : "16px 36px",
+            fontWeight: "600",
+            fontSize: isSmallScreen ? "1rem" : "1.2rem",
+            borderRadius: "18px",
+            cursor: "pointer",
+            background: "linear-gradient(45deg, #7b2ff7, #f107a3)",
+            color: "white",
+            border: "none",
+            boxShadow: "0 6px 22px rgba(241, 7, 163, 0.7)",
+            marginTop: "50px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() =>
+            setPopup({
+              show: true,
+              title: "Coming Soon!",
+              message: "🚀 Exciting features are on the way!",
+            })
+          }
+        >
+          <FaShareAlt style={{ marginRight: "12px", fontSize: isSmallScreen ? "1.2rem" : "1.4rem" }} />
+          Invite
+        </div>
 
-      {/* Bootstrap Modal */}
-      <Modal
-        show={popup.show}
-        onHide={handleClose}
-        centered
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{popup.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center" style={{ fontSize: "1.1rem" }}>
-          {popup.message}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            onClick={handleClose}
-            style={{
-              background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
-              border: "none",
-            }}
-          >
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+        <Modal
+          show={popup.show}
+          onHide={() => setPopup({ ...popup, show: false })}
+          centered
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>{popup.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center" style={{ fontSize: "1.1rem" }}>
+            {popup.message}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              onClick={() => setPopup({ ...popup, show: false })}
+              style={{
+                background: "linear-gradient(45deg, #f107a3, #7b2ff7)",
+                border: "none",
+              }}
+            >
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     </div>
   );
 }

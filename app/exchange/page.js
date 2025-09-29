@@ -42,7 +42,7 @@ export default function ExchangePage() {
   const [hovered, setHovered] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -92,12 +92,14 @@ export default function ExchangePage() {
     const newAmount = parseFloat(amountInput);
 
     const encryptedNewAmount = encryptData(newAmount.toString());
-    Cookies.set("SNGDTASRVR", encryptedNewAmount, {
+    const email = localStorage.getItem("userEmail"); // Or however you're storing user info
+    const cookieName = `SNGDTASRVR_${email}`;
+
+    Cookies.set(cookieName, encryptedNewAmount, {
       expires: 1,
       secure: true,
       sameSite: "Strict",
     });
-
 
     setShowDepositModalPage(false);
     toast.success(
@@ -210,239 +212,243 @@ export default function ExchangePage() {
     );
   }
 
-  const invite =()=>{
+  const invite = () => {
     Swal.fire({
-    title: "Coming Soon",
-    icon: "info", 
-    confirmButtonText: "OK",
-    background: "#7b2ff7",
-    color: "#fff",
-    confirmButtonColor: "#f107a3",
-  });
-  }
-  
+      title: "Coming Soon",
+      icon: "info",
+      confirmButtonText: "OK",
+      background: "#7b2ff7",
+      color: "#fff",
+      confirmButtonColor: "#f107a3",
+    });
+  };
 
   return (
     <div style={{ backgroundColor: "#f8f9fc", minHeight: "100vh" }}>
-      <Page/>
+      <Page />
       <Navbar />
 
-<Container className="banner-container">
-  {/* Left Side Text */}
-  <div className="banner-left">
-    <h1 className="banner-title">
-      Your Exchange. <br /> Your Control.
-    </h1>
-    <p className="banner-subtitle">
-      Premium USDT Xchange of India.
-    </p>
-    <Button
-      size="lg"
-      className="banner-deposit-btn"
-      onClick={handleShowPasswordModal}
-    >
-      Deposit Now
-    </Button>
-  </div>
-
-  {/* Right Side Image */}
-  <div className="banner-right">
-    <img
-      src="/6240209949623964668.jpg"
-      alt="Banner"
-      className="banner-image"
-    />
-  </div>
-</Container>
-
-    
-      {/* Exchange Info */}
-<Container className="py-5 d-flex justify-content-center">
-  <Card
-    className="shadow-lg rounded-4 p-5 text-center"
-    style={{
-      maxWidth: "650px",
-      background: "linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%)",
-      border: "1px solid #e2e8f0",
-    }}
-  >
-    {/* Header */}
-    <div className="d-flex justify-content-between align-items-center mb-4">
-      <h5 className="fw-bold text-primary m-0">💱 Current Exchange Rate</h5>
-      <span className="text-muted small fw-semibold">
-        ⏳ Auto-refresh in {seconds}s
-      </span>
-    </div>
-
-    {/* Main Rate */}
-    <h1 className="fw-bolder display-2 text-dark mb-2">
-      99
-      <Badge
-        bg="warning"
-        text="dark"
-        className="ms-2 fs-5 px-3 py-2 rounded-pill shadow-sm"
-      >
-        BASE
-      </Badge>
-    </h1>
-    <p className="text-secondary fs-5 mb-5">1 USDT = ₹99</p>
-
-    {/* Tier Pricing */}
-    <div className="table-responsive mb-4">
-      <table className="table table-hover align-middle text-start mb-0">
-        <thead className="table-light">
-          <tr>
-            <th scope="col" className="fw-semibold">Exchanges ($)</th>
-            <th scope="col" className="fw-semibold">Prices (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="fw-medium">=1000 and &lt; 2000</td>
-            <td className="text-danger fw-bold">₹99 + 0.50</td>
-          </tr>
-          <tr>
-            <td className="fw-medium">&gt;=3000 and &lt; 5000</td>
-            <td className="text-danger fw-bold">₹99 + 1</td>
-          </tr>
-          <tr>
-            <td className="fw-medium">&gt;=10000</td>
-            <td className="text-danger fw-bold">₹99 + 2</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    {/* Extra Info */}
-    <a
-      href="#"
-      className="text-primary fw-semibold small text-decoration-none"
-    >
-      ℹ️ What is the tiered price policy?
-    </a>
-  </Card>
-</Container>
-
-<div className="d-flex justify-content-center mt-1 mb-4">
-  <Button
-    size="lg"
-    style={{
-      backgroundColor: "#031238ff",
-      borderColor: "#0a0329ff",
-      borderRadius: "30px",
-      padding: "12px 36px",
-      fontWeight: "600",
-      color: "white",
-      boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
-      marginTop: "-35px", // 👈 lifts the button slightly upwards
-    }}
-    onClick={handlesell}
-    onMouseOver={(e) =>
-      (e.currentTarget.style.backgroundColor = "#097c2fff")
-    }
-    onMouseOut={(e) =>
-      (e.currentTarget.style.backgroundColor = "#031238ff")
-    }
-  >
-    Sell Now
-  </Button>
-</div>
-
-<Container fluid className="px-0">
-      <div
-        style={{
-          background: "#ffffff",
-          borderTopLeftRadius: "24px",
-          borderTopRightRadius: "24px",
-          boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
-          padding: "30px 0",
-          position: "relative",
-          zIndex: 10,
-          width: "100%",
-        }}
-      >
-        <Container className="d-flex justify-content-center">
-          <div
-            className="d-flex justify-content-center align-items-center flex-nowrap w-100"
-            style={{
-              maxWidth: "700px", // max width container
-              gap: isMobile ? "10px" : "450px", // 🔥 big gap desktop, small gap mobile
-              margin: "0 auto",
-            }}
+      <Container className="banner-container">
+        {/* Left Side Text */}
+        <div className="banner-left">
+          <h1 className="banner-title">
+            Your Exchange. <br /> Your Control.
+          </h1>
+          <p className="banner-subtitle">Premium USDT Xchange of India.</p>
+          <Button
+            size="lg"
+            className="banner-deposit-btn"
+            onClick={handleShowPasswordModal}
           >
-            {/* Deposit */}
-            <Button
-              variant="light"
-              className="d-flex flex-column align-items-center border-0 bg-transparent"
-              style={{
-                transition: "all 0.3s ease",
-                transform: hovered === "deposit" ? "translateY(-3px)" : "none",
-                minWidth: "80px",
-              }}
-              onMouseEnter={() => setHovered("deposit")}
-              onMouseLeave={() => setHovered(null)}
-              onClick={handleShowPasswordModal}
-            >
-              <FaMoneyBillWave
-                size={36}
-                className={`mb-2 ${
-                  hovered === "deposit" ? "text-purple" : "text-dark"
-                }`}
-              />
-              <span className="fw-semibold text-purple">Deposit</span>
-            </Button>
+            Deposit Now
+          </Button>
+        </div>
 
-            {/* Withdraw */}
-            <Button
-              variant="light"
-              className="d-flex flex-column align-items-center border-0 bg-transparent"
-              style={{
-                transition: "all 0.3s ease",
-                transform: hovered === "withdraw" ? "translateY(-3px)" : "none",
-                minWidth: "80px",
-              }}
-              onMouseEnter={() => setHovered("withdraw")}
-              onMouseLeave={() => setHovered(null)}
-              onClick={handlesell}
-            >
-              <FaUniversity
-                size={36}
-                className={`mb-2 ${
-                  hovered === "withdraw" ? "text-purple" : "text-dark"
-                }`}
-              />
-              <span className="fw-semibold text-purple">Withdraw</span>
-            </Button>
+        {/* Right Side Image */}
+        <div className="banner-right">
+          <img
+            src="/6240209949623964668.jpg"
+            alt="Banner"
+            className="banner-image"
+          />
+        </div>
+      </Container>
 
-            {/* Invite */}
-            <Button
-              variant="light"
-              className="d-flex flex-column align-items-center border-0 bg-transparent"
-              style={{
-                transition: "all 0.3s ease",
-                transform: hovered === "invite" ? "translateY(-3px)" : "none",
-                minWidth: "80px",
-              }}
-              onMouseEnter={() => setHovered("invite")}
-              onMouseLeave={() => setHovered(null)}
-              onClick={invite}
-            >
-              <FaUserPlus
-                size={36}
-                className={`mb-2 ${
-                  hovered === "invite" ? "text-purple" : "text-dark"
-                }`}
-              />
-              <span className="fw-semibold text-purple">Invite</span>
-            </Button>
+      {/* Exchange Info */}
+      <Container className="py-5 d-flex justify-content-center">
+        <Card
+          className="shadow-lg rounded-4 p-5 text-center"
+          style={{
+            maxWidth: "650px",
+            background: "linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h5 className="fw-bold text-primary m-0">
+              💱 Current Exchange Rate
+            </h5>
+            <span className="text-muted small fw-semibold">
+              ⏳ Auto-refresh in {seconds}s
+            </span>
           </div>
-        </Container>
+
+          {/* Main Rate */}
+          <h1 className="fw-bolder display-2 text-dark mb-2">
+            99
+            <Badge
+              bg="warning"
+              text="dark"
+              className="ms-2 fs-5 px-3 py-2 rounded-pill shadow-sm"
+            >
+              BASE
+            </Badge>
+          </h1>
+          <p className="text-secondary fs-5 mb-5">1 USDT = ₹99</p>
+
+          {/* Tier Pricing */}
+          <div className="table-responsive mb-4">
+            <table className="table table-hover align-middle text-start mb-0">
+              <thead className="table-light">
+                <tr>
+                  <th scope="col" className="fw-semibold">
+                    Exchanges ($)
+                  </th>
+                  <th scope="col" className="fw-semibold">
+                    Prices (₹)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="fw-medium">=1000 and &lt; 2000</td>
+                  <td className="text-danger fw-bold">₹99 + 0.50</td>
+                </tr>
+                <tr>
+                  <td className="fw-medium">&gt;=3000 and &lt; 5000</td>
+                  <td className="text-danger fw-bold">₹99 + 1</td>
+                </tr>
+                <tr>
+                  <td className="fw-medium">&gt;=10000</td>
+                  <td className="text-danger fw-bold">₹99 + 2</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Extra Info */}
+          <a
+            href="#"
+            className="text-primary fw-semibold small text-decoration-none"
+          >
+            ℹ️ What is the tiered price policy?
+          </a>
+        </Card>
+      </Container>
+
+      <div className="d-flex justify-content-center mt-1 mb-4">
+        <Button
+          size="lg"
+          style={{
+            backgroundColor: "#031238ff",
+            borderColor: "#0a0329ff",
+            borderRadius: "30px",
+            padding: "12px 36px",
+            fontWeight: "600",
+            color: "white",
+            boxShadow: "0 6px 12px rgba(51, 2, 2, 0.6)",
+            marginTop: "-35px", // 👈 lifts the button slightly upwards
+          }}
+          onClick={handlesell}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#097c2fff")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor = "#031238ff")
+          }
+        >
+          Sell Now
+        </Button>
       </div>
-    </Container>
 
-<FeaturesSection/>
+      <Container fluid className="px-0">
+        <div
+          style={{
+            background: "#ffffff",
+            borderTopLeftRadius: "24px",
+            borderTopRightRadius: "24px",
+            boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
+            padding: "30px 0",
+            position: "relative",
+            zIndex: 10,
+            width: "100%",
+          }}
+        >
+          <Container className="d-flex justify-content-center">
+            <div
+              className="d-flex justify-content-center align-items-center flex-nowrap w-100"
+              style={{
+                maxWidth: "700px", // max width container
+                gap: isMobile ? "10px" : "450px", // 🔥 big gap desktop, small gap mobile
+                margin: "0 auto",
+              }}
+            >
+              {/* Deposit */}
+              <Button
+                variant="light"
+                className="d-flex flex-column align-items-center border-0 bg-transparent"
+                style={{
+                  transition: "all 0.3s ease",
+                  transform:
+                    hovered === "deposit" ? "translateY(-3px)" : "none",
+                  minWidth: "80px",
+                }}
+                onMouseEnter={() => setHovered("deposit")}
+                onMouseLeave={() => setHovered(null)}
+                onClick={handleShowPasswordModal}
+              >
+                <FaMoneyBillWave
+                  size={36}
+                  className={`mb-2 ${
+                    hovered === "deposit" ? "text-purple" : "text-dark"
+                  }`}
+                />
+                <span className="fw-semibold text-purple">Deposit</span>
+              </Button>
 
-<TestimonialSlider/>
+              {/* Withdraw */}
+              <Button
+                variant="light"
+                className="d-flex flex-column align-items-center border-0 bg-transparent"
+                style={{
+                  transition: "all 0.3s ease",
+                  transform:
+                    hovered === "withdraw" ? "translateY(-3px)" : "none",
+                  minWidth: "80px",
+                }}
+                onMouseEnter={() => setHovered("withdraw")}
+                onMouseLeave={() => setHovered(null)}
+                onClick={handlesell}
+              >
+                <FaUniversity
+                  size={36}
+                  className={`mb-2 ${
+                    hovered === "withdraw" ? "text-purple" : "text-dark"
+                  }`}
+                />
+                <span className="fw-semibold text-purple">Withdraw</span>
+              </Button>
+
+              {/* Invite */}
+              <Button
+                variant="light"
+                className="d-flex flex-column align-items-center border-0 bg-transparent"
+                style={{
+                  transition: "all 0.3s ease",
+                  transform: hovered === "invite" ? "translateY(-3px)" : "none",
+                  minWidth: "80px",
+                }}
+                onMouseEnter={() => setHovered("invite")}
+                onMouseLeave={() => setHovered(null)}
+                onClick={invite}
+              >
+                <FaUserPlus
+                  size={36}
+                  className={`mb-2 ${
+                    hovered === "invite" ? "text-purple" : "text-dark"
+                  }`}
+                />
+                <span className="fw-semibold text-purple">Invite</span>
+              </Button>
+            </div>
+          </Container>
+        </div>
+      </Container>
+
+      <FeaturesSection />
+
+      <TestimonialSlider />
 
       {/* WhatsApp Floating Button */}
       <a
