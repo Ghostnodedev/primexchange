@@ -95,8 +95,9 @@ export default function ExchangePage() {
     const email = localStorage.getItem("userEmail"); // Or however you're storing user info
     const cookieName = `SNGDTASRVR_${email}`;
 
+    const expiresAt = new Date(new Date().getTime() + 15 * 60 * 1000); // 15 minutes
     Cookies.set(cookieName, encryptedNewAmount, {
-      expires: 1,
+      expires: expiresAt,
       secure: true,
       sameSite: "Strict",
     });

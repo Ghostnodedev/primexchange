@@ -126,19 +126,6 @@ useEffect(() => {
     }
   }
 
-  // Reset this user's cookie after 12 minutes
-  const resetTimeout = setTimeout(() => {
-    const encryptedZero = encryptData("0");
-    if (encryptedZero) {
-      Cookies.set(`SNGDTASRVR_${userEmail}`, encryptedZero, {
-        secure: true,
-        sameSite: "Strict",
-      });
-      setProcessingAmount("0.00");
-    }
-  }, 720000); // 12 minutes
-
-  return () => clearTimeout(resetTimeout);
 }, []);
 
 
