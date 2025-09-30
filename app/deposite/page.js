@@ -34,26 +34,30 @@ export default function DepositPage() {
     if (email) setStoredEmail(email);
   }, []);
 
-  useEffect(() => {
-    const encryptedLastAmount = Cookies.get("SNGDTASRVR");
-    if (encryptedLastAmount) {
-      try {
-        const decrypted = decryptData(encryptedLastAmount);
-        const latest = parseFloat(decrypted);
-        if (!isNaN(latest)) {
-          setAmount(latest);
-        } else {
-          toast.error("Invalid last deposit amount.");
-          setAmount(0);
-        }
-      } catch {
-        toast.error("Failed to read last deposit.");
-        setAmount(0);
-      }
-    } else {
+useEffect(() => {
+  const email = localStorage.getItem("userEmail");
+  if (!email) {
+    console.warn("No user email found in localStorage.");
+    return;
+  }
+
+  const cookieKey = `SNGDTASRVR_${email}`;
+  const encryptedLastAmount = Cookies.get(cookieKey);
+
+  if (encryptedLastAmount) {
+    try {
+      const decrypted = decryptData(encryptedLastAmount);
+      const parsed = parseFloat(decrypted);
+      setAmount(isNaN(parsed) ? 0 : parsed);
+    } catch (e) {
+      console.error("Failed to decrypt cookie", e);
       setAmount(0);
     }
-  }, []);
+  } else {
+    setAmount(0);
+  }
+}, []);
+
 
   useEffect(() => {
     const encryptedAmount = Cookies.get("SellAmount");
