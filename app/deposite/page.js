@@ -8,6 +8,7 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 import { FaRegCopy } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 export default function DepositPage() {
   const [timer, setTimer] = useState(1800);
@@ -112,54 +113,59 @@ useEffect(() => {
   };
 
   // ✅ Submit TXID
-  const handleSubmitTxid = async () => {
-    if (!inputId || inputId.length < 6) {
-      toast.error("Please enter a valid TXID.");
-      return;
+const handleSubmitTxid = async () => {
+  if (!inputId || inputId.length < 6) {
+    toast.error("Please enter a valid TXID.");
+    return;
+  }
+  setIsSubmitting(true);
+  try {
+    const encryptedAmount = Cookies.get("depositAmount");
+    let total = 0;
+    if (encryptedAmount) {
+      const decrypted = decryptData(encryptedAmount);
+      total = parseFloat(decrypted) || 0;
     }
-
-      setIsSubmitting(true); 
-
-    try {
-      // calculate total first
-      const encryptedAmount = Cookies.get("depositAmount");
-      let total = 0;
-      if (encryptedAmount) {
-        const decrypted = decryptData(encryptedAmount);
-        total = parseFloat(decrypted) || 0;
-      }
-      const updatedTotal = total + (amount || 0);
-
-
-      // call API
-      const response = await fetch(Api_Url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: "N/A",
-          totalamount: 0 || "N/A",
-          depositamount: amount,
-          sellamount,
-          email: storedEmail,
-          status: "pending",
-        }),
-      });
-
-      // if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Transaction submitted successfully!");
-      } else {
-        toast.success("Transaction submitted successfully!");
-      }
-
-      setTimeout(() => router.push("/profile"), 1500);
-    } catch (err) {
-      console.error("Error submitting transaction:", err);
-      toast.error("Something went wrong while saving the deposit.");
-    }
-  };
+    const updatedTotal = total + (amount || 0);
+    // 🧠 Show "Payment processing..." modal
+    Swal.fire({
+      title: "Payment in processing...",
+      text: "Please wait while we process your deposit.",
+      icon: "info",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+    // Submit to API
+    const response = await fetch(Api_Url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: "N/A",
+        totalamount: 0 || "N/A",
+        depositamount: amount,
+        sellamount,
+        email: storedEmail,
+        status: "pending",
+      }),
+    });
+    const data = await response.json();
+    // ✅ Wait 10-15 seconds
+    setTimeout(() => {
+      Swal.close(); // Close the modal
+      toast.success("Transaction submitted successfully!");
+      router.push("/profile");
+    }, 10000); // 10 seconds (use 15000 for 15s)
+  } catch (err) {
+    console.error("Error submitting transaction:", err);
+    Swal.close(); // Ensure the modal closes on error
+    toast.error("Something went wrong while saving the deposit.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div
