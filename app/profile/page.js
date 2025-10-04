@@ -289,40 +289,6 @@ useEffect(() => {
         ))}
       </div>
 
-      {/* Profile Details Section */}
-      <div
-        className="mx-auto rounded shadow-lg mt-5 px-4 py-3 w-100"
-        style={{
-          background: "#3a0ca3",
-          maxWidth: "600px",
-          boxShadow: "0 0 25px rgba(58, 12, 163, 0.7)",
-          color: "#fff",
-        }}
-      >
-        <h4 className="mb-3">Profile Details</h4>
-        {profileData ? (
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li>
-              <strong>Name:</strong> {profileData.name || "N/A"}
-            </li>
-            <li>
-              <strong>Email:</strong> {profileData.email || "N/A"}
-            </li>
-            <li>
-              <strong>Phone:</strong> {profileData.phone || "N/A"}
-            </li>
-            <li>
-              <strong>Total Amount:</strong> {profileData.totalamount || "N/A"}
-            </li>
-            {/* Removed Deposit Amount from here */}
-            <li>
-              <strong>Account Status:</strong> {profileData.status || "N/A"}
-            </li>
-          </ul>
-        ) : (
-          <p>Loading profile details...</p>
-        )}
-      </div>
 
       {/* Reward Section */}
       <div
