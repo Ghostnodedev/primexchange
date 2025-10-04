@@ -16,48 +16,84 @@ export default function LoginPage() {
     }
   }, []);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const formdata = {
-    // username: e.target.username.value,
-    email: e.target.email.value,
-    // phone: e.target.phone.value,
-    password: e.target.password.value,
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    try {
+      const res = await fetch(
+        "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok && data.step === "verify-otp") {
+        toast.success("OTP sent to your email.");
+
+        // Store email for OTP verification step
+        setEmailForReset(email);
+
+        // Show OTP modal
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("otpModal")
+        ).show();
+      } else {
+        toast.error(data.message || "Login failed.");
+      }
+    } catch (err) {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  try {
-    const res = await fetch(
-      "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formdata.email, password: formdata.password }), // only send email & password
-      }
-    );
-
-    const data = await res.json();
-    if (res.ok) {
-      const { token, user } = data;
-      toast.success("Login successful!");
-
-      // ✅ Store token and email in localStorage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userEmail", user.email); // store email dynamically
-
-      setMessage("Login successful! Redirecting...");
-      setTimeout(() => router.push("/profile"), 1500);
-    } else {
-      toast.error(data.message || "Login failed. Check your credentials.");
+  const handleOtpLogin = async () => {
+    const otp = document.getElementById("otp").value;
+    if (!otp || !emailForReset) {
+      return toast.error("OTP or email missing.");
     }
-  } catch (err) {
-    toast.error("Something went wrong.");
-  } finally {
-    setLoading(false);
-  }
-};
 
+    try {
+      const res = await fetch(
+        "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/login-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailForReset, otp }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Login successful!");
+
+        // Store token and email
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userEmail", data.email);
+
+        // Close OTP modal
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("otpModal")
+        ).hide();
+
+        // Redirect to profile
+        setTimeout(() => router.push("/profile"), 1500);
+      } else {
+        toast.error(data.message || "Invalid OTP");
+      }
+    } catch (err) {
+      toast.error("Something went wrong.");
+    }
+  };
 
   const handleEmailSubmit = async () => {
     const email = document.getElementById("resetEmail").value;
@@ -77,36 +113,15 @@ const handleSubmit = async (e) => {
         toast.success("OTP sent to email.");
         setOtpSent(true);
         setEmailForReset(email);
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("emailModal")).hide();
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("otpModal")).show();
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("emailModal")
+        ).hide();
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("otpModal")
+        ).show();
       } else toast.error(data.message || "Email not found.");
     } catch {
       toast.error("Network error.");
-    }
-  };
-
-  const handleOtpSubmit = async () => {
-    const otp = document.getElementById("otp").value;
-    if (!otp) return toast.error("OTP is required.");
-
-    try {
-      const res = await fetch(
-        "https://primexchange-apis-git-main-ghostnodedevs-projects.vercel.app/verify-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailForReset, otp }),
-        }
-      );
-
-      const data = await res.json();
-      if (res.ok) {
-        toast.success("OTP verified.");
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("otpModal")).hide();
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("passwordModal")).show();
-      } else toast.error(data.message || "Invalid OTP.");
-    } catch {
-      toast.error("Something went wrong.");
     }
   };
 
@@ -114,8 +129,10 @@ const handleSubmit = async (e) => {
     const newPassword = document.getElementById("newPassword").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    if (!newPassword || !confirmPassword) return toast.error("All fields are required.");
-    if (newPassword !== confirmPassword) return toast.error("Passwords do not match.");
+    if (!newPassword || !confirmPassword)
+      return toast.error("All fields are required.");
+    if (newPassword !== confirmPassword)
+      return toast.error("Passwords do not match.");
 
     try {
       const res = await fetch(
@@ -130,7 +147,9 @@ const handleSubmit = async (e) => {
       const data = await res.json();
       if (res.ok) {
         toast.success("Password reset successful.");
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("passwordModal")).hide();
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("passwordModal")
+        ).hide();
       } else toast.error(data.message || "Password reset failed.");
     } catch {
       toast.error("Something went wrong.");
@@ -141,7 +160,8 @@ const handleSubmit = async (e) => {
     <div
       className="vh-100 d-flex flex-column"
       style={{
-        background: "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
+        background:
+          "linear-gradient(135deg, #1a0033, #3a0ca3, #7209b7, #f72585)",
         color: "white",
       }}
     >
@@ -169,7 +189,7 @@ const handleSubmit = async (e) => {
               onSubmit={handleSubmit}
               style={{ maxWidth: "340px" }}
             >
-              {[ "email", "password"].map((field, i) => (
+              {["email", "password"].map((field, i) => (
                 <div className="mb-3" key={i}>
                   <label className="form-label fw-semibold" htmlFor={field}>
                     {field.charAt(0).toUpperCase() + field.slice(1)}
@@ -188,7 +208,6 @@ const handleSubmit = async (e) => {
                     placeholder={`Enter your ${field}`}
                     required
                     style={{ borderRadius: "10px", padding: "10px" }}
-                    pattern={field === "phone" ? "[0-9]{10}" : undefined}
                   />
                 </div>
               ))}
@@ -233,7 +252,6 @@ const handleSubmit = async (e) => {
               </div>
             </form>
 
-            {/* Register link for mobile */}
             <div className="mt-3 text-center d-md-none">
               <p className="text-white-50">
                 Not a member?{" "}
@@ -244,28 +262,30 @@ const handleSubmit = async (e) => {
             </div>
 
             {message && (
-              <div className="alert alert-info mt-3 text-center w-100">{message}</div>
+              <div className="alert alert-info mt-3 text-center w-100">
+                {message}
+              </div>
             )}
           </div>
 
-          {/* Right Panel (optional content) */}
+          {/* Right Panel */}
           <div className="col-md-7 d-none d-md-flex flex-column justify-content-center align-items-center text-center px-5">
             <h1 className="fw-bold display-4">Welcome.</h1>
             <p className="text-white-50" style={{ maxWidth: "400px" }}>
-              PrimExchange is your secure gateway to trading. Log in to access your
-              dashboard.
+              PrimExchange is your secure gateway to trading. Log in to access
+              your dashboard.
             </p>
             <p className="mt-3">
               Not a member?{" "}
               <a href="/register" className="text-info fw-semibold">
                 Register now
-                            </a>
+              </a>
             </p>
           </div>
         </div>
       </div>
 
-      {/* ✅ Email Modal */}
+      {/* Email Modal */}
       <div className="modal fade" id="emailModal" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content bg-dark text-white">
@@ -297,7 +317,7 @@ const handleSubmit = async (e) => {
         </div>
       </div>
 
-      {/* ✅ OTP Modal */}
+      {/* OTP Modal */}
       <div className="modal fade" id="otpModal" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content bg-dark text-white">
@@ -321,7 +341,7 @@ const handleSubmit = async (e) => {
               <button className="btn btn-secondary" data-bs-dismiss="modal">
                 Cancel
               </button>
-              <button className="btn btn-success" onClick={handleOtpSubmit}>
+              <button className="btn btn-success" onClick={handleOtpLogin}>
                 Verify OTP
               </button>
             </div>
@@ -329,7 +349,7 @@ const handleSubmit = async (e) => {
         </div>
       </div>
 
-      {/* ✅ Password Reset Modal */}
+      {/* Password Reset Modal */}
       <div className="modal fade" id="passwordModal" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content bg-dark text-white">
@@ -369,5 +389,3 @@ const handleSubmit = async (e) => {
     </div>
   );
 }
-
-      
