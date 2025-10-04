@@ -260,7 +260,7 @@ useEffect(() => {
       >
         {[
           {
-            title: "Total Amount",
+            title: "Available",
             value: `$${totalAmount}`, // Using updated totalAmount from cookie or API
           },
           {
@@ -268,10 +268,8 @@ useEffect(() => {
             value: `$${processingAmount}`, // <-- Using SNGDTASRVR cookie only
           },
           {
-            title: "Available",
-            value: profileData?.available
-              ? `$${profileData.available.toFixed(2)}`
-              : "$0.00",
+            title: "Total Amount",
+            value: `$${profileData?.totalamount}`
           },
         ].map((item) => (
           <div
